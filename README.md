@@ -17,6 +17,15 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 - Python 3.9+
 - Git
 - LuaTeX (see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org))
+- The following fonts accessible by LuaTeX[^1]:
+   - Apple Color Emoji
+   - Arial Unicode MS
+   - Helvetica Neue
+   - Helvetica Neue Bold
+   - Menlo
+   - [SF Compact Display](https://developer.apple.com/fonts/)
+
+[^1]: If LuaTeX cannot find a font used by the package, you may see an error like:<pre><code>! Package fontspec Error: The font "Apple Color Emoji" cannot be found.</pre></code>These fonts should come preinstalled in recent versions of macOS, except for SF Compact Display, which must be downloaded separately from the [Apple Developer website](https://developer.apple.com/fonts/).</br></br>Accessible by, or known to LuaTeX in this case generally means _exists in a standard fonts location_ such as `~/Library/Fonts/` on macOS, or `C:\Windows\Fonts` on Windows. On Linux, common font locations include `/usr/share/fonts/`, `~/.local/share/fonts/`, and `~/.fonts/`. If a font isn't detected, running `fc-cache -fv` may help update the font cache. Fonts are also accessible if found in the TEXMF tree. See the [fontspecs package documentation](https://ctan.org/pkg/fontspec) for more details.
 
 ## Installation
 ### Latest PyPI stable release

@@ -1,0 +1,23 @@
+# Byte-compiled / cached files
+__pycache__/
+_minted-*/
+.*_cache/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+.env/
+env/
+
+# Dependency directories
+dist/
+build/
+
+# Editor/IDE files
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db

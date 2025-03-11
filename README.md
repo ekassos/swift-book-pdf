@@ -2,6 +2,8 @@
 
 Convert the DocC source for _The Swift Programming Language_ book into a print-ready PDF document. The final document follows the DocC rendering style and retains all internal references and external links.
 
+![The image showcases three pages of a PDF version of "The Swift Programming Language" book. The first page displays a table of contents, listing chapters like "Welcome to Swift" and "Language Guide" with page numbers. The second page contains Swift code examples and explanations about loops, including how to use a for-in loop. The third page continues discussing while loops with a visual example of a snakes and ladders game board. The pages maintain DocC styling with black headers and highlighted code sections.](https://github.com/user-attachments/assets/466408bd-ff63-470e-a1fb-e84cb0b9412f)
+
 ## Features
 - Generate a PDF version of the _The Swift Programming Language_ book, perfect for offline browsing or printing.
 - Choose from one of two [rendering modes](#rendering-modes):

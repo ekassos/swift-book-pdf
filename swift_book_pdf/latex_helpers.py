@@ -133,7 +133,11 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     text = re.sub(r"\s\\\s", r" \\\\ ", text)
     text = re.sub(
         r"\[([^\]]+)\]\((https?:\/\/(?:[^()\s]+|\([^()]*\))+)\)",
-        (r"\\href{\2}{\1}\\footnote{\\url{\2}}" if mode == 1 else r"\\href{\2}{\1}"),
+        (
+            r"\\href{\2}{\1}\\footnote{\\url{\2}}"
+            if mode == RenderingMode.PRINT
+            else r"\\href{\2}{\1}"
+        ),
         text,
     )
     text = re.sub(r"(?<!\\)_", r"\_", text)

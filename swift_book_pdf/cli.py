@@ -19,6 +19,7 @@ import logging
 from swift_book_pdf.book import Book
 from swift_book_pdf.config import Config
 from swift_book_pdf.files import validate_output_path
+from swift_book_pdf.fonts import FontConfig
 from swift_book_pdf.schema import RenderingMode
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,7 @@ def run(output_path: str, mode: str, verbose: bool, typesets: int) -> None:
     )
     try:
         output_path = validate_output_path(output_path, logger)
+        FontConfig()
     except ValueError as e:
         logger.error(str(e))
         return

@@ -1,6 +1,6 @@
 [project]
 name = "swift-book-pdf"
-version = "1.0.1"
+version = "1.0.2"
 description = "A tool to generate a PDF version of The Swift Programming Language book."
 license = "Apache-2.0"
 readme = "README.md"
@@ -11,6 +11,10 @@ dependencies = ["pygments (>=2.9.0,<3.0.0)", "tqdm (>=4.67.1,<5.0.0)", "emoji (>
 
 [project.urls]
 repository = "https://github.com/ekassos/swift-book-pdf.git"
+issues = "https://github.com/ekassos/swift-book-pdf/issues"
+changelog = "https://github.com/ekassos/swift-book-pdf/blob/main/CHANGELOG.md"
+documentation = "https://github.com/ekassos/swift-book-pdf/wiki"
+releasenotes = "https://github.com/ekassos/swift-book-pdf/releases"
 
 [project.scripts]
 swift_book_pdf = 'swift_book_pdf.cli:run'

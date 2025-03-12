@@ -12,18 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from subprocess import Popen
+import logging
 import sys
 import textwrap
 
+from subprocess import Popen
+
+
+def configure_logging(verbose: bool):
+    """Configures logging globally based on verbosity."""
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+    handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter("[%(levelname)s]: %(message)s")
+    handler.setFormatter(formatter)
+    root_logger.addHandler(handler)
+    root_logger.propagate = False
+
 
 def run_process_with_logs(
-    process: Popen[str], MAX_LINES: int = 5, MAX_LINE_LENGTH: int = 80
+    process: Popen[str], MAX_LINES: int = 10, MAX_LINE_LENGTH: int = 80
 ) -> None:
     last_lines = []
     printed_lines = 0
-    BLUE = "\033[34m"
+    GRAY = "\033[37m"
     RESET = "\033[0m"
+
+    is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
+    max_lines = None if is_debug else MAX_LINES
 
     while True:
         if process.stdout is None:
@@ -40,24 +56,26 @@ def run_process_with_logs(
         else:
             last_lines.append(line.rstrip("\n"))
 
-        # Keep only the last MAX_LINES lines
-        if len(last_lines) > MAX_LINES:
-            last_lines = last_lines[-MAX_LINES:]
+        # Keep only the last max_lines lines
+        if max_lines is not None and len(last_lines) > max_lines:
+            last_lines = last_lines[-max_lines:]
 
-        for _ in range(printed_lines):
-            sys.stdout.write("\033[F")
-            sys.stdout.write("\033[2K")
+        if not is_debug:
+            for _ in range(printed_lines):
+                sys.stdout.write("\033[F")
+                sys.stdout.write("\033[2K")
 
         out = "\n".join(last_lines)
-        sys.stdout.write(BLUE + out + RESET + "\n")
+        sys.stdout.write(GRAY + out + RESET + "\n")
         sys.stdout.flush()
         printed_lines = len(last_lines)
 
     process.wait()
 
-    for _ in range(printed_lines):
+    if not is_debug:
+        for _ in range(printed_lines):
+            sys.stdout.write("\033[F")
+            sys.stdout.write("\033[2K")
         sys.stdout.write("\033[F")
-        sys.stdout.write("\033[2K")
-    sys.stdout.write("\033[F")
 
     sys.stdout.flush()

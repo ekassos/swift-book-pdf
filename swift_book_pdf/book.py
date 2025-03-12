@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import logging
 
 from tqdm import trange
 from swift_book_pdf.config import Config
@@ -20,6 +21,8 @@ from swift_book_pdf.latex import LaTeXConverter
 from swift_book_pdf.pdf import PDFConverter
 from swift_book_pdf.preamble import generate_preamble
 from swift_book_pdf.toc import TableOfContents
+
+logger = logging.getLogger(__name__)
 
 
 class Book:
@@ -41,7 +44,7 @@ class Book:
                 latex_content = self.converter.generate_latex(file_path)
                 latex += latex_content + "\n"
             else:
-                self.config.logger.warning(
+                logger.warning(
                     f"Warning: No file found for tag <doc:{tag}>, skipping..."
                 )
         latex += r"\end{document}"
@@ -51,15 +54,15 @@ class Book:
     def process(self):
         latex_file_path = os.path.join(self.config.temp_dir, "inner_content.tex")
         self.process_files_in_order(latex_file_path)
-        self.config.logger.info("Creating PDF...")
+        logger.info(f"Creating PDF in {self.config.rendering_mode.value} mode...")
         converter = PDFConverter(self.config)
         for _ in trange(self.config.typesets, leave=False):
             converter.convert_to_pdf(latex_file_path)
 
         temp_pdf_path = os.path.join(self.config.temp_dir, "inner_content.pdf")
         if not os.path.exists(temp_pdf_path):
-            self.config.logger.error(f"PDF file not found: {temp_pdf_path}")
+            logger.error(f"PDF file not found: {temp_pdf_path}")
             return
 
         os.rename(temp_pdf_path, self.config.output_path)
-        self.config.logger.info(f"PDF saved to {self.config.output_path}")
+        logger.info(f"PDF saved to {self.config.output_path}")

@@ -36,8 +36,12 @@ pip install swift-book-pdf
 ## Usage
 ### Basic usage
 Call `swift_book_pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](#rendering-modes).
-```
-swift_book_pdf
+```bash
+$ swift_book_pdf
+
+[INFO]: Downloading TSPL files...
+[INFO]: Creating PDF in digital mode...
+[INFO]: PDF saved to ./swift-book.pdf
 ```
 
 When invoked, `swift_book_pdf` will:

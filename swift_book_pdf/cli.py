@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tempfile import TemporaryDirectory
 import click
 import logging
+
+from tempfile import TemporaryDirectory
 
 from swift_book_pdf.book import Book
 from swift_book_pdf.config import Config
 from swift_book_pdf.files import validate_output_path
 from swift_book_pdf.fonts import FontConfig
+from swift_book_pdf.log import configure_logging
 from swift_book_pdf.schema import RenderingMode
-
-logger = logging.getLogger(__name__)
 
 
 @click.group()
@@ -41,19 +41,19 @@ def cli() -> None:
 @click.option("--verbose", is_flag=True)
 @click.option("--typesets", type=int, default=4)
 def run(output_path: str, mode: str, verbose: bool, typesets: int) -> None:
-    logging.basicConfig(
-        level=logging.DEBUG if verbose else logging.INFO, format="%(message)s"
-    )
+    configure_logging(verbose)
+    logger = logging.getLogger(__name__)
+
     try:
-        output_path = validate_output_path(output_path, logger)
+        output_path = validate_output_path(output_path)
         font_config = FontConfig()
-        font_config.check_font_availability(logger)
+        font_config.check_font_availability()
     except ValueError as e:
         logger.error(str(e))
         return
 
     with TemporaryDirectory() as temp:
-        config = Config(temp, output_path, RenderingMode(mode), logger, typesets)
+        config = Config(temp, output_path, RenderingMode(mode), typesets)
         Book(config).process()
 
 

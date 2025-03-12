@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from logging import Logger
+import logging
 import subprocess
+
+logger = logging.getLogger(__name__)
 
 SANS_FONT = "Helvetica Neue"
 SANS_FONT_BOLD = "Helvetica Neue Bold"
@@ -43,7 +45,7 @@ class FontConfig:
         self.unicode_font = unicode_font
         self.header_footer_font = header_footer_font
 
-    def check_font_availability(self, logger: Logger) -> None:
+    def check_font_availability(self) -> None:
         fonts = [
             self.sans_font,
             self.sans_font_bold,

@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from logging import Logger
+import logging
 import os
 import subprocess
+
+logger = logging.getLogger(__name__)
 
 
 def get_file_name(file_path: str) -> str:
@@ -31,12 +33,17 @@ def clone_swift_book_repo(temp: str) -> None:
     repo_url = "https://github.com/swiftlang/swift-book.git"
     clone_dir = os.path.join(temp, "swift-book")
 
+    is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
+
     subprocess.run(
-        ["git", "clone", repo_url, clone_dir], check=True, stdout=subprocess.DEVNULL
+        ["git", "clone", repo_url, clone_dir],
+        check=True,
+        stdout=None if is_debug else subprocess.DEVNULL,
+        stderr=None if is_debug else subprocess.DEVNULL,
     )
 
 
-def validate_output_path(output_path: str, logger: Logger) -> str:
+def validate_output_path(output_path: str) -> str:
     output_dir = os.path.dirname(output_path) or "."  # Default to current directory
 
     if os.path.isdir(output_path):

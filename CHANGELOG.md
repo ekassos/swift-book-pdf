@@ -1,24 +1,20 @@
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+# Change Log
 
 ## [Unreleased]
 
 ### Added
 
-- Check that all fonts used by `fontspec` while typesetting are accessible by LuaTeX before creating the LaTeX or PDF documents.
+- Add check that all fonts used by `fontspec` while typesetting are accessible by LuaTeX before creating the LaTeX or PDF documents.
+- Add changelog.
 
 ### Changed
 
-- Streamline console logging and reduce redundant logs when the log level is set to INFO.
+- Streamline console logging and reduce redundant logs at the default logging level.
 
 ## [1.0.1] - 2025-03-11
 
 ### Fixed
-- **Markdown to LaTeX Conversion:** External URLs are not rendered as footnotes in print mode. (#1)
+- Fix an issue where external URLs were not being rendered as footnotes in print mode. [#1](https://github.com/ekassos/swift-book-pdf)
 
 ## [1.0.0] - 2025-03-11
 

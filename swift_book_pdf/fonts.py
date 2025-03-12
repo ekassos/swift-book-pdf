@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from logging import Logger
 import subprocess
 
 SANS_FONT = "Helvetica Neue"
@@ -20,6 +21,9 @@ MONO_FONT = "Menlo"
 EMOJI_FONT = "Apple Color Emoji"
 UNICODE_FONT = "Arial Unicode MS"
 HEADER_FOOTER_FONT = "SF Compact Display"
+FONT_TROUBLESHOOTING_URL = (
+    "https://github.com/ekassos/swift-book-pdf/wiki/Troubleshooting"
+)
 
 
 class FontConfig:
@@ -32,9 +36,6 @@ class FontConfig:
         unicode_font: str = UNICODE_FONT,
         header_footer_font: str = HEADER_FOOTER_FONT,
     ):
-        check_font_availability(
-            [sans_font, sans_font_bold, mono_font, emoji_font, unicode_font]
-        )
         self.sans_font = sans_font
         self.sans_font_bold = sans_font_bold
         self.mono_font = mono_font
@@ -42,19 +43,30 @@ class FontConfig:
         self.unicode_font = unicode_font
         self.header_footer_font = header_footer_font
 
-
-def check_font_availability(fonts: list[str]) -> None:
-    try:
-        result = subprocess.run(
-            ["luaotfload-tool", "--list=*"], capture_output=True, text=True
-        )
-        available_fonts = result.stdout.lower()
-        for font in fonts:
-            if font.lower() not in available_fonts:
-                raise ValueError(
-                    f"Can't build The Swift Programming Language book: Font {font} is not accessible by LuaTeX."
-                )
-    except FileNotFoundError:
-        raise ValueError(
-            "Can't build The Swift Programming Language book: luaotfload-tool not found. Ensure LuaTeX is installed."
-        )
+    def check_font_availability(self, logger: Logger) -> None:
+        fonts = [
+            self.sans_font,
+            self.sans_font_bold,
+            self.mono_font,
+            self.emoji_font,
+            self.unicode_font,
+            self.header_footer_font,
+        ]
+        try:
+            result = subprocess.run(
+                ["luaotfload-tool", "--list=*"], capture_output=True, text=True
+            )
+            logger.debug(f"Available fonts:\n{result.stdout}")
+            available_fonts = result.stdout.lower()
+            for font in fonts:
+                if font.lower() not in available_fonts:
+                    logger.debug(f'Font "{font}" is not accessible by LuaTeX.')
+                    raise ValueError(
+                        f'Can\'t build The Swift Programming Language book: Font "{font}" is not accessible by LuaTeX. See: {FONT_TROUBLESHOOTING_URL}'
+                    )
+                else:
+                    logger.debug(f'Font "{font}" is accessible by LuaTeX.')
+        except FileNotFoundError:
+            raise ValueError(
+                "Can't build The Swift Programming Language book: luaotfload-tool not found. Ensure LuaTeX is installed."
+            )

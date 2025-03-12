@@ -46,7 +46,8 @@ def run(output_path: str, mode: str, verbose: bool, typesets: int) -> None:
     )
     try:
         output_path = validate_output_path(output_path, logger)
-        FontConfig()
+        font_config = FontConfig()
+        font_config.check_font_availability(logger)
     except ValueError as e:
         logger.error(str(e))
         return

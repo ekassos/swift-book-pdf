@@ -1,11 +1,13 @@
-# Change Log
+# Changelog
 
 ## [Unreleased]
 
 ### Added
 
 - Add check that all fonts used by `fontspec` while typesetting are accessible by LuaTeX before creating the LaTeX or PDF documents.
-- Add changelog.
+- _Docs:_ Add fonts used by `fontspec` in Requirements section.
+- _Docs:_ Add details about how to make fonts accessible to LuaTeX.
+- _Docs:_ Add changelog.
 
 ### Changed
 

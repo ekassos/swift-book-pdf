@@ -16,7 +16,7 @@
 ## [1.0.1] - 2025-03-11
 
 ### Fixed
-- Fix an issue where external URLs were not being rendered as footnotes in print mode. [#1](https://github.com/ekassos/swift-book-pdf)
+- Fix an issue where external URLs were not being rendered as footnotes in print mode. ([#1](https://github.com/ekassos/swift-book-pdf))
 
 ## [1.0.0] - 2025-03-11
 

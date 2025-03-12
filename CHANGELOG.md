@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Check that all fonts used while typesetting by `fontspec` are accessible by LuaTeX before creating the LaTeX or PDF documents.
+- Check that all fonts used by `fontspec` while typesetting are accessible by LuaTeX before creating the LaTeX or PDF documents.
 
 ### Changed
 
-- Streamline console logging.
+- Streamline console logging and reduce redundant logs when the log level is set to INFO.
 
 ## [1.0.1] - 2025-03-11
 

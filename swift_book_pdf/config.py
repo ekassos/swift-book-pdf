@@ -18,6 +18,8 @@ import shutil
 from swift_book_pdf.files import clone_swift_book_repo
 from swift_book_pdf.schema import RenderingMode
 
+logger = logging.getLogger(__name__)
+
 
 class Config:
     def __init__(
@@ -25,17 +27,14 @@ class Config:
         input_path: str,
         output_path: str,
         output_format: RenderingMode,
-        logger: logging.Logger,
         typesets: int,
     ):
-        self.logger = logger
-
         if not shutil.which("git"):
             raise RuntimeError("Git is not installed or not in PATH.")
 
         self.temp_dir = input_path
 
-        self.logger.info("Downloading TSPL files...")
+        logger.info("Downloading TSPL files...")
         clone_swift_book_repo(input_path)
         self.root_dir = os.path.join(input_path, "swift-book/TSPL.docc/")
 

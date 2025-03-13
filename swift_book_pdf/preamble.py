@@ -49,7 +49,7 @@ PREAMBLE = Template(r"""
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
-\usepackage[$geometry_opts,inner=1.9in,top=1.2in,outer=0.9in,headheight=0.8in,headsep=0.3in,bottom=1.2in]{geometry}
+\usepackage[$geometry_opts,top=1.2in,outer=0.9in,headheight=0.8in,headsep=0.3in,bottom=1.2in]{geometry}
 \usepackage{adjustbox}
 \usepackage{ifoddpage}
 \usepackage{enumitem}

@@ -46,8 +46,10 @@ def cli() -> None:
     show_default="digital",
 )
 @click.option(
-    "--size",
-    type=click.Choice([size.value for size in PaperSize], case_sensitive=False),
+    "--paper",
+    type=click.Choice(
+        [paper_size.value for paper_size in PaperSize], case_sensitive=False
+    ),
     default=PaperSize.LETTER.value,
     help="Paper size for the document",
     show_default="letter",
@@ -60,7 +62,7 @@ def cli() -> None:
     show_default="4",
 )
 @click.option("--verbose", is_flag=True)
-def run(output_path: str, mode: str, verbose: bool, typesets: int, size: str) -> None:
+def run(output_path: str, mode: str, verbose: bool, typesets: int, paper: str) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
 
@@ -68,7 +70,7 @@ def run(output_path: str, mode: str, verbose: bool, typesets: int, size: str) ->
         output_path = validate_output_path(output_path)
         font_config = FontConfig()
         font_config.check_font_availability()
-        doc_config = DocConfig(RenderingMode(mode), PaperSize(size), typesets)
+        doc_config = DocConfig(RenderingMode(mode), PaperSize(paper), typesets)
     except ValueError as e:
         logger.error(str(e))
         return

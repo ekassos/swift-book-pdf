@@ -48,13 +48,13 @@ class TableOfContents:
     ) -> tuple[str, Optional[str]]:
         processed_lines = remove_directives(self.file_content)
         processed_lines = replace_chapter_href_with_toc_item(
-            processed_lines, self.chapter_metadata, converter.config.rendering_mode
+            processed_lines, self.chapter_metadata, converter.config.doc_config.mode
         )
         processed_lines, version_info = replace_and_extract_version(processed_lines)
         file_name = get_file_name(self.tspl_file_path)
         toc_latex_lines = converter.convert_file_to_latex(processed_lines, file_name)
         toc_latex_lines = self.toc_latex_overrides(
-            toc_latex_lines, converter.config.rendering_mode
+            toc_latex_lines, converter.config.doc_config.mode
         )
         toc_latex = "\n".join(toc_latex_lines)
         return toc_latex, version_info

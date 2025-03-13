@@ -61,7 +61,7 @@ class LaTeXConverter:
         latex_lines.append("{\\BodyStyle\n")
         blocks = parse_blocks(file_content)
         body_latex = convert_blocks_to_latex(
-            blocks, file_name, self.config.assets_dir, self.config.rendering_mode
+            blocks, file_name, self.config.assets_dir, self.config.doc_config.mode
         )
         latex_lines.extend(body_latex)
         latex_lines.append("}\n\\newpage\n")

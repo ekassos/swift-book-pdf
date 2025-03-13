@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .schema import RenderingMode
+from swift_book_pdf.doc import DocConfig
+from .schema import PaperSize, RenderingMode
 from string import Template
 
 
@@ -26,8 +27,19 @@ def get_link_color(mode: RenderingMode) -> str:
             raise ValueError("Invalid rendering mode specified.")
 
 
-def generate_preamble(mode: RenderingMode) -> str:
-    return PREAMBLE.substitute(color=get_link_color(mode))
+def get_geometry_opts(paper_size: PaperSize) -> str:
+    return {
+        PaperSize.A4: "a4paper,inner=1.67in",
+        PaperSize.LETTER: "letterpaper,inner=1.9in",
+        PaperSize.LEGAL: "legalpaper,inner=1.9in",
+    }.get(paper_size, "letterpaper,inner=1.9in")
+
+
+def generate_preamble(doc_config: DocConfig) -> str:
+    return PREAMBLE.substitute(
+        color=get_link_color(doc_config.mode),
+        geometry_opts=get_geometry_opts(doc_config.paper_size),
+    )
 
 
 PREAMBLE = Template(r"""
@@ -37,7 +49,7 @@ PREAMBLE = Template(r"""
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
-\usepackage[inner=1.9in,outer=0.9in,headheight=0.8in,headsep=0.3in,bottom=1.2in]{geometry}
+\usepackage[$geometry_opts,top=1.2in,outer=0.9in,headheight=0.8in,headsep=0.3in,bottom=1.2in]{geometry}
 \usepackage{adjustbox}
 \usepackage{ifoddpage}
 \usepackage{enumitem}
@@ -371,14 +383,14 @@ PREAMBLE = Template(r"""
 
 \fancyfoot[FO]{%
 \begin{tikzpicture}[remember picture, overlay]
-\fill[headerGray] ([yshift=0.4in]current page.south west)
- rectangle ([yshift=0.8in]current page.south east);
+\fill[headerGray] ([yshift=0.5in]current page.south west)
+ rectangle ([yshift=0.9in]current page.south east);
 
-\node[anchor=east] at ([yshift=0.6in,xshift=-0.7in]current page.south east) {
+\node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
   \includegraphics[height=0.18in]{Swift_logo_white.png}
 };
 
-\node[anchor=east,white] at ([yshift=0.6in,xshift=-1in]current page.south east) {
+\node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
   \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
@@ -386,14 +398,14 @@ PREAMBLE = Template(r"""
 
 \fancyfoot[FE]{%
 \begin{tikzpicture}[remember picture, overlay]
-\fill[headerGray] ([yshift=0.4in]current page.south west)
- rectangle ([yshift=0.8in]current page.south east);
+\fill[headerGray] ([yshift=0.5in]current page.south west)
+ rectangle ([yshift=0.9in]current page.south east);
 
-\node[anchor=west] at ([yshift=0.6in,xshift=0.7in]current page.south west) {
+\node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
   \includegraphics[height=0.18in]{Swift_logo_white.png}
 };
 
-\node[anchor=west,white] at ([yshift=0.6in,xshift=1in]current page.south west) {
+\node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
   \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
@@ -403,14 +415,14 @@ PREAMBLE = Template(r"""
   \fancyhf{}
   \fancyfoot[FO]{%
   \begin{tikzpicture}[remember picture, overlay]
-  \fill[headerGray] ([yshift=0.4in]current page.south west)
-   rectangle ([yshift=0.8in]current page.south east);
+  \fill[headerGray] ([yshift=0.5in]current page.south west)
+   rectangle ([yshift=0.9in]current page.south east);
 
-  \node[anchor=east] at ([yshift=0.6in,xshift=-0.7in]current page.south east) {
+  \node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
     \includegraphics[height=0.18in]{Swift_logo_white.png}
   };
 
-  \node[anchor=east,white] at ([yshift=0.6in,xshift=-1in]current page.south east) {
+  \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
     \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%
@@ -418,14 +430,14 @@ PREAMBLE = Template(r"""
 
   \fancyfoot[FE]{%
   \begin{tikzpicture}[remember picture, overlay]
-  \fill[headerGray] ([yshift=0.4in]current page.south west)
-   rectangle ([yshift=0.8in]current page.south east);
+  \fill[headerGray] ([yshift=0.5in]current page.south west)
+   rectangle ([yshift=0.9in]current page.south east);
 
-  \node[anchor=west] at ([yshift=0.6in,xshift=0.7in]current page.south west) {
+  \node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
     \includegraphics[height=0.18in]{Swift_logo_white.png}
   };
 
-  \node[anchor=west,white] at ([yshift=0.6in,xshift=1in]current page.south west) {
+  \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
     \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%

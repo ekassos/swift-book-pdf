@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add CLI `--paper` option to generate book in letter, legal, or A4 paper sizes.
+
+### Changed
+
+- Changed the footer's bottom margin to mirror the header's top margin.
+
 ## [1.0.2] - 2025-03-12
 
 ### Added

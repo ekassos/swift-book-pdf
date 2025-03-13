@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Add CLI option to generate book in letter, legal, or A4 paper sizes.
+
 ## [1.0.2] - 2025-03-12
 
 ### Added

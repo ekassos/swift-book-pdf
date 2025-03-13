@@ -19,10 +19,11 @@ from tempfile import TemporaryDirectory
 
 from swift_book_pdf.book import Book
 from swift_book_pdf.config import Config
+from swift_book_pdf.doc import DocConfig
 from swift_book_pdf.files import validate_output_path
 from swift_book_pdf.fonts import FontConfig
 from swift_book_pdf.log import configure_logging
-from swift_book_pdf.schema import RenderingMode
+from swift_book_pdf.schema import PaperSize, RenderingMode
 
 
 @click.group()
@@ -37,10 +38,29 @@ def cli() -> None:
     default="./swift-book.pdf",
     required=False,
 )
-@click.option("--mode", type=click.Choice(["print", "digital"]), default="digital")
+@click.option(
+    "--mode",
+    type=click.Choice([mode.value for mode in RenderingMode], case_sensitive=False),
+    default=RenderingMode.DIGITAL.value,
+    help="Rendering mode",
+    show_default="digital",
+)
+@click.option(
+    "--size",
+    type=click.Choice([size.value for size in PaperSize], case_sensitive=False),
+    default=PaperSize.LETTER.value,
+    help="Paper size for the document",
+    show_default="letter",
+)
+@click.option(
+    "--typesets",
+    type=int,
+    default=4,
+    help="Number of typeset passes to use",
+    show_default="4",
+)
 @click.option("--verbose", is_flag=True)
-@click.option("--typesets", type=int, default=4)
-def run(output_path: str, mode: str, verbose: bool, typesets: int) -> None:
+def run(output_path: str, mode: str, verbose: bool, typesets: int, size: str) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
 
@@ -48,12 +68,13 @@ def run(output_path: str, mode: str, verbose: bool, typesets: int) -> None:
         output_path = validate_output_path(output_path)
         font_config = FontConfig()
         font_config.check_font_availability()
+        doc_config = DocConfig(RenderingMode(mode), PaperSize(size), typesets)
     except ValueError as e:
         logger.error(str(e))
         return
 
     with TemporaryDirectory() as temp:
-        config = Config(temp, output_path, RenderingMode(mode), typesets)
+        config = Config(temp, output_path, doc_config)
         Book(config).process()
 
 

@@ -15,8 +15,8 @@
 import logging
 import os
 import shutil
+from swift_book_pdf.doc import DocConfig
 from swift_book_pdf.files import clone_swift_book_repo
-from swift_book_pdf.schema import RenderingMode
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +26,7 @@ class Config:
         self,
         input_path: str,
         output_path: str,
-        output_format: RenderingMode,
-        typesets: int,
+        doc_config: DocConfig,
     ):
         if not shutil.which("git"):
             raise RuntimeError("Git is not installed or not in PATH.")
@@ -53,5 +52,4 @@ class Config:
             )
 
         self.output_path = output_path
-        self.rendering_mode = output_format
-        self.typesets = typesets
+        self.doc_config = doc_config

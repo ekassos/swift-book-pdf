@@ -22,6 +22,12 @@ class RenderingMode(StrEnum):
     PRINT = "print"
 
 
+class PaperSize(StrEnum):
+    A4 = "a4"
+    LETTER = "letter"
+    LEGAL = "legal"
+
+
 class ChapterMetadata(BaseModel):
     file_path: str | None = None
     header_line: str | None = None

@@ -6,11 +6,11 @@
 
 ### Added
 
-- Add CLI `--paper` option to generate book in letter, legal, or A4 paper sizes.
+- Add CLI `--paper` option to generate book in letter, legal, or A4 paper sizes. ([#7](https://github.com/ekassos/swift-book-pdf/pull/7))
 
 ### Changed
 
-- Changed the footer's bottom margin to mirror the header's top margin.
+- Changed the footer's bottom margin to mirror the header's top margin. ([#7](https://github.com/ekassos/swift-book-pdf/pull/7))
 
 ## [1.0.2] - 2025-03-12
 

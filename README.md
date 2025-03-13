@@ -7,8 +7,8 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
     <td colspan="2"><b>Preview Books</b></td>
   </tr>
   <tr>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.0.2/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.0.2/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.1.0/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.1.0/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
   </tr>
 </table>
 
@@ -43,7 +43,7 @@ pip install swift-book-pdf
 
 ## Usage
 ### Basic usage
-Call `swift_book_pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](#rendering-modes).
+Call `swift_book_pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](#rendering-modes) in Letter [paper size](#paper-sizes).
 ```
 $ swift_book_pdf
 
@@ -70,15 +70,25 @@ swift_book_pdf /path/to/output.pdf
 `swift_book_pdf` supports two rendering modes:
 
 1. `digital` (default): Best for browsing _The Swift Programming Language_ book as a PDF, the `digital` mode renders internal references and external links in blue hyperlinks.
-
-   ```
-   swift_book_pdf /path/to/output.pdf --mode digital
-   ```
 2. `print`: Best for reading through _The Swift Programming Language_ book in print, the `print` mode includes page numbers for all internal references and complete URLs in footnotes for external links.
 
-   ```
-   swift_book_pdf /path/to/output.pdf --mode print
-   ```
+Use the `--mode` option to set your preferred rendering option:
+
+```
+swift_book_pdf /path/to/output.pdf --mode print
+```
+
+### Paper sizes
+`swift_book_pdf` supports three paper sizes:
+
+1. `letter` (default)
+2. `legal`
+3. `A4`
+
+Use the `--paper` option to set your preferred paper size:
+```
+swift_book_pdf --paper legal
+```
 
 ### Number of typesetting passes
 This package uses LaTeX to typeset the TSPL book. LaTeX arranges page elements dynamically, so references added in the second pass may shift the page content, and alter the placement of headers and footers. To ensure everything is properly rendered, swift_book_pdf typesets the document four times.

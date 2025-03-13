@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-03-13
+
 ### Added
 
 - Add CLI `--paper` option to generate book in letter, legal, or A4 paper sizes.
@@ -42,7 +44,8 @@
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.0.2...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/ekassos/swift-book-pdf/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.0...v1.0.1
 [1.0.0]: https://github.com/ekassos/swift-book-pdf/releases/tag/v1.0

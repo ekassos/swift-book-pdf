@@ -4,7 +4,7 @@
 
 ### Added
 
-- Add CLI option to generate book in letter, legal, or A4 paper sizes.
+- Add CLI `--size` option to generate book in letter, legal, or A4 paper sizes.
 
 ### Changed
 

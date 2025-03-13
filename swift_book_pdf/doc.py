@@ -16,7 +16,12 @@ from swift_book_pdf.schema import PaperSize, RenderingMode
 
 
 class DocConfig:
-    def __init__(self, mode: RenderingMode = RenderingMode.DIGITAL, paper_size: PaperSize = PaperSize.LETTER, typesets: int = 4):
+    def __init__(
+        self,
+        mode: RenderingMode = RenderingMode.DIGITAL,
+        paper_size: PaperSize = PaperSize.LETTER,
+        typesets: int = 4,
+    ):
         self.mode = mode
         self.paper_size = paper_size
         self.typesets = typesets

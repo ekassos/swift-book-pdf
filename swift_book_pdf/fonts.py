@@ -100,7 +100,7 @@ class FontConfig:
         if main_font_custom:
             main_font = find_font([main_font_custom], available_fonts)
             if not main_font:
-                logging.warning(
+                logger.warning(
                     f"Custom main font '{main_font_custom}' not found. Using default fonts."
                 )
                 main_font = find_font(main_font_list, available_fonts)
@@ -115,7 +115,7 @@ class FontConfig:
         if mono_font_custom:
             mono_font = find_font([mono_font_custom], available_fonts)
             if not mono_font:
-                logging.warning(
+                logger.warning(
                     f"Custom monospace font '{mono_font_custom}' not found. Using default fonts."
                 )
                 mono_font = find_font(mono_font_list, available_fonts)
@@ -130,7 +130,7 @@ class FontConfig:
         if emoji_font_custom:
             emoji_font = find_font([emoji_font_custom], available_fonts)
             if not emoji_font:
-                logging.warning(
+                logger.warning(
                     f"Custom emoji font '{emoji_font_custom}' not found. Using default fonts."
                 )
                 emoji_font = find_font(emoji_font_list, available_fonts)
@@ -145,7 +145,7 @@ class FontConfig:
         if unicode_font_custom:
             unicode_font = find_font([unicode_font_custom], available_fonts)
             if not unicode_font:
-                logging.warning(
+                logger.warning(
                     f"Custom unicode font '{unicode_font_custom}' not found. Using default fonts."
                 )
                 unicode_font = find_font(unicode_font_list, available_fonts)
@@ -160,7 +160,7 @@ class FontConfig:
         if header_footer_font_custom:
             header_footer_font = find_font([header_footer_font_custom], available_fonts)
             if not header_footer_font:
-                logging.warning(
+                logger.warning(
                     f"Custom header/footer font '{header_footer_font_custom}' not found. Using default fonts."
                 )
                 header_footer_font = find_font(header_footer_font_list, available_fonts)
@@ -201,7 +201,7 @@ def check_for_missing_font_logs(log_line: str):
     """
     pattern = re.compile(
         r"Missing character: There is no (?P<char>\S+) "
-        r"\((?P<code>U\+\w+)\) in font name:(?P<font>[^:]+):"
+        r"\((?P<code>U\+\w+)\) in font name:(?P<font>.+?):"
     )
 
     match = pattern.search(log_line)

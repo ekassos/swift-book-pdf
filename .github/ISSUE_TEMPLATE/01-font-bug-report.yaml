@@ -17,7 +17,7 @@ body:
     attributes:
       label: Confirmation
       options:
-        - label: The issue is caused by one of the default fonts.
+        - label: The issue is caused when using a default font.
           required: true
   - type: input
     id: font

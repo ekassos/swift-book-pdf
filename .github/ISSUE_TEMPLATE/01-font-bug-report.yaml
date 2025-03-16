@@ -1,0 +1,51 @@
+name: Font Issue Report
+description: File a font bug report if you're seeing something that doesn't look right.
+title: "[Bug]: "
+labels: ["bug", "triage", "fonts"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+        Please complete all questions and **provide the log output**. This will help us to reproduce the issue and get it fixed as quickly as possible.
+  - type: markdown
+    attributes:
+      value: "## Basic Information"
+  - type: input
+    id: font
+    attributes:
+      label: Font name
+      description: |
+        Please provide the name of the font you are using. The error message should contain the name of the font.
+      placeholder: "Menlo"
+  - type: input
+    id: offending-character
+    attributes:
+      label: Character causing the issue
+      description: |
+        Please provide the character that is causing the issue with the Unicode code point. The error message should contain the character.
+      placeholder: "你 (U+4F60)"
+  - type: markdown
+    attributes:
+      value: "## Log Information"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant error logs
+      description: |
+        Please copy and paste the relevant error logs. It should look something like this:
+        
+        ```
+        [ERROR]: Couldn't build The Swift Programming Language book: Menlo does not support character 你 (U+4F60).    
+        If you are using a custom font, please ensure that it supports the character set you are trying to use.
+        Otherwise, see https://github.com/ekassos/swift-book-pdf/wiki/Troubleshooting for more information.
+        
+        Your font configuration:
+        Main font: Helvetica Neue (default font)
+        Monospace font: Menlo (default font)
+        Emoji font: Apple Color Emoji (default font)
+        Unicode font: Arial Unicode MS (default font)
+        Header/Footer font: SF Compact Display (default font)
+        ```
+      render: shell

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 import re
 import struct
@@ -34,8 +33,6 @@ from swift_book_pdf.schema import (
     TermListBlock,
     UnorderedListBlock,
 )
-
-logger = logging.getLogger(__name__)
 
 
 def generate_chapter_title(lines: list[str], file_name: str) -> tuple[str, list[str]]:

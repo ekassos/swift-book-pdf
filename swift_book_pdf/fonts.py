@@ -79,11 +79,16 @@ class FontConfig:
         unicode_font_list: list[str] = UNICODE_FONT_LIST,
         header_footer_font_list: list[str] = HEADER_FOOTER_FONT_LIST,
     ):
-        result = subprocess.run(
-            ["luaotfload-tool", "--list=*"], capture_output=True, text=True
-        )
-        logger.debug(f"Available fonts:\n{result.stdout}")
-        available_fonts = result.stdout.lower()
+        try:
+            result = subprocess.run(
+                ["luaotfload-tool", "--list=*"], capture_output=True, text=True
+            )
+            logger.debug(f"Available fonts:\n{result.stdout}")
+            available_fonts = result.stdout.lower()
+        except FileNotFoundError:
+            raise ValueError(
+                "Can't build The Swift Programming Language book: luaotfload-tool not found. Ensure LuaTeX is installed."
+            )
 
         main_font = find_font(main_font_list, available_fonts)
         if not main_font:

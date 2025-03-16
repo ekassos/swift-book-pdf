@@ -7,8 +7,8 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
     <td colspan="2"><b>Preview Books</b></td>
   </tr>
   <tr>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.1.0/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.1.0/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.2.0/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.2.0/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
   </tr>
 </table>
 
@@ -25,15 +25,7 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 - Python 3.9+
 - Git
 - LuaTeX (see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org))
-- The following fonts accessible by LuaTeX[^1]:
-   - Apple Color Emoji
-   - Arial Unicode MS
-   - Helvetica Neue
-   - Helvetica Neue Bold
-   - Menlo
-   - [SF Compact Display](https://developer.apple.com/fonts/)
-
-[^1]: If LuaTeX cannot find a font used by the package, you may see an error like:<pre><code>Can't build The Swift Programming Language book: Font "Apple Color Emoji" is not accessible by LuaTeX.</pre></code>These fonts should come preinstalled in recent versions of macOS, except for SF Compact Display, which must be downloaded separately from the [Apple Developer website](https://developer.apple.com/fonts/).</br></br>Accessible by, or known to LuaTeX in this case generally means _exists in a standard fonts location_ such as `~/Library/Fonts/` on macOS, or `C:\Windows\Fonts` on Windows. On Linux, common font locations include `/usr/share/fonts/`, `~/.local/share/fonts/`, and `~/.fonts/`. If a font isn't detected, running `fc-cache -fv` may help update the font cache. Fonts are also accessible if found in the TEXMF tree. See the [fontspecs package documentation](https://ctan.org/pkg/fontspec) for more details.
+- Fonts for typesetting. See [the Fonts article](https://github.com/ekassos/swift-book-pdf/wiki/Fonts) for more details.
 
 ## Installation
 ### Latest PyPI stable release
@@ -89,6 +81,9 @@ Use the `--paper` option to set your preferred paper size:
 ```
 swift_book_pdf --paper legal
 ```
+
+### Fonts
+swift-book-pdf requires a set of fonts to typeset *The Swift Programming Language* book. You can use any of the available default options, or specify your own fonts. To learn more about fonts and available configuration options, see [this article](https://github.com/ekassos/swift-book-pdf/wiki/Fonts/).
 
 ### Number of typesetting passes
 This package uses LaTeX to typeset the TSPL book. LaTeX arranges page elements dynamically, so references added in the second pass may shift the page content, and alter the placement of headers and footers. To ensure everything is properly rendered, swift_book_pdf typesets the document four times.

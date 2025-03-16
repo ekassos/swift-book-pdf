@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-03-15
+
 ### Added
 
-- Add more default font options, organized in five font categories. swift-book-pdf will now typeset TSPL in any system where LuaTeX has access to at least one font in each font category.
+- Add more default font options, organized in five font categories. swift-book-pdf will typeset TSPL in any system where LuaTeX has access to at least one font in each font category.
 - Add option to use custom fonts.
 - Add error reporting when a font (custom or default) does not support a typeset character based on the assigned font category.
 - Add `--version` CLI option.
@@ -52,7 +54,8 @@
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/ekassos/swift-book-pdf/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.0...v1.0.1

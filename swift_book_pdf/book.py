@@ -32,7 +32,7 @@ class Book:
         self.converter = LaTeXConverter(config)
 
     def process_files_in_order(self, latex_file_path: str):
-        latex = generate_preamble(self.config.doc_config)
+        latex = generate_preamble(self.config)
         # TODO: Use the version to generate a cover page
         toc_latex, _ = self.toc.generate_toc_latex(converter=self.converter)
         latex += toc_latex + "\n"

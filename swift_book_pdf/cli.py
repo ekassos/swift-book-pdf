@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib
 from typing import Optional
 import click
 import logging
@@ -93,6 +94,7 @@ def cli() -> None:
     help="Font for text in the header and footer",
 )
 @click.option("--verbose", is_flag=True)
+@click.option("--version", is_flag=True)
 def run(
     output_path: str,
     mode: str,
@@ -104,7 +106,13 @@ def run(
     unicode: Optional[str],
     emoji: Optional[str],
     header_footer: Optional[str],
+    version: bool,
 ) -> None:
+    if version:
+        current_version = importlib.metadata.version("swift-book-pdf")
+        click.echo(f"swift-book-pdf {current_version}")
+        return
+
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
 

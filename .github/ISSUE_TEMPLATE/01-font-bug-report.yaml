@@ -1,6 +1,6 @@
 name: Font Issue Report
 description: File a font bug report if you're seeing something that doesn't look right.
-title: "[Bug]: "
+title: "[Font Issue] - {font} - {character}"
 labels: ["bug", "triage", "fonts"]
 body:
   - type: markdown
@@ -15,7 +15,8 @@ body:
   - type: checkboxes
     id: confirmation
     attributes:
-      label: Confirmation
+      label: |
+        Please confirm the following:
       options:
         - label: The issue is caused when using a default font.
           required: true
@@ -27,7 +28,7 @@ body:
         Provide the name of the font you are using. The error message should contain the name of the font.
       placeholder: "Menlo"
   - type: input
-    id: offending-character
+    id: character
     attributes:
       label: Character causing the issue
       description: |

@@ -17,6 +17,7 @@ import os
 import shutil
 from swift_book_pdf.doc import DocConfig
 from swift_book_pdf.files import clone_swift_book_repo
+from swift_book_pdf.fonts import FontConfig
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ class Config:
         self,
         input_path: str,
         output_path: str,
+        font_config: FontConfig,
         doc_config: DocConfig,
     ):
         if not shutil.which("git"):
@@ -52,4 +54,5 @@ class Config:
             )
 
         self.output_path = output_path
+        self.font_config = font_config
         self.doc_config = doc_config

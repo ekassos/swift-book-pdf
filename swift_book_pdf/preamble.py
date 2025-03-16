@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.doc import DocConfig
+from swift_book_pdf.config import Config
 from .schema import PaperSize, RenderingMode
 from string import Template
 
@@ -35,10 +35,15 @@ def get_geometry_opts(paper_size: PaperSize) -> str:
     }.get(paper_size, "letterpaper,inner=1.9in")
 
 
-def generate_preamble(doc_config: DocConfig) -> str:
+def generate_preamble(config: Config) -> str:
     return PREAMBLE.substitute(
-        color=get_link_color(doc_config.mode),
-        geometry_opts=get_geometry_opts(doc_config.paper_size),
+        color=get_link_color(config.doc_config.mode),
+        geometry_opts=get_geometry_opts(config.doc_config.paper_size),
+        main_font=config.font_config.main_font,
+        mono_font=config.font_config.mono_font,
+        emoji_font=config.font_config.emoji_font,
+        unicode_font=config.font_config.unicode_font,
+        header_footer_font=config.font_config.header_footer_font,
     )
 
 
@@ -83,10 +88,10 @@ PREAMBLE = Template(r"""
 \setlength\parindent{0pt}
 \setcounter{secnumdepth}{4}
 
-\renewcommand{\footnotesize}{\fontspec{Menlo}\fontsize{8pt}{8pt}\selectfont}
+\renewcommand{\footnotesize}{\fontspec{$mono_font}\fontsize{8pt}{8pt}\selectfont}
 \setlength{\footnotesep}{9pt}
 \makeatletter
-\renewcommand{\@makefnmark}{\fontspec{Helvetica Neue}\selectfont\textsuperscript\@thefnmark}
+\renewcommand{\@makefnmark}{\fontspec{$main_font}\selectfont\textsuperscript\@thefnmark}
 \renewcommand{\@makefntext}[1]{%
   \@hangfrom{\hbox{\@makefnmark\ }}#1%
 }
@@ -94,15 +99,15 @@ PREAMBLE = Template(r"""
 \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
 
 \newcommand{\TitleStyle}{%
-  \fontspec{Helvetica Neue}\fontsize{22pt}{1.2\baselineskip}\selectfont
+  \fontspec{$main_font}\fontsize{22pt}{1.2\baselineskip}\selectfont
 }
 
 \newcommand{\SubtitleStyle}{%
-\global\precededbyboxfalse\fontspec{Helvetica Neue}\fontsize{11.07pt}{1.2\baselineskip}\selectfont
+\global\precededbyboxfalse\fontspec{$main_font}\fontsize{11.07pt}{1.2\baselineskip}\selectfont
 }
 
 \newcommand{\BodyStyle}{%
-\fontspec{Helvetica Neue}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
+\fontspec{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
 }
 
 \newcommand{\ParagraphStyle}[1]{%
@@ -124,7 +129,7 @@ PREAMBLE = Template(r"""
 \def\section{\@startsection{section}{1}{0pt}%
    {0.4in}
    {0.1in}
-   {\fontspec{Helvetica Neue}\fontsize{22pt}{1.5\baselineskip}\selectfont\global\AtPageTopfalse}}
+   {\fontspec{$main_font}\fontsize{22pt}{1.5\baselineskip}\selectfont\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\TitleSection}[2]{%
@@ -137,7 +142,7 @@ PREAMBLE = Template(r"""
 \def\subsection{\@startsection{subsection}{2}{0pt}%
    {\ifprecededbyparagraph 0.44in \else 0.41in \fi}
    {0.16in}
-   {\fontspec{Helvetica Neue}\fontsize{16.88pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\fontspec{$main_font}\fontsize{16.88pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SectionHeader}[2]{%
@@ -161,7 +166,7 @@ PREAMBLE = Template(r"""
 \def\subsubsection{\@startsection{subsubsection}{3}{0pt}%
    {\ifAtPageTop \ifintoc 0in \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi}
    {0.16in}
-   {\fontspec{Helvetica Neue}\fontsize{14.77pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\fontspec{$main_font}\fontsize{14.77pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsectionHeader}[2]{%
@@ -194,7 +199,7 @@ PREAMBLE = Template(r"""
 \def\paragraph{\@startsection{paragraph}{4}{0pt}%
    {\ifprecededbyparagraph 0.34in \else 0.32in \fi}
    {0.16in}
-   {\fontspec{Helvetica Neue Bold}\fontsize{12.66}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\bfseries\fontspec{$main_font}\fontsize{12.66}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsubsectionHeader}[2]{%
@@ -207,14 +212,14 @@ PREAMBLE = Template(r"""
 }
 
 \newcommand{\CodeStyle}{%
-  \fontspec{Menlo}\fontsize{9pt}{1.1\baselineskip}\selectfont
+  \fontspec{$mono_font}\fontsize{9pt}{1.1\baselineskip}\selectfont
   \setlength{\parskip}{7pt}\raggedright
 }
-\setmonofont{Menlo}[Scale=1]
+\setmonofont{$mono_font}[Scale=1]
 
 % Define custom emoji style for code
-\newfontfamily\emoji{Apple Color Emoji}[Renderer=Harfbuzz]
-\newfontfamily\unicodeFont{Arial Unicode MS}[Renderer=Harfbuzz]
+\newfontfamily\emoji{$emoji_font}[Renderer=Harfbuzz]
+\newfontfamily\unicodeFont{$unicode_font}[Renderer=Harfbuzz]
 \newcommand{\loweremoji}[1]{\raisebox{-0.2ex}{#1}}
 \newcommand{\textNonLatin}[1]{\unicodeFont{#1}}
 
@@ -360,7 +365,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=east,white] at ([yshift=-0.70in,xshift=-0.95in]current page.north east) {
-    \scalebox{1.10}[1]{\fontspec{SF Compact Display}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont \customheader}
+    \scalebox{1.10}[1]{\fontspec{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont \customheader}
   };
 \end{tikzpicture}%
 }
@@ -376,7 +381,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=west,white] at ([yshift=-0.71in,xshift=0.95in]current page.north west) {
-  \scalebox{1.10}[1]{\fontspec{SF Compact Display}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
+  \scalebox{1.10}[1]{\fontspec{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
 };
 \end{tikzpicture}%
 }
@@ -391,7 +396,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-  \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
+  \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
 }
@@ -406,7 +411,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-  \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
+  \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
 }
@@ -423,7 +428,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-    \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
+    \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%
   }
@@ -438,7 +443,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-    \fontspec{SF Compact Display} \fontsize{13pt}{0pt}\selectfont \thepage
+    \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%
   }

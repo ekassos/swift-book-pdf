@@ -454,7 +454,11 @@ def convert_nested_block(block: Block, mode: RenderingMode) -> str:
 
 
 def convert_blocks_to_latex(
-    blocks: list[Block], file_name: str, assets_dir: str, mode: RenderingMode
+    blocks: list[Block],
+    file_name: str,
+    assets_dir: str,
+    mode: RenderingMode,
+    main_font: str,
 ) -> list[str]:
     """
     Convert parsed blocks into corresponding LaTeX lines.
@@ -463,6 +467,7 @@ def convert_blocks_to_latex(
     :param file_name: The name of the file being converted
     :param assets_dir: The directory containing the images
     :param mode: The rendering mode
+    :param main_font: The font to be used for the main text
     :return: A list of LaTeX lines
     """
     output: list[str] = []
@@ -582,7 +587,9 @@ def convert_blocks_to_latex(
             output.append(f"\\ParagraphStyle{{{para_conv}}}\n")
         elif isinstance(block, TableBlock):
             output.append(
-                "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{heroGray}\n\\renewcommand{\\arraystretch}{1.5}\n\\fontspec{Helvetica Neue}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
+                "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{heroGray}\n\\renewcommand{\\arraystretch}{1.5}\n\\fontspec{"
+                + main_font
+                + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
             )
             header_row = block.rows[0]
             output.append(

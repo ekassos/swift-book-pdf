@@ -69,14 +69,13 @@ def run(output_path: str, mode: str, verbose: bool, typesets: int, paper: str) -
     try:
         output_path = validate_output_path(output_path)
         font_config = FontConfig()
-        font_config.check_font_availability()
         doc_config = DocConfig(RenderingMode(mode), PaperSize(paper), typesets)
     except ValueError as e:
         logger.error(str(e))
         return
 
     with TemporaryDirectory() as temp:
-        config = Config(temp, output_path, doc_config)
+        config = Config(temp, output_path, font_config, doc_config)
         Book(config).process()
 
 

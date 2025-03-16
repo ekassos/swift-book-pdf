@@ -16,6 +16,7 @@ import os
 import subprocess
 
 from swift_book_pdf.config import Config
+from swift_book_pdf.fonts import check_for_missing_font_logs
 from swift_book_pdf.log import run_process_with_logs
 
 
@@ -47,4 +48,4 @@ class PDFConverter:
             bufsize=1,
         )
 
-        run_process_with_logs(process)
+        run_process_with_logs(process, log_check_func=check_for_missing_font_logs)

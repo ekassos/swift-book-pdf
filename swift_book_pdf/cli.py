@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib
+from typing import Optional
 import click
 import logging
 
@@ -61,14 +63,68 @@ def cli() -> None:
     help="Number of typeset passes to use",
     show_default="4",
 )
+@click.option(
+    "--main",
+    type=str,
+    default=None,
+    help="Font for the main text",
+)
+@click.option(
+    "--mono",
+    type=str,
+    default=None,
+    help="Font for code blocks",
+)
+@click.option(
+    "--unicode",
+    type=str,
+    default=None,
+    help="Font for characters not supported by the main font",
+)
+@click.option(
+    "--emoji",
+    type=str,
+    default=None,
+    help="Font for emoji",
+)
+@click.option(
+    "--header-footer",
+    type=str,
+    default=None,
+    help="Font for text in the header and footer",
+)
 @click.option("--verbose", is_flag=True)
-def run(output_path: str, mode: str, verbose: bool, typesets: int, paper: str) -> None:
+@click.option("--version", is_flag=True)
+def run(
+    output_path: str,
+    mode: str,
+    verbose: bool,
+    typesets: int,
+    paper: str,
+    main: Optional[str],
+    mono: Optional[str],
+    unicode: Optional[str],
+    emoji: Optional[str],
+    header_footer: Optional[str],
+    version: bool,
+) -> None:
+    if version:
+        current_version = importlib.metadata.version("swift-book-pdf")
+        click.echo(f"swift-book-pdf {current_version}")
+        return
+
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
 
     try:
         output_path = validate_output_path(output_path)
-        font_config = FontConfig()
+        font_config = FontConfig(
+            main_font_custom=main,
+            mono_font_custom=mono,
+            unicode_font_custom=unicode,
+            emoji_font_custom=emoji,
+            header_footer_font_custom=header_footer,
+        )
         doc_config = DocConfig(RenderingMode(mode), PaperSize(paper), typesets)
     except ValueError as e:
         logger.error(str(e))
@@ -76,7 +132,12 @@ def run(output_path: str, mode: str, verbose: bool, typesets: int, paper: str) -
 
     with TemporaryDirectory() as temp:
         config = Config(temp, output_path, font_config, doc_config)
-        Book(config).process()
+        try:
+            Book(config).process()
+        except Exception as e:
+            logger.error(
+                f"Couldn't build The Swift Programming Language book: {e}\n{font_config}"
+            )
 
 
 if __name__ == "__main__":

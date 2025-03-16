@@ -17,6 +17,7 @@ import sys
 import textwrap
 
 from subprocess import Popen
+from typing import Callable, Optional
 
 
 def configure_logging(verbose: bool):
@@ -31,7 +32,10 @@ def configure_logging(verbose: bool):
 
 
 def run_process_with_logs(
-    process: Popen[str], MAX_LINES: int = 10, MAX_LINE_LENGTH: int = 80
+    process: Popen[str],
+    MAX_LINES: int = 10,
+    MAX_LINE_LENGTH: int = 80,
+    log_check_func: Optional[Callable] = None,
 ) -> None:
     last_lines = []
     printed_lines = 0
@@ -47,6 +51,10 @@ def run_process_with_logs(
         line = process.stdout.readline()
         if not line:
             break
+
+        # Check if the line contains a specific log message
+        if log_check_func is not None:
+            log_check_func(line)
 
         # Split long lines
         if len(line.rstrip("\n")) > MAX_LINE_LENGTH:

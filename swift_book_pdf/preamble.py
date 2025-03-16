@@ -39,7 +39,7 @@ def generate_preamble(config: Config) -> str:
     return PREAMBLE.substitute(
         color=get_link_color(config.doc_config.mode),
         geometry_opts=get_geometry_opts(config.doc_config.paper_size),
-        sans_font=config.font_config.sans_font,
+        main_font=config.font_config.main_font,
         mono_font=config.font_config.mono_font,
         emoji_font=config.font_config.emoji_font,
         unicode_font=config.font_config.unicode_font,
@@ -91,7 +91,7 @@ PREAMBLE = Template(r"""
 \renewcommand{\footnotesize}{\fontspec{$mono_font}\fontsize{8pt}{8pt}\selectfont}
 \setlength{\footnotesep}{9pt}
 \makeatletter
-\renewcommand{\@makefnmark}{\fontspec{$sans_font}\selectfont\textsuperscript\@thefnmark}
+\renewcommand{\@makefnmark}{\fontspec{$main_font}\selectfont\textsuperscript\@thefnmark}
 \renewcommand{\@makefntext}[1]{%
   \@hangfrom{\hbox{\@makefnmark\ }}#1%
 }
@@ -99,15 +99,15 @@ PREAMBLE = Template(r"""
 \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
 
 \newcommand{\TitleStyle}{%
-  \fontspec{$sans_font}\fontsize{22pt}{1.2\baselineskip}\selectfont
+  \fontspec{$main_font}\fontsize{22pt}{1.2\baselineskip}\selectfont
 }
 
 \newcommand{\SubtitleStyle}{%
-\global\precededbyboxfalse\fontspec{$sans_font}\fontsize{11.07pt}{1.2\baselineskip}\selectfont
+\global\precededbyboxfalse\fontspec{$main_font}\fontsize{11.07pt}{1.2\baselineskip}\selectfont
 }
 
 \newcommand{\BodyStyle}{%
-\fontspec{$sans_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
+\fontspec{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
 }
 
 \newcommand{\ParagraphStyle}[1]{%
@@ -129,7 +129,7 @@ PREAMBLE = Template(r"""
 \def\section{\@startsection{section}{1}{0pt}%
    {0.4in}
    {0.1in}
-   {\fontspec{$sans_font}\fontsize{22pt}{1.5\baselineskip}\selectfont\global\AtPageTopfalse}}
+   {\fontspec{$main_font}\fontsize{22pt}{1.5\baselineskip}\selectfont\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\TitleSection}[2]{%
@@ -142,7 +142,7 @@ PREAMBLE = Template(r"""
 \def\subsection{\@startsection{subsection}{2}{0pt}%
    {\ifprecededbyparagraph 0.44in \else 0.41in \fi}
    {0.16in}
-   {\fontspec{$sans_font}\fontsize{16.88pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\fontspec{$main_font}\fontsize{16.88pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SectionHeader}[2]{%
@@ -166,7 +166,7 @@ PREAMBLE = Template(r"""
 \def\subsubsection{\@startsection{subsubsection}{3}{0pt}%
    {\ifAtPageTop \ifintoc 0in \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi}
    {0.16in}
-   {\fontspec{$sans_font}\fontsize{14.77pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\fontspec{$main_font}\fontsize{14.77pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsectionHeader}[2]{%
@@ -199,7 +199,7 @@ PREAMBLE = Template(r"""
 \def\paragraph{\@startsection{paragraph}{4}{0pt}%
    {\ifprecededbyparagraph 0.34in \else 0.32in \fi}
    {0.16in}
-   {\bfseries\fontspec{$sans_font}\fontsize{12.66}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\bfseries\fontspec{$main_font}\fontsize{12.66}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsubsectionHeader}[2]{%

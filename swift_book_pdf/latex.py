@@ -65,7 +65,7 @@ class LaTeXConverter:
             file_name,
             self.config.assets_dir,
             self.config.doc_config.mode,
-            self.config.font_config.mono_font,
+            self.config.font_config.main_font,
         )
         latex_lines.extend(body_latex)
         latex_lines.append("}\n\\newpage\n")

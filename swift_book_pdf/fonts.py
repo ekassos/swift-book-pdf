@@ -17,7 +17,7 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
-SANS_FONT_LIST = [
+MAIN_FONT_LIST = [
     "Helvetica Neue",
     "Helvetica",
     "SF Pro",
@@ -73,7 +73,7 @@ def find_font(font_list: list[str], available_fonts: str):
 class FontConfig:
     def __init__(
         self,
-        sans_font_list: list[str] = SANS_FONT_LIST,
+        main_font_list: list[str] = MAIN_FONT_LIST,
         mono_font_list: list[str] = MONO_FONT_LIST,
         emoji_font_list: list[str] = EMOJI_FONT_LIST,
         unicode_font_list: list[str] = UNICODE_FONT_LIST,
@@ -85,12 +85,12 @@ class FontConfig:
         logger.debug(f"Available fonts:\n{result.stdout}")
         available_fonts = result.stdout.lower()
 
-        sans_font = find_font(sans_font_list, available_fonts)
-        if not sans_font:
+        main_font = find_font(main_font_list, available_fonts)
+        if not main_font:
             raise ValueError(
-                f"Couldn't find any of the following fonts for sans text: {', '.join(sans_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
+                f"Couldn't find any of the following fonts for the main text: {', '.join(main_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
             )
-        self.sans_font = sans_font
+        self.main_font = main_font
 
         mono_font = find_font(mono_font_list, available_fonts)
         if not mono_font:
@@ -121,7 +121,7 @@ class FontConfig:
         self.header_footer_font = header_footer_font
 
         logger.debug("Font configuration:")
-        logger.debug(f"SANS: {self.sans_font}")
+        logger.debug(f"MAIN: {self.main_font}")
         logger.debug(f"MONO: {self.mono_font}")
         logger.debug(f"EMOJI: {self.emoji_font}")
         logger.debug(f"UNICODE: {self.unicode_font}")

@@ -458,7 +458,7 @@ def convert_blocks_to_latex(
     file_name: str,
     assets_dir: str,
     mode: RenderingMode,
-    sans_font: str,
+    main_font: str,
 ) -> list[str]:
     """
     Convert parsed blocks into corresponding LaTeX lines.
@@ -467,7 +467,7 @@ def convert_blocks_to_latex(
     :param file_name: The name of the file being converted
     :param assets_dir: The directory containing the images
     :param mode: The rendering mode
-    :param sans_font: The font to be used for sans-serif text
+    :param main_font: The font to be used for the main text
     :return: A list of LaTeX lines
     """
     output: list[str] = []
@@ -588,7 +588,7 @@ def convert_blocks_to_latex(
         elif isinstance(block, TableBlock):
             output.append(
                 "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{heroGray}\n\\renewcommand{\\arraystretch}{1.5}\n\\fontspec{"
-                + sans_font
+                + main_font
                 + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
             )
             header_row = block.rows[0]

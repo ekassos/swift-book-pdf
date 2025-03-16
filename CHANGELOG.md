@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added more default font options, organized in five font categories. swift-book-pdf will now typeset TSPL in any system where LuaTeX has access to at least one font in each font category.
+
 ## [1.1.0] - 2025-03-13
 
 ### Added

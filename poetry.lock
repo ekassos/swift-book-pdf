@@ -65,21 +65,6 @@ files = [
 ]
 
 [[package]]
-name = "emoji"
-version = "2.14.1"
-description = "Emoji for Python"
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "emoji-2.14.1-py3-none-any.whl", hash = "sha256:35a8a486c1460addb1499e3bf7929d3889b2e2841a57401903699fef595e942b"},
-    {file = "emoji-2.14.1.tar.gz", hash = "sha256:f8c50043d79a2c1410ebfae833ae1868d5941a67a6cd4d18377e2eb0bd79346b"},
-]
-
-[package.extras]
-dev = ["coverage", "pytest (>=7.4.4)"]
-
-[[package]]
 name = "filelock"
 version = "3.17.0"
 description = "A platform independent file lock."
@@ -429,4 +414,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "70553c29e6ffe1e267cee2362400199211fa7763245219ddcc533164cf62eeed"
+content-hash = "d3f3ab344ddb3f657453e03aedff4f9a1bfcf088f70a2f050f2e721600b341fc"

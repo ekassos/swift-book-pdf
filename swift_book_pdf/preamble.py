@@ -88,10 +88,55 @@ PREAMBLE = Template(r"""
 \setlength\parindent{0pt}
 \setcounter{secnumdepth}{4}
 
-\renewcommand{\footnotesize}{\fontspec{$mono_font}\fontsize{8pt}{8pt}\selectfont}
+\directlua{luaotfload.add_fallback
+   ("monoFallback",
+    {
+      "$main_font:mode=harf;",
+      "$unicode_font:mode=harf;",
+      "$emoji_font:mode=harf;",
+      "$header_footer_font:mode=harf;"
+    }
+   )
+}
+
+\directlua{luaotfload.add_fallback
+   ("mainFontFallback",
+    {
+      "$unicode_font:mode=harf;",
+      "$emoji_font:mode=harf;",
+      "$header_footer_font:mode=harf;",
+      "$mono_font:mode=harf;"
+    }
+   )
+}
+
+\directlua{luaotfload.add_fallback
+   ("headerFallback",
+    {
+      "$main_font:mode=harf;",
+      "$unicode_font:mode=harf;",
+      "$emoji_font:mode=harf;",
+      "$mono_font:mode=harf;"
+    }
+   )
+}
+
+\newcommand{\mainFontWithFallback}[1]{%
+ \fontspec{#1}[RawFeature={fallback=mainFontFallback}]%
+}
+
+\newcommand{\monoFontWithFallback}[1]{%
+  \fontspec{#1}[RawFeature={fallback=monoFallback}]%
+}
+
+\newcommand{\headerFontWithFallback}[2]{%
+  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]%
+}
+
+\renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{8pt}{8pt}\selectfont}
 \setlength{\footnotesep}{9pt}
 \makeatletter
-\renewcommand{\@makefnmark}{\fontspec{$main_font}\selectfont\textsuperscript\@thefnmark}
+\renewcommand{\@makefnmark}{\mainFontWithFallback{$main_font}\selectfont\textsuperscript\@thefnmark}
 \renewcommand{\@makefntext}[1]{%
   \@hangfrom{\hbox{\@makefnmark\ }}#1%
 }
@@ -99,15 +144,15 @@ PREAMBLE = Template(r"""
 \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
 
 \newcommand{\TitleStyle}{%
-  \fontspec{$main_font}\fontsize{22pt}{1.2\baselineskip}\selectfont
+  \mainFontWithFallback{$main_font}\fontsize{22pt}{1.2\baselineskip}\selectfont
 }
 
 \newcommand{\SubtitleStyle}{%
-\global\precededbyboxfalse\fontspec{$main_font}\fontsize{11.07pt}{1.2\baselineskip}\selectfont
+\global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{11.07pt}{1.2\baselineskip}\selectfont
 }
 
 \newcommand{\BodyStyle}{%
-\fontspec{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
+\mainFontWithFallback{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
 }
 
 \newcommand{\ParagraphStyle}[1]{%
@@ -129,7 +174,7 @@ PREAMBLE = Template(r"""
 \def\section{\@startsection{section}{1}{0pt}%
    {0.4in}
    {0.1in}
-   {\fontspec{$main_font}\fontsize{22pt}{1.5\baselineskip}\selectfont\global\AtPageTopfalse}}
+   {\mainFontWithFallback{$main_font}\fontsize{22pt}{1.5\baselineskip}\selectfont\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\TitleSection}[2]{%
@@ -142,7 +187,7 @@ PREAMBLE = Template(r"""
 \def\subsection{\@startsection{subsection}{2}{0pt}%
    {\ifprecededbyparagraph 0.44in \else 0.41in \fi}
    {0.16in}
-   {\fontspec{$main_font}\fontsize{16.88pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\mainFontWithFallback{$main_font}\fontsize{16.88pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SectionHeader}[2]{%
@@ -166,7 +211,7 @@ PREAMBLE = Template(r"""
 \def\subsubsection{\@startsection{subsubsection}{3}{0pt}%
    {\ifAtPageTop \ifintoc 0in \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi}
    {0.16in}
-   {\fontspec{$main_font}\fontsize{14.77pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\mainFontWithFallback{$main_font}\fontsize{14.77pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsectionHeader}[2]{%
@@ -199,7 +244,7 @@ PREAMBLE = Template(r"""
 \def\paragraph{\@startsection{paragraph}{4}{0pt}%
    {\ifprecededbyparagraph 0.34in \else 0.32in \fi}
    {0.16in}
-   {\bfseries\fontspec{$main_font}\fontsize{12.66}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\bfseries\mainFontWithFallback{$main_font}\fontsize{12.66}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsubsectionHeader}[2]{%
@@ -212,10 +257,10 @@ PREAMBLE = Template(r"""
 }
 
 \newcommand{\CodeStyle}{%
-  \fontspec{$mono_font}\fontsize{9pt}{1.1\baselineskip}\selectfont
+  \monoFontWithFallback{$mono_font}\fontsize{9pt}{1.1\baselineskip}\selectfont
   \setlength{\parskip}{7pt}\raggedright
 }
-\setmonofont{$mono_font}[Scale=1]
+\setmonofont{$mono_font}[RawFeature={fallback=monoFallback}, Scale=1]
 
 % Define custom emoji style for code
 \newfontfamily\emoji{$emoji_font}[Renderer=Harfbuzz]
@@ -365,7 +410,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=east,white] at ([yshift=-0.70in,xshift=-0.95in]current page.north east) {
-    \scalebox{1.10}[1]{\fontspec{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont \customheader}
+    \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}{LetterSpace=-3.5} \fontsize{13pt}{0pt}\selectfont \customheader}
   };
 \end{tikzpicture}%
 }
@@ -381,7 +426,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=west,white] at ([yshift=-0.71in,xshift=0.95in]current page.north west) {
-  \scalebox{1.10}[1]{\fontspec{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
+  \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}{LetterSpace=-3.5} \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
 };
 \end{tikzpicture}%
 }
@@ -396,7 +441,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-  \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+  \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
 }
@@ -411,7 +456,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-  \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+  \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
 }
@@ -428,7 +473,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-    \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+    \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%
   }
@@ -443,7 +488,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-    \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+    \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%
   }

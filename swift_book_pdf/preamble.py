@@ -104,7 +104,19 @@ PREAMBLE = Template(r"""
     {
       "$unicode_font:mode=harf;",
       "$emoji_font:mode=harf;",
-      "$header_footer_font:mode=harf;"
+      "$header_footer_font:mode=harf;",
+      "$mono_font:mode=harf;"
+    }
+   )
+}
+
+\directlua{luaotfload.add_fallback
+   ("headerFallback",
+    {
+      "$main_font:mode=harf;",
+      "$unicode_font:mode=harf;",
+      "$emoji_font:mode=harf;",
+      "$mono_font:mode=harf;"
     }
    )
 }
@@ -115,6 +127,10 @@ PREAMBLE = Template(r"""
 
 \newcommand{\monoFontWithFallback}[1]{%
   \fontspec{#1}[RawFeature={fallback=monoFallback}]%
+}
+
+\newcommand{\headerFontWithFallback}[1]{%
+  \fontspec{#1}[RawFeature={fallback=headerFallback}]%
 }
 
 \renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{8pt}{8pt}\selectfont}
@@ -394,7 +410,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=east,white] at ([yshift=-0.70in,xshift=-0.95in]current page.north east) {
-    \scalebox{1.10}[1]{\fontspec{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont \customheader}
+    \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont \customheader}
   };
 \end{tikzpicture}%
 }
@@ -410,7 +426,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=west,white] at ([yshift=-0.71in,xshift=0.95in]current page.north west) {
-  \scalebox{1.10}[1]{\fontspec{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
+  \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}[LetterSpace=-3.5] \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
 };
 \end{tikzpicture}%
 }
@@ -425,7 +441,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-  \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+  \headerFontWithFallback{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
 }
@@ -440,7 +456,7 @@ PREAMBLE = Template(r"""
 };
 
 \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-  \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+  \headerFontWithFallback{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
 };
 \end{tikzpicture}%
 }
@@ -457,7 +473,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-    \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+    \headerFontWithFallback{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%
   }
@@ -472,7 +488,7 @@ PREAMBLE = Template(r"""
   };
 
   \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-    \fontspec{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
+    \headerFontWithFallback{$header_footer_font} \fontsize{13pt}{0pt}\selectfont \thepage
   };
   \end{tikzpicture}%
   }

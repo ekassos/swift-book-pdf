@@ -112,11 +112,14 @@ def escape_texttt(text: str) -> str:
     return text
 
 
-def override_characters(text: str) -> str:
+def override_characters(text: str, in_code_block: bool = False) -> str:
     """
     Override characters in text that may have special formatting in LaTeX.
     """
     override_set = {"é⃝": "\\textcircled{é}"}
+
+    if in_code_block:
+        override_set = {k: f"|{v}|" for k, v in override_set.items()}
 
     for char, replacement in override_set.items():
         text = text.replace(char, replacement)
@@ -279,7 +282,7 @@ def convert_blocks_to_latex(
                 # Escape % characters
                 line = line.replace("%", "\%")
                 # Escape non-latin and emoji characters
-                output.append(override_characters(line))
+                output.append(override_characters(line, True))
             output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
         elif isinstance(block, UnorderedListBlock):
             output.append(r"\begin{itemize}")
@@ -386,9 +389,9 @@ def convert_blocks_to_latex(
             output.append(f"\\ParagraphStyle{{{para_conv}}}\n")
         elif isinstance(block, TableBlock):
             output.append(
-                "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{heroGray}\n\\renewcommand{\\arraystretch}{1.5}\n\\fontspec{"
+                "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{heroGray}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
                 + main_font
-                + "}[RawFeature={fallback=monoFallback}]\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
+                + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
             )
             header_row = block.rows[0]
             output.append(

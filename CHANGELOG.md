@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Fix an issue where the minted package could not shell escape in systems running MiKTeX.
+
 ## [1.2.0] - 2025-03-15
 
 ### Added

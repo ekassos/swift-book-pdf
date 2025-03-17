@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Fix an issue where the minted package could not shell escape in systems running MiKTeX.
+
 ### Changed
 - When rendering unsupported characters, fall through all available fonts in case the character is supported by one of the other available fonts.
 

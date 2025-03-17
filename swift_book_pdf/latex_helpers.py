@@ -15,9 +15,7 @@
 import os
 import re
 import struct
-import unicodedata
 
-import emoji
 from swift_book_pdf.schema import (
     Block,
     CodeBlock,
@@ -109,6 +107,19 @@ def escape_texttt(text: str) -> str:
     # Replace it before any chance of interfering with its hyphen.
     text = text.replace("->", r"{->}")
 
+    text = override_characters(text)
+
+    return text
+
+
+def override_characters(text: str) -> str:
+    """
+    Override characters in text that may have special formatting in LaTeX.
+    """
+    override_set = {"é⃝": "\\textcircled{é}"}
+
+    for char, replacement in override_set.items():
+        text = text.replace(char, replacement)
     return text
 
 
@@ -174,219 +185,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     for token, segment in inline_segments.items():
         text = text.replace(token, segment)
 
-    matches = emoji.emoji_list(text)
-    if matches:
-        for match in matches:
-            emoji_char = match["emoji"]
-            text = text.replace(emoji_char, f"\\loweremoji{{\\emoji{emoji_char}}}")
-
-    matches = detect_non_latin(text)
-    if matches:
-        for ch in matches:
-            text = text.replace(ch, f"\\textNonLatin{{{ch}}}")
-    return text
-
-
-def wrap_emoji_string(line: str) -> str:
-    """
-    Wrap emoji in the given line to escape code font rendering.
-    """
-
-    matches = emoji.emoji_list(line)
-    matches = [match["emoji"] for match in matches]
-
-    # NOTE: The emoji incorrectly detects these as emoji
-    # Remove these from the matches list
-    overrides = ["♥", "♡", "♠", "♤", "♦", "♢", "♣", "♧"]
-    matches = [m for m in matches if m not in overrides]
-    if not matches:
-        return line
-
-    is_comment = "//" in line
-
-    def find_innermost_string(text, char):
-        pattern = (
-            r'((?:"[^"]*?'
-            + re.escape(char)
-            + "[^\"]*?\")|(?:'[^']*?"
-            + re.escape(char)
-            + "[^']*?'))"
-        )
-        matches = re.findall(pattern, text)
-        return matches
-
-    for emoji_char in matches:
-        if is_comment:
-            line = line.replace(
-                emoji_char, f"|\\PYG{{c+c1}}{{\\loweremoji{{\\emoji{emoji_char}}}}}|"
-            )
-        else:
-            string_result = find_innermost_string(line, emoji_char)
-            if string_result:
-                _string_result = string_result[0]
-                _string_result = _string_result.replace(
-                    emoji_char, f"\\loweremoji{{\\emoji{emoji_char}}}"
-                )
-                _matches = emoji.emoji_list(_string_result)
-                for _match in _matches:
-                    if _match["emoji"] != emoji_char:
-                        _string_result = _string_result.replace(
-                            _match["emoji"], f"\\loweremoji{{\\emoji{_match['emoji']}}}"
-                        )
-                        if _match["emoji"] in matches:
-                            matches.remove(_match["emoji"])
-                _string_result = _string_result.replace('"', r"\PYGZdq{}")
-                _string_result = _string_result.replace("'", r"\PYGZsq{}")
-                _string_result = f"|\\PYG{{l+s}}{{{_string_result}}}|"
-                line = line.replace(string_result[0], _string_result)
-            else:
-                line = line.replace(
-                    emoji_char, f"|\\PYG{{l+s}}{{\\loweremoji{{\\emoji{emoji_char}}}}}|"
-                )
-
-    return line
-
-
-def detect_non_latin(text: str) -> dict[str, str]:
-    """
-    Detect non-Latin letters or numbers.
-
-    Allowed characters:
-      - Letters whose Unicode name includes "LATIN" (covers accented Latin letters too)
-      - Decimal digits (category 'Nd') that are considered allowed.
-
-    Only if a character is a letter (category 'L*') or a digit (Nd) and does not meet
-    the allowed conditions will it be reported.
-
-    Characters such as punctuation, whitespace, symbols, and control characters (even though
-    they are non-Latin) are ignored.
-    """
-
-    matches = {}
-
-    override_set = {"é⃝": "\\textcircled{é}"}
-    for char, replacement in override_set.items():
-        if char in text:
-            text = text.replace(char, "")
-            matches[char] = replacement
-
-    for ch in text:
-        cat = unicodedata.category(ch)
-
-        # Check letters.
-        if cat.startswith("L"):
-            try:
-                name = unicodedata.name(ch)
-            except ValueError:
-                continue
-
-            if (
-                ("LATIN" not in name)
-                and ("GREEK" not in name)
-                and ("CYRILLIC" not in name)
-                and name not in {"MODIFIER LETTER SMALL X"}
-                and ch not in {"é"}
-            ):
-                matches[ch] = ch
-
-        # Check digits.
-        elif cat == "Nd":
-            if ch not in "0123456789":
-                matches[ch] = ch
-
-        # For all other categories (punctuation, space, symbols, control characters, etc.)
-        # we do not want to report anything.
-        else:
-            continue
-
-    return matches
-
-
-def wrap_non_latin(text: str) -> str:
-    """
-    Wrap non-Latin characters in the given line to escape code font rendering.
-
-    Processing is done in three stages:
-      1. Comments (assumed to start with '//' until end-of-line) are replaced. Offending characters inside comments are replaced by: `│\PYG{c+c1}{\\textNonLatin{<replacement>}}│` and the entire comment region is protected with a placeholder.
-
-      2. String literals (matching either "…" or '…') are processed. Inside a literal the inner content is scanned; if any offending characters are found then each is replaced by: `│\PYG{l+s}{\\textNonLatin{<replacement>}}│`.
-
-         In that case the literal's surrounding quotes are also replaced (using markup tokens); for example, if the literal was double-quoted, the opening and closing quotes become `│\PYG{l+s}{\PYGZdq{}}│`.
-
-         If no offending characters are found the literal is left unchanged. (In either case the literal is protected with a placeholder.)
-
-      3. The remaining text (outside protected regions) is globally processed so any offending characters are replaced by: `│\PYG{l+s}{\\textNonLatin{<replacement>}}│`
-
-    Finally, the placeholders are restored. This ensures that replacements in protected regions are not subject to a second round of processing.
-    """
-    matches = detect_non_latin(text)
-    if not matches:
-        return text
-
-    placeholders = {}
-    placeholder_id = 0
-
-    def make_placeholder(segment):
-        nonlocal placeholder_id
-        key = f"@@PLACEHOLDER_{placeholder_id}@@"
-        placeholders[key] = segment
-        placeholder_id += 1
-        return key
-
-    # Process comments.
-    # Assumes comments start with '//' and run until the end of the line.
-    def process_comment(match):
-        comment = match.group(0)
-        for ch, replacement in matches.items():
-            if ch in comment:
-                comment = comment.replace(
-                    ch, f"|\\PYG{{c+c1}}{{\\textNonLatin{{{replacement}}}}}|"
-                )
-        return make_placeholder(comment)
-
-    text = re.sub(r"//.*$", process_comment, text, flags=re.MULTILINE)
-
-    # Process string literals.
-    # The following regex catches either double-quoted or single-quoted literals.
-    def process_literal(match):
-        literal = match.group(0)
-        if len(literal) < 2 or (literal[0] != literal[-1]):
-            return literal  # Invalid literal; leave unchanged.
-        quote_char = literal[0]
-        inner = literal[1:-1]
-        new_inner = inner
-        replaced_inside = False
-        for ch, replacement in matches.items():
-            if ch in new_inner:
-                replaced_inside = True
-                new_inner = new_inner.replace(
-                    ch, f"|\\PYG{{l+s}}{{\\textNonLatin{{{replacement}}}}}|"
-                )
-        if replaced_inside:
-            # If any offending character was replaced inside the literal,
-            # replace the quotes with corresponding markup wrapped in vertical bars.
-            if quote_char == '"':
-                open_quote = r"|\PYG{l+s}{\PYGZdq{}}|"
-                close_quote = r"|\PYG{l+s}{\PYGZdq{}}|"
-            else:
-                open_quote = r"|\PYG{l+s}{\PYGZsq{}}|"
-                close_quote = r"|\PYG{l+s}{\PYGZsq{}}|"
-            processed_literal = f"{open_quote}{new_inner}{close_quote}"
-            return make_placeholder(processed_literal)
-        else:
-            # If no offending character was found, leave the literal untouched.
-            return make_placeholder(literal)
-
-    text = re.sub(r'(".*?"|\'.*?\')', process_literal, text)
-
-    # Process any remaining occurrences outside protected regions.
-    for ch, replacement in matches.items():
-        text = text.replace(ch, f"|\\PYG{{l+s}}{{\\textNonLatin{{{replacement}}}}}|")
-
-    # Restore the protected regions.
-    for key, segment in placeholders.items():
-        text = text.replace(key, segment)
-
+    text = override_characters(text)
     return text
 
 
@@ -444,7 +243,7 @@ def convert_nested_block(block: Block, mode: RenderingMode) -> str:
         )
         for line in block.lines:
             line2 = line.replace("%", "\%")
-            out += wrap_non_latin(wrap_emoji_string(line2)) + "\n"
+            out += override_characters(line2) + "\n"
         out += r"\end{swiftstyledbox}" + "\n"
         return out
     else:  # fallback
@@ -480,7 +279,7 @@ def convert_blocks_to_latex(
                 # Escape % characters
                 line = line.replace("%", "\%")
                 # Escape non-latin and emoji characters
-                output.append(wrap_non_latin(wrap_emoji_string(line)))
+                output.append(override_characters(line))
             output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
         elif isinstance(block, UnorderedListBlock):
             output.append(r"\begin{itemize}")
@@ -589,7 +388,7 @@ def convert_blocks_to_latex(
             output.append(
                 "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{heroGray}\n\\renewcommand{\\arraystretch}{1.5}\n\\fontspec{"
                 + main_font
-                + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
+                + "}[RawFeature={fallback=monoFallback}]\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
             )
             header_row = block.rows[0]
             output.append(

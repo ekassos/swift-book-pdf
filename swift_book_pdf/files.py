@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_file_name(file_path: str) -> str:
-    return file_path.split("/")[-1].replace(".md", "")
+    return os.path.basename(file_path).replace(".md", "")
 
 
 def clone_swift_book_repo(temp: str) -> None:

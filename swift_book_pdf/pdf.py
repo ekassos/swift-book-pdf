@@ -39,7 +39,7 @@ class PDFConverter:
         )
 
         process = subprocess.Popen(
-            ["lualatex", "--shell-escape", "--enable-write18", latex_file_path],
+            ["lualatex", "-shell-escape", "-enable-write18", latex_file_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
@@ -48,4 +48,4 @@ class PDFConverter:
             bufsize=1,
         )
 
-        run_process_with_logs(process, log_check_func=check_for_missing_font_logs)
+        run_process_with_logs(process)

@@ -91,8 +91,8 @@ PREAMBLE = Template(r"""
 \directlua{luaotfload.add_fallback
    ("monoFallback",
     {
-      "$main_font:mode=harf;",
       "$unicode_font:mode=harf;",
+      "$main_font:mode=harf;",
       "$emoji_font:mode=harf;",
       "$header_footer_font:mode=harf;"
     }

@@ -66,7 +66,7 @@ FONT_TROUBLESHOOTING_URL = (
 def find_font(font_list: list[str], available_fonts: str):
     """Return the first font from font_list that's available, or None otherwise."""
     for font in font_list:
-        if font.lower() in available_fonts:
+        if f"{font.lower()}\t" in available_fonts:
             logger.debug(f'Font "{font}" is accessible by LuaTeX.')
             return font
         else:

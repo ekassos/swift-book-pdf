@@ -323,6 +323,7 @@ def convert_blocks_to_latex(
             imgname = block.imgname
 
             img_path = os.path.join(assets_dir, f"{imgname}@2x.png")
+            img_path = img_path.replace("\\", "/")
             final_width = "auto"
             width = None
             try:

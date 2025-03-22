@@ -68,6 +68,4 @@ class Book:
             os.replace(temp_pdf_path, self.config.output_path)
             logger.info(f"PDF saved to {self.config.output_path}")
         except OSError as e:
-            logger.error(
-                f"Failed to save PDF to {self.config.output_path}. Error overwriting existing file at destination: {e}"
-            )
+            logger.error(f"Failed to save PDF to {self.config.output_path}: {e}")

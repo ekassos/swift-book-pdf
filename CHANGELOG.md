@@ -6,6 +6,7 @@
 - Fix an issue where the minted package could not shell escape in systems running MiKTeX.
 - Fix an issue where internal references might not populate properly in Windows systems.
 - Fix an issue where logs might not render properly because of an incorrect encoding issue, causing the entire typesetting process to fail.
+- Fix an issue where image paths passed to LaTeX were not following the Unix style on Windows.
 
 ### Changed
 - When rendering unsupported characters, fall through all available fonts in case the character is supported by one of the other available fonts.

@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Added
-- Added new "Global" font category as a unicode font for additional characters not supported by the main font, e.g. Chinese characters. The same font can be used both for Global and Unicode categories if it includes all required glyphs (e.g. Arial Unicode MS).
+- Add new "Global" font category as a unicode font for additional characters not supported by the main font, e.g. Chinese characters. The same font can be used both for Global and Unicode categories if it includes all required glyphs (e.g. Arial Unicode MS).
 
 ### Fixed
 - Fix an issue where the minted package could not shell escape in systems running MiKTeX.

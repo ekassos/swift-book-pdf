@@ -45,45 +45,50 @@ def run_process_with_logs(
     is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
     max_lines = None if is_debug else MAX_LINES
 
-    while True:
-        if process.stdout is None:
-            break
-        line = process.stdout.readline()
-        if not line:
-            break
+    try:
+        while True:
+            if process.stdout is None:
+                break
+            line = process.stdout.readline()
+            if not line:
+                break
 
-        # Check if the line contains a specific log message
-        if log_check_func is not None:
-            log_check_func(line)
+            # Check if the line contains a specific log message
+            if log_check_func is not None:
+                log_check_func(line)
 
-        # Split long lines
-        if len(line.rstrip("\n")) > MAX_LINE_LENGTH:
-            wrapped_lines = textwrap.wrap(line.rstrip("\n"), width=MAX_LINE_LENGTH)
-            for wrapped_line in wrapped_lines:
-                last_lines.append(wrapped_line)
-        else:
-            last_lines.append(line.rstrip("\n"))
+            # Split long lines
+            if len(line.rstrip("\n")) > MAX_LINE_LENGTH:
+                wrapped_lines = textwrap.wrap(line.rstrip("\n"), width=MAX_LINE_LENGTH)
+                for wrapped_line in wrapped_lines:
+                    last_lines.append(wrapped_line)
+            else:
+                last_lines.append(line.rstrip("\n"))
 
-        # Keep only the last max_lines lines
-        if max_lines is not None and len(last_lines) > max_lines:
-            last_lines = last_lines[-max_lines:]
+            # Keep only the last max_lines lines
+            if max_lines is not None and len(last_lines) > max_lines:
+                last_lines = last_lines[-max_lines:]
+
+            if not is_debug:
+                for _ in range(printed_lines):
+                    sys.stdout.write("\033[F")
+                    sys.stdout.write("\033[2K")
+
+            out = "\n".join(last_lines)
+            sys.stdout.write(GRAY + out + RESET + "\n")
+            sys.stdout.flush()
+            printed_lines = len(last_lines)
+
+        process.wait()
 
         if not is_debug:
             for _ in range(printed_lines):
                 sys.stdout.write("\033[F")
                 sys.stdout.write("\033[2K")
-
-        out = "\n".join(last_lines)
-        sys.stdout.write(GRAY + out + RESET + "\n")
-        sys.stdout.flush()
-        printed_lines = len(last_lines)
-
-    process.wait()
-
-    if not is_debug:
-        for _ in range(printed_lines):
             sys.stdout.write("\033[F")
-            sys.stdout.write("\033[2K")
-        sys.stdout.write("\033[F")
 
-    sys.stdout.flush()
+        sys.stdout.flush()
+    except Exception as e:
+        process.kill()
+        process.wait()
+        raise e

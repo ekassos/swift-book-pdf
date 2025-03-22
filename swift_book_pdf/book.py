@@ -68,7 +68,11 @@ class Book:
             logger.debug(
                 f"File already exists at {self.config.output_path}. It will be replaced."
             )
-            os.remove(self.config.output_path)
+            try:
+                os.remove(self.config.output_path)
+            except OSError as e:
+                logger.error(f"Error overwriting file {self.config.output_path}: {e}")
+                return
 
         os.rename(temp_pdf_path, self.config.output_path)
         logger.info(f"PDF saved to {self.config.output_path}")

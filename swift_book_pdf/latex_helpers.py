@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+from pathlib import PureWindowsPath
 import re
 import struct
 
@@ -323,7 +324,8 @@ def convert_blocks_to_latex(
             imgname = block.imgname
 
             img_path = os.path.join(assets_dir, f"{imgname}@2x.png")
-            img_path = img_path.replace("\\", "/")
+            if os.sep == '\\':
+                img_path = PureWindowsPath(img_path).as_posix()
             final_width = "auto"
             width = None
             try:

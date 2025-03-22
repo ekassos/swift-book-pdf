@@ -88,7 +88,7 @@ def run_process_with_logs(
             sys.stdout.write("\033[F")
 
         sys.stdout.flush()
-    except Exception as e:
+    except:
         process.kill()
         process.wait()
-        raise e
+        raise

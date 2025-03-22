@@ -43,6 +43,7 @@ def generate_preamble(config: Config) -> str:
         mono_font=config.font_config.mono_font,
         emoji_font=config.font_config.emoji_font,
         unicode_font=config.font_config.unicode_font,
+        global_font=config.font_config.global_font,
         header_footer_font=config.font_config.header_footer_font,
     )
 
@@ -91,10 +92,11 @@ PREAMBLE = Template(r"""
 \directlua{luaotfload.add_fallback
    ("monoFallback",
     {
-      "$main_font:mode=harf;",
-      "$unicode_font:mode=harf;",
+      "$main_font:mode=node;",
+      "$unicode_font:mode=node;",
+      "$global_font:mode=node;",
       "$emoji_font:mode=harf;",
-      "$header_footer_font:mode=harf;"
+      "$header_footer_font:mode=node;"
     }
    )
 }
@@ -102,10 +104,11 @@ PREAMBLE = Template(r"""
 \directlua{luaotfload.add_fallback
    ("mainFontFallback",
     {
-      "$unicode_font:mode=harf;",
+      "$unicode_font:mode=node;",
+      "$global_font:mode=node;",
       "$emoji_font:mode=harf;",
-      "$header_footer_font:mode=harf;",
-      "$mono_font:mode=harf;"
+      "$header_footer_font:mode=node;",
+      "$mono_font:mode=node;"
     }
    )
 }
@@ -113,10 +116,11 @@ PREAMBLE = Template(r"""
 \directlua{luaotfload.add_fallback
    ("headerFallback",
     {
-      "$main_font:mode=harf;",
-      "$unicode_font:mode=harf;",
+      "$main_font:mode=node;",
+      "$unicode_font:mode=node;",
+      "$global_font:mode=node;",
       "$emoji_font:mode=harf;",
-      "$mono_font:mode=harf;"
+      "$mono_font:mode=node;"
     }
    )
 }
@@ -261,12 +265,6 @@ PREAMBLE = Template(r"""
   \setlength{\parskip}{7pt}\raggedright
 }
 \setmonofont{$mono_font}[RawFeature={fallback=monoFallback}, Scale=1]
-
-% Define custom emoji style for code
-\newfontfamily\emoji{$emoji_font}[Renderer=Harfbuzz]
-\newfontfamily\unicodeFont{$unicode_font}[Renderer=Harfbuzz]
-\newcommand{\loweremoji}[1]{\raisebox{-0.2ex}{#1}}
-\newcommand{\textNonLatin}[1]{\unicodeFont{#1}}
 
 % ----------------------------------------
 % Define custom property for padding

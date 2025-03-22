@@ -31,18 +31,20 @@ MAIN_FONT_LIST = [
 MONO_FONT_LIST = [
     "Menlo",
     "SF Mono",
-    "Courier",
     "Monaco",
     "Consolas",
-    "Courier New",
     "DejaVu Sans Mono",
     "Ubuntu Mono",
+    "Courier New",
 ]
 EMOJI_FONT_LIST = ["Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"]
-UNICODE_FONT_LIST = [
+UNICODE_FONT_LIST = ["Arial Unicode MS", "Noto Sans", "DejaVu Sans"]
+GLOBAL_FONT_LIST = [
     "Arial Unicode MS",
     "Noto Sans CJK",
     "Noto Serif CJK",
+    "Noto Sans SC",
+    "Noto Serif SC",
 ]
 HEADER_FOOTER_FONT_LIST = [
     "SF Compact Display",
@@ -79,11 +81,13 @@ class FontConfig:
         mono_font_custom: Optional[str] = None,
         emoji_font_custom: Optional[str] = None,
         unicode_font_custom: Optional[str] = None,
+        global_font_custom: Optional[str] = None,
         header_footer_font_custom: Optional[str] = None,
         main_font_list: list[str] = MAIN_FONT_LIST,
         mono_font_list: list[str] = MONO_FONT_LIST,
         emoji_font_list: list[str] = EMOJI_FONT_LIST,
         unicode_font_list: list[str] = UNICODE_FONT_LIST,
+        global_font_list: list[str] = GLOBAL_FONT_LIST,
         header_footer_font_list: list[str] = HEADER_FOOTER_FONT_LIST,
     ):
         try:
@@ -157,6 +161,21 @@ class FontConfig:
             )
         self.unicode_font = unicode_font
 
+        if global_font_custom:
+            global_font = find_font([global_font_custom], available_fonts)
+            if not global_font:
+                logger.warning(
+                    f"Custom global font '{global_font_custom}' not found. Using default fonts."
+                )
+                global_font = find_font(global_font_list, available_fonts)
+        else:
+            global_font = find_font(global_font_list, available_fonts)
+        if not global_font:
+            raise ValueError(
+                f"Couldn't find any of the following fonts for non-latin characters: {', '.join(global_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
+            )
+        self.global_font = global_font
+
         if header_footer_font_custom:
             header_footer_font = find_font([header_footer_font_custom], available_fonts)
             if not header_footer_font:
@@ -177,6 +196,7 @@ class FontConfig:
         logger.debug(f"MONO: {self.mono_font}")
         logger.debug(f"EMOJI: {self.emoji_font}")
         logger.debug(f"UNICODE: {self.unicode_font}")
+        logger.debug(f"GLOBAL: {self.global_font}")
         logger.debug(f"HEADER/FOOTER: {self.header_footer_font}")
 
     def __str__(self):
@@ -186,6 +206,7 @@ class FontConfig:
             f"Monospace font: {self.mono_font} ({'default font' if self.mono_font in MONO_FONT_LIST else 'custom font'})\n"
             f"Emoji font: {self.emoji_font} ({'default font' if self.emoji_font in EMOJI_FONT_LIST else 'custom font'})\n"
             f"Unicode font: {self.unicode_font} ({'default font' if self.unicode_font in UNICODE_FONT_LIST else 'custom font'})\n"
+            f"Global font: {self.global_font} ({'default font' if self.global_font in GLOBAL_FONT_LIST else 'custom font'})\n"
             f"Header/Footer font: {self.header_footer_font} ({'default font' if self.header_footer_font in HEADER_FOOTER_FONT_LIST else 'custom font'})\n"
         )
 
@@ -201,14 +222,13 @@ def check_for_missing_font_logs(log_line: str):
     """
     pattern = re.compile(
         r"Missing character: There is no (?P<char>\S+) "
-        r"\((?P<code>U\+\w+)\) in font name:(?P<font>.+?):"
+        r"\((?P<code>U\+\w+)\) in font name:"
     )
 
     match = pattern.search(log_line)
     if match:
         missing_char = match.group("char")
         unicode_code = match.group("code")
-        font_name = match.group("font")
         raise ValueError(
-            f"{font_name} does not support character {missing_char} ({unicode_code}).\nIf you are using a custom font, please ensure that it supports the character set you are trying to use.\nOtherwise, see {FONT_TROUBLESHOOTING_URL} for more information."
+            f"The fonts you selected do not support character {missing_char} ({unicode_code}).\nIf you are using a custom font, please ensure that it supports the character set you are trying to use.\nOtherwise, see {FONT_TROUBLESHOOTING_URL} for more information."
         )

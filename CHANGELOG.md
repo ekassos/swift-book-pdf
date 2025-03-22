@@ -2,12 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+- Add new "Global" font category as a unicode font for additional characters not supported by the main font, e.g. Chinese characters. The same font can be used both for Global and Unicode categories if it includes all required glyphs (e.g. Arial Unicode MS).
+
 ### Fixed
 - Fix an issue where the minted package could not shell escape in systems running MiKTeX.
 - Fix an issue where internal references might not populate properly in Windows systems.
 - Fix an issue where logs might not render properly because of an incorrect encoding issue, causing the entire typesetting process to fail.
 - Fix an issue where image paths passed to LaTeX were not following the Unix style in Windows systems.
 - Fix an issue where the output file could not be saved by overwriting an existing file in Windows systems.
+- Fix an issue where an accepted Unicode font may not support all required glyphs.
 
 ### Changed
 - When rendering unsupported characters, fall through all available fonts in case the character is supported by one of the other available fonts.

@@ -13,8 +13,11 @@
 # limitations under the License.
 
 import logging
+import os
 import re
 import subprocess
+import tempfile
+
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -63,15 +66,100 @@ FONT_TROUBLESHOOTING_URL = (
 )
 
 
-def find_font(font_list: list[str], available_fonts_list: list[str]):
-    """Return the first font from font_list that's available, or None otherwise."""
+def batch_check_fonts(font_names: list[str]) -> dict[str, bool]:
+    """
+    Given an iterable of font names, check (in one lualatex run) whether each
+    font is available to fontspec.
+    """
+    if not font_names:
+        return {}
+
+    font_cache = {}
+
+    # Build LaTeX code that produces output like:
+    #   FONTCHECK:<fontname>:FOUND
+    #   FONTCHECK:<fontname>:MISSING
+    font_checks = "\n".join(
+        rf"""\IfFontExistsTF{{{font}}}{{\typeout{{FONTCHECK:{font}:FOUND}}}}{{\typeout{{FONTCHECK:{font}:MISSING}}}}"""
+        for font in font_names
+    )
+
+    tex_code = rf"""
+    \documentclass{{article}}
+    \usepackage{{fontspec}}
+    \begin{{document}}
+    {font_checks}
+    \end{{document}}
+    """
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tex_filename = "check_fonts.tex"
+        tex_file_path = os.path.join(tmpdir, tex_filename)
+        with open(tex_file_path, "w", encoding="utf-8") as tex_file:
+            tex_file.write(tex_code)
+        try:
+            result = subprocess.run(
+                ["lualatex", "--interaction=nonstopmode", tex_filename],
+                cwd=tmpdir,
+                capture_output=True,
+                text=True,
+            )
+            output = result.stdout + "\n" + result.stderr
+            logger.debug(f"Batch font check output:\n{output}")
+        except Exception as e:
+            logger.error(
+                "Error occurred while running lualatex for batch font check", exc_info=e
+            )
+            # On error, mark all as missing.
+            for font in font_names:
+                font_cache[font] = False
+            return font_cache
+
+    for line in output.splitlines():
+        if "FONTCHECK:" in line:
+            try:
+                # Expecting a line: "FONTCHECK:<font>:FOUND" or "FONTCHECK:<font>:MISSING"
+                marker = line.split("FONTCHECK:", 1)[1]
+                font, status = marker.split(":", 1)
+                font_cache[font.strip()] = status.strip() == "FOUND"
+            except Exception as parse_e:
+                logger.warning(
+                    f"Cannot parse font status from line: {line}. Error: {parse_e}"
+                )
+
+    return font_cache
+
+
+def find_font(font_list: list[str], latex_font_cache: dict[str, bool]) -> Optional[str]:
+    """
+    Return the first font in font_list that is available, or None if none are found.
+    """
     for font in font_list:
-        if any(line.startswith(f"{font.lower()}\t") for line in available_fonts_list):
+        if latex_font_cache.get(font, False):
             logger.debug(f'Font "{font}" is accessible by LuaTeX.')
             return font
         else:
             logger.debug(f'Font "{font}" is not accessible by LuaTeX.')
     return None
+
+
+def gather_all_candidate_fonts(
+    custom_fonts: list[Optional[str]], default_font_lists: list[list[str]]
+) -> dict[str, bool]:
+    """
+    Gathers all custom fonts (if provided) and all default fonts from the provided lists,
+    then batch-checks them using LuaTeX.
+    """
+    candidate_fonts = set()
+    for font in custom_fonts:
+        if font:
+            candidate_fonts.add(font)
+    for font_list in default_font_lists:
+        candidate_fonts.update(font_list)
+    if candidate_fonts:
+        return batch_check_fonts(list(candidate_fonts))
+    else:
+        return {}
 
 
 class FontConfig:
@@ -90,26 +178,43 @@ class FontConfig:
         global_font_list: list[str] = GLOBAL_FONT_LIST,
         header_footer_font_list: list[str] = HEADER_FOOTER_FONT_LIST,
     ):
-        try:
-            result = subprocess.run(
-                ["luaotfload-tool", "--list=*"], capture_output=True, text=True
-            )
-            logger.debug(f"Available fonts:\n{result.stdout}")
-            available_fonts_list = result.stdout.lower().splitlines()
-        except FileNotFoundError:
-            raise ValueError(
-                "Can't build The Swift Programming Language book: luaotfload-tool not found. Ensure LuaTeX is installed."
-            )
+        logger.info("Configuring fonts...")
+        logger.debug("Custom fonts provided:")
+        logger.debug(f"Main font: {main_font_custom}")
+        logger.debug(f"Monospace font: {mono_font_custom}")
+        logger.debug(f"Emoji font: {emoji_font_custom}")
+        logger.debug(f"Unicode font: {unicode_font_custom}")
+        logger.debug(f"Global font: {global_font_custom}")
+        logger.debug(f"Header/Footer font: {header_footer_font_custom}")
+
+        LATEX_FONT_CACHE = gather_all_candidate_fonts(
+            [
+                main_font_custom,
+                mono_font_custom,
+                emoji_font_custom,
+                unicode_font_custom,
+                global_font_custom,
+                header_footer_font_custom,
+            ],
+            [
+                main_font_list,
+                mono_font_list,
+                emoji_font_list,
+                unicode_font_list,
+                global_font_list,
+                header_footer_font_list,
+            ],
+        )
 
         if main_font_custom:
-            main_font = find_font([main_font_custom], available_fonts_list)
+            main_font = find_font([main_font_custom], LATEX_FONT_CACHE)
             if not main_font:
                 logger.warning(
                     f"Custom main font '{main_font_custom}' not found. Using default fonts."
                 )
-                main_font = find_font(main_font_list, available_fonts_list)
+                main_font = find_font(main_font_list, LATEX_FONT_CACHE)
         else:
-            main_font = find_font(main_font_list, available_fonts_list)
+            main_font = find_font(main_font_list, LATEX_FONT_CACHE)
         if not main_font:
             raise ValueError(
                 f"Couldn't find any of the following fonts for the main text: {', '.join(main_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
@@ -117,14 +222,14 @@ class FontConfig:
         self.main_font = main_font
 
         if mono_font_custom:
-            mono_font = find_font([mono_font_custom], available_fonts_list)
+            mono_font = find_font([mono_font_custom], LATEX_FONT_CACHE)
             if not mono_font:
                 logger.warning(
                     f"Custom monospace font '{mono_font_custom}' not found. Using default fonts."
                 )
-                mono_font = find_font(mono_font_list, available_fonts_list)
+                mono_font = find_font(mono_font_list, LATEX_FONT_CACHE)
         else:
-            mono_font = find_font(mono_font_list, available_fonts_list)
+            mono_font = find_font(mono_font_list, LATEX_FONT_CACHE)
         if not mono_font:
             raise ValueError(
                 f"Couldn't find any of the following fonts for monospace text: {', '.join(mono_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
@@ -132,14 +237,14 @@ class FontConfig:
         self.mono_font = mono_font
 
         if emoji_font_custom:
-            emoji_font = find_font([emoji_font_custom], available_fonts_list)
+            emoji_font = find_font([emoji_font_custom], LATEX_FONT_CACHE)
             if not emoji_font:
                 logger.warning(
                     f"Custom emoji font '{emoji_font_custom}' not found. Using default fonts."
                 )
-                emoji_font = find_font(emoji_font_list, available_fonts_list)
+                emoji_font = find_font(emoji_font_list, LATEX_FONT_CACHE)
         else:
-            emoji_font = find_font(emoji_font_list, available_fonts_list)
+            emoji_font = find_font(emoji_font_list, LATEX_FONT_CACHE)
         if not emoji_font:
             raise ValueError(
                 f"Couldn't find any of the following fonts for emojis: {', '.join(emoji_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
@@ -147,14 +252,14 @@ class FontConfig:
         self.emoji_font = emoji_font
 
         if unicode_font_custom:
-            unicode_font = find_font([unicode_font_custom], available_fonts_list)
+            unicode_font = find_font([unicode_font_custom], LATEX_FONT_CACHE)
             if not unicode_font:
                 logger.warning(
                     f"Custom unicode font '{unicode_font_custom}' not found. Using default fonts."
                 )
-                unicode_font = find_font(unicode_font_list, available_fonts_list)
+                unicode_font = find_font(unicode_font_list, LATEX_FONT_CACHE)
         else:
-            unicode_font = find_font(unicode_font_list, available_fonts_list)
+            unicode_font = find_font(unicode_font_list, LATEX_FONT_CACHE)
         if not unicode_font:
             raise ValueError(
                 f"Couldn't find any of the following fonts for unicode text: {', '.join(unicode_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
@@ -162,14 +267,14 @@ class FontConfig:
         self.unicode_font = unicode_font
 
         if global_font_custom:
-            global_font = find_font([global_font_custom], available_fonts_list)
+            global_font = find_font([global_font_custom], LATEX_FONT_CACHE)
             if not global_font:
                 logger.warning(
                     f"Custom global font '{global_font_custom}' not found. Using default fonts."
                 )
-                global_font = find_font(global_font_list, available_fonts_list)
+                global_font = find_font(global_font_list, LATEX_FONT_CACHE)
         else:
-            global_font = find_font(global_font_list, available_fonts_list)
+            global_font = find_font(global_font_list, LATEX_FONT_CACHE)
         if not global_font:
             raise ValueError(
                 f"Couldn't find any of the following fonts for non-latin characters: {', '.join(global_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"
@@ -178,19 +283,17 @@ class FontConfig:
 
         if header_footer_font_custom:
             header_footer_font = find_font(
-                [header_footer_font_custom], available_fonts_list
+                [header_footer_font_custom], LATEX_FONT_CACHE
             )
             if not header_footer_font:
                 logger.warning(
                     f"Custom header/footer font '{header_footer_font_custom}' not found. Using default fonts."
                 )
                 header_footer_font = find_font(
-                    header_footer_font_list, available_fonts_list
+                    header_footer_font_list, LATEX_FONT_CACHE
                 )
         else:
-            header_footer_font = find_font(
-                header_footer_font_list, available_fonts_list
-            )
+            header_footer_font = find_font(header_footer_font_list, LATEX_FONT_CACHE)
         if not header_footer_font:
             raise ValueError(
                 f"Couldn't find any of the following fonts for header/footer text: {', '.join(header_footer_font_list)}. Install one of these fonts to continue. See: {FONT_TROUBLESHOOTING_URL}"

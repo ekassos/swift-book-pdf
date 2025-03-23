@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.3.0]
+## [1.3.0] - 2025-03-23
 
 ### Added
 - Add more accurate font checking mechanism by testing whether each font is accessible to package `fontspec` through a quick LaTeX typeset. ([#27](https://github.com/ekassos/swift-book-pdf/pull/27))

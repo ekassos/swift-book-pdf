@@ -79,14 +79,8 @@ def cli() -> None:
     "--unicode",
     type=str,
     default=None,
-    help="Font for characters not supported by the main font",
-)
-@click.option(
-    "--global",
-    "_global",
-    type=str,
-    default=None,
-    help="Secondary unicode font for additional characters not supported by the main font, e.g. Chinese characters",
+    help="Font(s) for characters not supported by the main font",
+    multiple=True,
 )
 @click.option(
     "--emoji",
@@ -110,8 +104,7 @@ def run(
     paper: str,
     main: Optional[str],
     mono: Optional[str],
-    unicode: Optional[str],
-    _global: Optional[str],
+    unicode: list[str],
     emoji: Optional[str],
     header_footer: Optional[str],
     version: bool,
@@ -129,8 +122,7 @@ def run(
         font_config = FontConfig(
             main_font_custom=main,
             mono_font_custom=mono,
-            unicode_font_custom=unicode,
-            global_font_custom=_global,
+            unicode_fonts_custom_list=unicode,
             emoji_font_custom=emoji,
             header_footer_font_custom=header_footer,
         )

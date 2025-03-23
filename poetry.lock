@@ -97,6 +97,47 @@ files = [
 license = ["ukkonen"]
 
 [[package]]
+name = "latex2pydata"
+version = "0.5.0"
+description = "Load data from LaTeX in Python literal format"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "latex2pydata-0.5.0-py3-none-any.whl", hash = "sha256:7c4092562082985453f47f52db31e1f8c2edcf5d7f855f4c614cfba12808675b"},
+    {file = "latex2pydata-0.5.0.tar.gz", hash = "sha256:bccad2083c3a6ed70492653d5d819ccd9360a3afc3c319dbecf496fba0574289"},
+]
+
+[[package]]
+name = "latexminted"
+version = "0.5.0"
+description = "Python library for LaTeX minted package"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "latexminted-0.5.0-py3-none-any.whl", hash = "sha256:7da8e2489709cee1981018683fcc2d31bd8e1e225367f3fdc8fae00f26d2d61e"},
+    {file = "latexminted-0.5.0.tar.gz", hash = "sha256:b108885409aa6414b2af2048bda7ec553515b976df2497e9370c43f2c9462500"},
+]
+
+[package.dependencies]
+latex2pydata = ">=0.5.0"
+latexrestricted = ">=0.6.2"
+pygments = ">=2.17.0"
+
+[[package]]
+name = "latexrestricted"
+version = "0.6.2"
+description = "Library for creating Python executables compatible with LaTeX restricted shell escape"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "latexrestricted-0.6.2-py3-none-any.whl", hash = "sha256:993bcc1c2a0484e95ce8f167bd8ec19de18cc7386cdb2d1f55d839d036eed590"},
+    {file = "latexrestricted-0.6.2.tar.gz", hash = "sha256:d51d21a41197a581ff29c0f818551f16fa0e6890def929799ac0bde762a7aa60"},
+]
+
+[[package]]
 name = "nodeenv"
 version = "1.9.1"
 description = "Node.js virtual environment builder"
@@ -414,4 +455,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "d3f3ab344ddb3f657453e03aedff4f9a1bfcf088f70a2f050f2e721600b341fc"
+content-hash = "fdb87f0d971aeebcdba9ff96131d1a3be8cd4a2fad1b27e0386c834d203d39cb"

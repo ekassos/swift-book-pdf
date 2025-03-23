@@ -54,12 +54,15 @@ def convert_reference_links_in_line(line: str, references: dict[str, str]) -> st
     :param references: The references to substitute
     :return: The line with the reference links substituted
     """
-    pattern = re.compile(r"\[([^\]]+)\]\[\]")
+    pattern = re.compile(r"\[(.*?)\](?:\[(.*?)\])?")
 
     def repl(match):
-        ref = match.group(1)
-        if ref in references:
-            return f"[{ref}]({references[ref]})"
+        ref_1 = match.group(1)
+        ref_2 = match.group(2)
+        if ref_1 in references:
+            return f"[{ref_1}]({references[ref_1]})"
+        elif ref_2 in references:
+            return f"[{ref_2}]({references[ref_2]})"
         return match.group(0)
 
     return pattern.sub(repl, line)

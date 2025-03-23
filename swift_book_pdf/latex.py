@@ -20,7 +20,10 @@ from swift_book_pdf.latex_helpers import (
     convert_blocks_to_latex,
     generate_chapter_title,
 )
-from swift_book_pdf.markdown_helpers import remove_multiline_comments
+from swift_book_pdf.markdown_helpers import (
+    convert_markdown_links,
+    remove_multiline_comments,
+)
 
 
 class LaTeXConverter:
@@ -47,6 +50,7 @@ class LaTeXConverter:
         Convert the markdown content to LaTeX.
         """
         file_content = remove_multiline_comments(file_content)
+        file_content = convert_markdown_links(file_content)
         file_content = [line.strip("\n") for line in file_content]
         if not file_content:
             return []

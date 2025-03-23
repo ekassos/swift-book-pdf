@@ -13,6 +13,7 @@
 - Fix an issue where the output file could not be saved by overwriting an existing file in Windows systems.
 - Fix an issue where an accepted Unicode font may not support all required glyphs.
 - Fix an issue where the LaTeX typesetting process may continue even after a font error is raised.
+- Fix an issue where fonts names may be incorrectly recognized as available to LuaTeX because of partial name matches.
 
 ### Changed
 - When rendering unsupported characters, fall through all available fonts in case the character is supported by one of the other available fonts.

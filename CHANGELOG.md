@@ -25,7 +25,7 @@
 - Replace `wrap_emoji_string` and `detect_non_latin`/`wrap_non_latin` processing pipelines with `luaotfload` font fallbacks.
 - Add new `override_characters` function for characters requiring special handling before typesetting. Previously handled within `wrap_non_latin`.
 - Remove `emoji` dependency.
-- Add `latexminted` package to ensure that `minted` v3 can run correctly on all systems.
+- Add `latexminted` package dependency to ensure that `minted` v3 can run correctly on all systems.
 - Only use shell escape when using an unsupported system (TeX Live \< 2024 or MiKTeX).
 
 ## [1.2.0] - 2025-03-15

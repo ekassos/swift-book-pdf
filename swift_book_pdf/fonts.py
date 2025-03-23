@@ -208,7 +208,7 @@ class FontConfig:
 
         if main_font_custom:
             main_font = find_font([main_font_custom], LATEX_FONT_CACHE)
-            if main_font:
+            if not main_font:
                 logger.warning(
                     f"Custom main font '{main_font_custom}' not found. Using default fonts."
                 )

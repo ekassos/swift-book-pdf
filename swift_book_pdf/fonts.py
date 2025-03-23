@@ -262,7 +262,7 @@ class FontConfig:
             )
             if not has_valid_custom_unicode_fonts:
                 logger.warning(
-                    f"Some of the provided unicode font(s) '{', '.join(unicode_fonts_custom_list)}' not found. Using default fonts."
+                    f"Some of the provided unicode font(s) ('{', '.join(unicode_fonts_custom_list)}') not found. Using default fonts."
                 )
                 unicode_font = find_font(unicode_font_list, LATEX_FONT_CACHE)
             else:
@@ -310,7 +310,7 @@ class FontConfig:
             f"Main font: {self.main_font} ({'default font' if self.main_font in MAIN_FONT_LIST else 'custom font'})\n"
             f"Monospace font: {self.mono_font} ({'default font' if self.mono_font in MONO_FONT_LIST else 'custom font'})\n"
             f"Emoji font: {self.emoji_font} ({'default font' if self.emoji_font in EMOJI_FONT_LIST else 'custom font'})\n"
-            f"Unicode font: {', '.join(self.unicode_font_list)} ({'default font' if all(font in UNICODE_FONT_LIST for font in self.unicode_font_list) else 'custom font'})\n"
+            f"Unicode font(s): {', '.join(self.unicode_font_list)} ({'default font' if all(font in UNICODE_FONT_LIST for font in self.unicode_font_list) else 'custom font(s)'})\n"
             f"Header/Footer font: {self.header_footer_font} ({'default font' if self.header_footer_font in HEADER_FOOTER_FONT_LIST else 'custom font'})\n"
         )
 
@@ -334,5 +334,5 @@ def check_for_missing_font_logs(log_line: str):
         missing_char = match.group("char")
         unicode_code = match.group("code")
         raise ValueError(
-            f"The fonts you selected do not support character {missing_char} ({unicode_code}).\nIf you are using a custom font, please ensure that it supports the character set you are trying to use.\nOtherwise, see {FONT_TROUBLESHOOTING_URL} for more information."
+            f"The fonts you specified do not support character {missing_char} ({unicode_code}).\nIf you are using a custom font, please ensure that it supports the character set you are trying to use.\nOtherwise, see {FONT_TROUBLESHOOTING_URL} for more information."
         )

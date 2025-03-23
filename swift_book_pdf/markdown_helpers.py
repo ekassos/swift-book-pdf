@@ -62,7 +62,10 @@ def convert_reference_links_in_line(line: str, references: dict[str, str]) -> st
         if ref_1 and ref_1 in references:
             return f"[{ref_1}]({references[ref_1]})"
         elif ref_2 and ref_2 in references:
-            return f"[{ref_2}]({references[ref_2]})"
+            if ref_1:
+                return f"[{ref_1}]({references[ref_2]})"
+            else:
+                return f"[{ref_2}]({references[ref_2]})"
         else:
             return match.group(0)
 

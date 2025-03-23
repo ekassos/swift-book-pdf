@@ -43,7 +43,7 @@ class PDFConverter:
         )
 
         if result.returncode != 0:
-            raise RuntimeError("Failed to get LaTeX version")
+            raise RuntimeError(f"Failed to get LaTeX version: {result.stderr}")
 
         match = re.search(pattern, result.stdout)
         if match:
@@ -62,7 +62,7 @@ class PDFConverter:
                     f"Unsupported LaTeX distribution: {tex_distribution}"
                 )
         else:
-            raise RuntimeError("Failed to parse LaTeX version")
+            raise RuntimeError(f"Failed to get LaTeX version: {result.stderr}")
         logger.debug(
             f"Using LaTeX distribution: {tex_distribution}, version: {tex_version}"
         )

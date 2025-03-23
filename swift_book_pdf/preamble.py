@@ -36,14 +36,16 @@ def get_geometry_opts(paper_size: PaperSize) -> str:
 
 
 def generate_preamble(config: Config) -> str:
+    unicode_fallback = "\n".join(
+        [f'      "{font}:mode=node;",' for font in config.font_config.unicode_font_list]
+    )
     return PREAMBLE.substitute(
         color=get_link_color(config.doc_config.mode),
         geometry_opts=get_geometry_opts(config.doc_config.paper_size),
         main_font=config.font_config.main_font,
         mono_font=config.font_config.mono_font,
         emoji_font=config.font_config.emoji_font,
-        unicode_font=config.font_config.unicode_font,
-        global_font=config.font_config.global_font,
+        unicode_font=unicode_fallback,
         header_footer_font=config.font_config.header_footer_font,
     )
 
@@ -93,8 +95,7 @@ PREAMBLE = Template(r"""
    ("monoFallback",
     {
       "$main_font:mode=node;",
-      "$unicode_font:mode=node;",
-      "$global_font:mode=node;",
+      $unicode_font
       "$emoji_font:mode=harf;",
       "$header_footer_font:mode=node;"
     }
@@ -104,8 +105,7 @@ PREAMBLE = Template(r"""
 \directlua{luaotfload.add_fallback
    ("mainFontFallback",
     {
-      "$unicode_font:mode=node;",
-      "$global_font:mode=node;",
+      $unicode_font
       "$emoji_font:mode=harf;",
       "$header_footer_font:mode=node;",
       "$mono_font:mode=node;"
@@ -117,8 +117,7 @@ PREAMBLE = Template(r"""
    ("headerFallback",
     {
       "$main_font:mode=node;",
-      "$unicode_font:mode=node;",
-      "$global_font:mode=node;",
+      $unicode_font
       "$emoji_font:mode=harf;",
       "$mono_font:mode=node;"
     }

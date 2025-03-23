@@ -17,6 +17,7 @@
 
 ### Changed
 - When rendering unsupported characters, fall through all available fonts in case the character is supported by one of the other available fonts.
+- Change the order in which default fonts in the Mono Fonts category are checked for availability to LuaTeX. Courier New is now the final default font option checked, as it provides extremely thin glyphs.
 
 ### Internal
 - Replace `wrap_emoji_string` and `detect_non_latin`/`wrap_non_latin` processing pipelines with `luaotfload` font fallbacks.

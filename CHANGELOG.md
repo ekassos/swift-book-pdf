@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Internal
+- Change regular expression used for detecting URLs in Markdown that may have caused exponential backtracking on strings starting with '[\](http://' and containing many repetitions of '!'.
+
 ## [1.3.0] - 2025-03-23
 
 ### Added

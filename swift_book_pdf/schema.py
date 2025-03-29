@@ -22,6 +22,11 @@ class RenderingMode(StrEnum):
     PRINT = "print"
 
 
+class Appearance(StrEnum):
+    LIGHT = "light"
+    DARK = "dark"
+
+
 class PaperSize(StrEnum):
     A4 = "a4"
     LETTER = "letter"
@@ -109,3 +114,19 @@ Block = (
     | TermListBlock
     | UnorderedListBlock
 )
+
+
+class DocumentColors(BaseModel):
+    background: str
+    text: str
+    header_background: str
+    header_text: str
+    hero_background: str
+    hero_text: str
+    link: str
+    aside_background: str
+    aside_border: str
+    aside_text: str
+    table_border: str
+    code_border: str
+    code_background: str

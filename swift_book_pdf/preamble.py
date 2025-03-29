@@ -13,18 +13,9 @@
 # limitations under the License.
 
 from swift_book_pdf.config import Config
-from .schema import PaperSize, RenderingMode
+from .schema import PaperSize, Appearance
 from string import Template
-
-
-def get_link_color(mode: RenderingMode) -> str:
-    match mode:
-        case RenderingMode.DIGITAL:
-            return "urlBlue"
-        case RenderingMode.PRINT:
-            return "black"
-        case _:
-            raise ValueError("Invalid rendering mode specified.")
+from .colors import get_document_colors
 
 
 def get_geometry_opts(paper_size: PaperSize) -> str:
@@ -39,8 +30,21 @@ def generate_preamble(config: Config) -> str:
     unicode_fallback = "\n".join(
         [f'      "{font}:mode=node;",' for font in config.font_config.unicode_font_list]
     )
+    colors = get_document_colors(config.doc_config.mode, Appearance.LIGHT)
     return PREAMBLE.substitute(
-        color=get_link_color(config.doc_config.mode),
+        background=colors.background,
+        text=colors.text,
+        header_background=colors.header_background,
+        header_text=colors.header_text,
+        hero_background=colors.hero_background,
+        hero_text=colors.hero_text,
+        link=colors.link,
+        aside_background=colors.aside_background,
+        aside_text=colors.aside_text,
+        aside_border=colors.aside_border,
+        table_border=colors.table_border,
+        code_border=colors.code_border,
+        code_background=colors.code_background,
         geometry_opts=get_geometry_opts(config.doc_config.paper_size),
         main_font=config.font_config.main_font,
         mono_font=config.font_config.mono_font,
@@ -77,14 +81,22 @@ PREAMBLE = Template(r"""
 % ----------------------------------------
 % Define custom colors
 % ----------------------------------------
-\definecolor{containerBackground}{HTML}{f7f7f7}
-\definecolor{containerBorder}{HTML}{cccccc}
-\definecolor{heroGray}{RGB}{240, 240, 240}
-\definecolor{headerGray}{RGB}{51, 51, 51}
-\definecolor{noteBackground}{HTML}{F5F5F5}
-\definecolor{noteBorder}{HTML}{666666}
-\definecolor{urlBlue}{RGB}{0,102,204}
+\definecolor{background}{RGB}{$background}
+\definecolor{text}{RGB}{$text}
+\definecolor{header_background}{RGB}{$header_background}
+\definecolor{header_text}{RGB}{$header_text}
+\definecolor{hero_background}{RGB}{$hero_background}
+\definecolor{hero_text}{RGB}{$hero_text}
+\definecolor{link}{RGB}{$link}
+\definecolor{aside_background}{RGB}{$aside_background}
+\definecolor{aside_text}{RGB}{$aside_text}
+\definecolor{aside_border}{RGB}{$aside_border}
+\definecolor{table_border}{RGB}{$table_border}
+\definecolor{code_border}{RGB}{$code_border}
+\definecolor{code_background}{RGB}{$code_background}
 
+\pagecolor{background}
+\color{text}
 % ----------------------------------------
 % Define fonts and small helpers
 % ----------------------------------------
@@ -133,7 +145,7 @@ PREAMBLE = Template(r"""
 }
 
 \newcommand{\headerFontWithFallback}[2]{%
-  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]%
+  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{hero_text}%
 }
 
 \renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{8pt}{8pt}\selectfont}
@@ -350,8 +362,8 @@ PREAMBLE = Template(r"""
     framesep=0pt,
     escapeinside=||,
   },
-  colback=containerBackground,
-  colframe=containerBorder,
+  colback=code_background,
+  colframe=code_border,
   boxrule=0.5pt,
   arc=4pt,
   top=0.05in, bottom=0.05in,
@@ -367,9 +379,9 @@ PREAMBLE = Template(r"""
 % ----------------------------------------
 \newtcolorbox{asideNote}{%
   enhanced,
-  colback=noteBackground,
+  colback=aside_background,
   arc=4pt,
-  borderline west={3pt}{0pt}{noteBorder},
+  borderline west={3pt}{0pt}{aside_border},
   boxrule=0pt,
   frame empty,
   before skip={\dimexpr\ifprecededbybox0.19in\else0.21in\fi},
@@ -382,8 +394,8 @@ PREAMBLE = Template(r"""
 
 \hypersetup{
   colorlinks=true,    % Make links colored
-  linkcolor=$color,     % Color of internal links
-  urlcolor=$color,      % Color for URLs
+  linkcolor=link,     % Color of internal links
+  urlcolor=link,      % Color for URLs
   pdfstartview=FitH,   % Ensure the view fits horizontally on page
   bookmarksdepth=4
 }
@@ -399,7 +411,7 @@ PREAMBLE = Template(r"""
 \fancyhead[HO]{%
 \global\AtPageToptrue%
 \begin{tikzpicture}[remember picture, overlay]
-  \fill[headerGray] ([yshift=-0.5in]current page.north west)
+  \fill[header_background] ([yshift=-0.5in]current page.north west)
   rectangle ([yshift=-0.9in]current page.north east);
 
   \node[anchor=east] at ([yshift=-0.7in,xshift=-0.7in]current page.north east) {
@@ -415,7 +427,7 @@ PREAMBLE = Template(r"""
 \fancyhead[HE]{%
 \global\AtPageToptrue%
 \begin{tikzpicture}[remember picture, overlay]
-\fill[headerGray] ([yshift=-0.5in]current page.north west)
+\fill[header_background] ([yshift=-0.5in]current page.north west)
  rectangle ([yshift=-0.9in]current page.north east);
 
 \node[anchor=west] at ([yshift=-0.7in,xshift=0.7in]current page.north west) {
@@ -430,7 +442,7 @@ PREAMBLE = Template(r"""
 
 \fancyfoot[FO]{%
 \begin{tikzpicture}[remember picture, overlay]
-\fill[headerGray] ([yshift=0.5in]current page.south west)
+\fill[header_background] ([yshift=0.5in]current page.south west)
  rectangle ([yshift=0.9in]current page.south east);
 
 \node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
@@ -445,7 +457,7 @@ PREAMBLE = Template(r"""
 
 \fancyfoot[FE]{%
 \begin{tikzpicture}[remember picture, overlay]
-\fill[headerGray] ([yshift=0.5in]current page.south west)
+\fill[header_background] ([yshift=0.5in]current page.south west)
  rectangle ([yshift=0.9in]current page.south east);
 
 \node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
@@ -462,7 +474,7 @@ PREAMBLE = Template(r"""
   \fancyhf{}
   \fancyfoot[FO]{%
   \begin{tikzpicture}[remember picture, overlay]
-  \fill[headerGray] ([yshift=0.5in]current page.south west)
+  \fill[header_background] ([yshift=0.5in]current page.south west)
    rectangle ([yshift=0.9in]current page.south east);
 
   \node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
@@ -477,7 +489,7 @@ PREAMBLE = Template(r"""
 
   \fancyfoot[FE]{%
   \begin{tikzpicture}[remember picture, overlay]
-  \fill[headerGray] ([yshift=0.5in]current page.south west)
+  \fill[header_background] ([yshift=0.5in]current page.south west)
    rectangle ([yshift=0.9in]current page.south east);
 
   \node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
@@ -496,10 +508,11 @@ PREAMBLE = Template(r"""
   \ifoddpage
     % -- Odd page
     \hspace*{-2in}
-    \fcolorbox{heroGray}{heroGray}{%
+    \fcolorbox{hero_background}{hero_background}{%
       \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
         \hspace{1.9in}
         \begin{minipage}[t]{0.7\textwidth}
+          \color{hero_text}
           \vspace*{0.4in}
           \TitleSection{#1}{#2}  % Title
           {\SubtitleStyle #3\par}  % Subtitle
@@ -510,8 +523,9 @@ PREAMBLE = Template(r"""
   \else
     % -- Even page
     \hspace*{-0.53in}
-    \fcolorbox{heroGray}{heroGray}{%
+    \fcolorbox{hero_background}{hero_background}{%
       \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
+        \color{hero_text}
         \hspace{0.4in}
         \begin{minipage}[t]{0.7\textwidth}
           \vspace*{0.4in}

@@ -130,3 +130,4 @@ class DocumentColors(BaseModel):
     table_border: str
     code_border: str
     code_background: str
+    code_style: str

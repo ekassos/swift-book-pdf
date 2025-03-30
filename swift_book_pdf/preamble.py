@@ -45,6 +45,7 @@ def generate_preamble(config: Config) -> str:
         table_border=colors.table_border,
         code_border=colors.code_border,
         code_background=colors.code_background,
+        code_style=colors.code_style,
         geometry_opts=get_geometry_opts(config.doc_config.paper_size),
         main_font=config.font_config.main_font,
         mono_font=config.font_config.mono_font,
@@ -353,7 +354,7 @@ PREAMBLE = Template(r"""
   minted language=swift,
   minted options={
     fontsize=\customsmall,
-    style=swift_book_dark_style,
+    style=$code_style,
     breaklines=true,
     autogobble=true,
     breakautoindent=false,

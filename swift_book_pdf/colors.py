@@ -29,6 +29,7 @@ def light_colors(rendering_mode: RenderingMode) -> DocumentColors:
         table_border="240, 240, 240",
         code_border="204, 204, 204",
         code_background="247, 247, 247",
+        code_style="swift_book_style",
     )
 
 
@@ -49,4 +50,5 @@ def dark_colors(rendering_mode: RenderingMode) -> DocumentColors:
         table_border="66, 66, 66",
         code_border="87, 87, 87",
         code_background="22, 22, 22",
+        code_style="swift_book_dark_style",
     )

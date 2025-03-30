@@ -108,7 +108,7 @@ def replace_chapter_href_with_toc_item(
                 subtitle = (
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line or ""
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} {{\textcolor{{noteBorder}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
+                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
 
         case _:
             raise ValueError("Invalid rendering mode specified.")

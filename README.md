@@ -40,7 +40,7 @@ Call `swift_book_pdf` without any arguments to save the resulting PDF as `swift_
 $ swift_book_pdf
 
 [INFO]: Downloading TSPL files...
-[INFO]: Creating PDF in digital mode...
+[INFO]: Creating PDF in digital (light) mode...
 [INFO]: PDF saved to ./swift-book.pdf
 ```
 
@@ -80,6 +80,13 @@ swift_book_pdf /path/to/output.pdf --mode print
 Use the `--paper` option to set your preferred paper size:
 ```
 swift_book_pdf --paper legal
+```
+
+### Appearance
+`swift_book_pdf` renders *The Swift Programming Language* book in light mode by default. To render the book in dark mode, use the `--dark` flag.
+
+```
+swift_book_pdf --dark
 ```
 
 ### Fonts

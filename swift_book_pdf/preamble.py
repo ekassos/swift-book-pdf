@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from swift_book_pdf.config import Config
-from .schema import PaperSize, Appearance
+from .schema import PaperSize
 from string import Template
 from .colors import get_document_colors
 
@@ -30,7 +30,7 @@ def generate_preamble(config: Config) -> str:
     unicode_fallback = "\n".join(
         [f'      "{font}:mode=node;",' for font in config.font_config.unicode_font_list]
     )
-    colors = get_document_colors(config.doc_config.mode, Appearance.LIGHT)
+    colors = get_document_colors(config.doc_config.mode, config.doc_config.appearance)
     return PREAMBLE.substitute(
         background=colors.background,
         text=colors.text,
@@ -145,7 +145,7 @@ PREAMBLE = Template(r"""
 }
 
 \newcommand{\headerFontWithFallback}[2]{%
-  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{hero_text}%
+  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{header_text}%
 }
 
 \renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{8pt}{8pt}\selectfont}
@@ -353,7 +353,7 @@ PREAMBLE = Template(r"""
   minted language=swift,
   minted options={
     fontsize=\customsmall,
-    style=swift_book_style,
+    style=swift_book_dark_style,
     breaklines=true,
     autogobble=true,
     breakautoindent=false,
@@ -371,6 +371,7 @@ PREAMBLE = Template(r"""
   boxsep=0pt,
   before skip={\dimexpr\ifprecededbybox0.19in\else0.21in\fi},
   after skip=0in,
+  before lower=\color{text},
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
 }
 
@@ -388,7 +389,7 @@ PREAMBLE = Template(r"""
   after skip=0in,
   after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\AtPageTopfalse},
   left=8.8pt, right=8pt, top=8pt, bottom=8pt,
-  before upper={\raggedright},
+  before upper={\raggedright\color{aside_text}},
 }
 
 

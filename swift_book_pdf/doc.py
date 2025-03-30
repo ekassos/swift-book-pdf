@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.schema import PaperSize, RenderingMode
+from swift_book_pdf.schema import PaperSize, RenderingMode, Appearance
 
 
 class DocConfig:
@@ -21,7 +21,9 @@ class DocConfig:
         mode: RenderingMode = RenderingMode.DIGITAL,
         paper_size: PaperSize = PaperSize.LETTER,
         typesets: int = 4,
+        dark_mode: bool = False,
     ):
         self.mode = mode
         self.paper_size = paper_size
         self.typesets = typesets
+        self.appearance = Appearance.DARK if dark_mode else Appearance.LIGHT

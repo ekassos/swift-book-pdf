@@ -18,6 +18,7 @@ import re
 import struct
 
 from swift_book_pdf.schema import (
+    Appearance,
     Block,
     CodeBlock,
     Header2Block,
@@ -261,6 +262,7 @@ def convert_blocks_to_latex(
     file_name: str,
     assets_dir: str,
     mode: RenderingMode,
+    appearance: Appearance,
     main_font: str,
 ) -> list[str]:
     """
@@ -270,6 +272,7 @@ def convert_blocks_to_latex(
     :param file_name: The name of the file being converted
     :param assets_dir: The directory containing the images
     :param mode: The rendering mode
+    :param appearance: The appearance mode (light or dark)
     :param main_font: The font to be used for the main text
     :return: A list of LaTeX lines
     """
@@ -323,7 +326,10 @@ def convert_blocks_to_latex(
             _ = block.alt
             imgname = block.imgname
 
-            img_path = os.path.join(assets_dir, f"{imgname}@2x.png")
+            img_path = os.path.join(
+                assets_dir,
+                f"{imgname}{'~dark' if appearance == Appearance.DARK else ''}@2x.png",
+            )
             if os.sep == "\\":
                 img_path = PureWindowsPath(img_path).as_posix()
             final_width = "auto"
@@ -392,7 +398,7 @@ def convert_blocks_to_latex(
             output.append(f"\\ParagraphStyle{{{para_conv}}}\n")
         elif isinstance(block, TableBlock):
             output.append(
-                "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{heroGray}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
+                "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{table_border}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
                 + main_font
                 + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
             )

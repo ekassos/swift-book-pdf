@@ -54,7 +54,9 @@ class Book:
     def process(self):
         latex_file_path = os.path.join(self.config.temp_dir, "inner_content.tex")
         self.process_files_in_order(latex_file_path)
-        logger.info(f"Creating PDF in {self.config.doc_config.mode.value} mode...")
+        logger.info(
+            f"Creating PDF in {self.config.doc_config.mode.value} ({self.config.doc_config.appearance}) mode..."
+        )
         converter = PDFConverter(self.config)
         for _ in trange(self.config.doc_config.typesets, leave=False):
             converter.convert_to_pdf(latex_file_path)

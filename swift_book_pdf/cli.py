@@ -94,6 +94,7 @@ def cli() -> None:
     default=None,
     help="Font for text in the header and footer",
 )
+@click.option("--dark", is_flag=True, help="Render the book in dark mode")
 @click.option("--verbose", is_flag=True)
 @click.option("--version", is_flag=True)
 def run(
@@ -107,6 +108,7 @@ def run(
     unicode: list[str],
     emoji: Optional[str],
     header_footer: Optional[str],
+    dark: bool,
     version: bool,
 ) -> None:
     if version:
@@ -126,7 +128,7 @@ def run(
             emoji_font_custom=emoji,
             header_footer_font_custom=header_footer,
         )
-        doc_config = DocConfig(RenderingMode(mode), PaperSize(paper), typesets)
+        doc_config = DocConfig(RenderingMode(mode), PaperSize(paper), typesets, dark)
     except ValueError as e:
         logger.error(str(e))
         return

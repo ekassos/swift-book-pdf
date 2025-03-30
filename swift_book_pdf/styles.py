@@ -22,12 +22,14 @@ from pygments.token import (
     String,
     Number,
     Punctuation,
+    Error,
 )
 
 
 class CustomSwiftBookStyle(Style):
     styles = {
         Text: "#000",
+        Error: "#000",
         Keyword: "#ad3da4",  # --color-syntax-keywords
         Keyword.Constant: "#ad3da4",  # --color-syntax-keywords
         Keyword.Declaration: "#ad3da4",  # --color-syntax-keywords
@@ -46,4 +48,29 @@ class CustomSwiftBookStyle(Style):
         Punctuation: "#000",
         Comment: "#707f8c",  # --color-syntax-comments
         Comment.Special: "#506375",  # --color-syntax-documentation-markup-keywords
+    }
+
+
+class CustomSwiftBookDarkStyle(Style):
+    styles = {
+        Text: "#fff",
+        Error: "#fff",
+        Keyword: "#ff7ab2",  # --color-syntax-keywords
+        Keyword.Constant: "#ff7ab2",  # --color-syntax-keywords
+        Keyword.Declaration: "#ff7ab2",  # --color-syntax-keywords
+        Keyword.Reserved: "#ff7ab2",  # --color-syntax-keywords
+        Name: "#fff",
+        Name.Builtin: "#dabaff",  # --color-syntax-other-type-names
+        Name.Builtin.Pseudo: "#fff",
+        Name.Class: "#dabaff",  # --color-syntax-other-type-names
+        Name.Function: "#dabaff",  # --color-syntax-other-type-names
+        Name.Variable: "#fff",
+        String: "#ff8170",  # --color-syntax-strings
+        String.Escape: "#ff8170",  # --color-syntax-strings
+        String.Interpol: "#fff",
+        Number: "#d9c97c",  # --color-syntax-numbers
+        Operator: "#fff",
+        Punctuation: "#fff",
+        Comment: "#7f8c98",  # --color-syntax-comments
+        Comment.Special: "#a3b1bf",  # --color-syntax-documentation-markup-keywords
     }

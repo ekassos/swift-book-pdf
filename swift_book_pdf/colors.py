@@ -38,6 +38,15 @@ def dark_colors(rendering_mode: RenderingMode) -> DocumentColors:
         text="255, 255, 255",
         header_background="51, 51, 51",
         header_text="255, 255, 255",
-        hero_background="30, 30, 30",
+        hero_background="51, 51, 51",
         hero_text="255, 255, 255",
+        link="0, 153, 255"
+        if rendering_mode == RenderingMode.DIGITAL
+        else "255, 255, 255",
+        aside_background="34, 34, 34",
+        aside_text="255, 255, 255",
+        aside_border="176, 176, 176",
+        table_border="66, 66, 66",
+        code_border="87, 87, 87",
+        code_background="22, 22, 22",
     )

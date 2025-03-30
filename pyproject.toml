@@ -21,6 +21,7 @@ swift_book_pdf = 'swift_book_pdf.cli:run'
 
 [project.entry-points."pygments.styles"]
 swift_book_style = "swift_book_pdf.styles:CustomSwiftBookStyle"
+swift_book_dark_style = "swift_book_pdf.styles:CustomSwiftBookDarkStyle"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.1.0"

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add new `--dark` flag to enable rendering in dark mode.
+
 ### Internal
 - Change regular expression used for detecting URLs in Markdown that may have caused exponential backtracking on strings starting with '[\](http://' and containing many repetitions of '!'.
 

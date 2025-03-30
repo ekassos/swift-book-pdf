@@ -15,52 +15,62 @@
 from pygments.style import Style
 from pygments.token import (
     Text,
-    Whitespace,
-    Escape,
-    Error,
-    Other,
     Keyword,
     Name,
-    Literal,
+    Operator,
+    Comment,
     String,
     Number,
     Punctuation,
-    Operator,
-    Comment,
-    Generic,
+    Error,
 )
 
 
 class CustomSwiftBookStyle(Style):
     styles = {
-        # Special tokens
-        Text: "#000000",  # --color-syntax-plain-text: #000
-        Whitespace: "#000000",
-        Escape: "#000000",
-        Error: "#FF0000",
-        Other: "#000000",
-        # Common tokens for source code
-        Keyword: "#ad3da4",  # --color-syntax-keywords: #ad3da4
-        Name: "#000000",
-        Literal: "#000000",
-        String: "#d12f1b",  # --color-syntax-strings: #d12f1b
-        Number: "#272ad8",  # --color-syntax-numbers: #272ad8
-        Punctuation: "#272ad8",  # --color-syntax-characters: #272ad8
-        Operator: "#000000",  # --color-syntax-operators: #000000
-        Comment: "#707f8c",  # --color-syntax-comments: #707f8c
-        Generic: "#000000",
-        # Additional refinement for Swift declarations and names
-        Name.Class: "#703daa",  # --color-syntax-other-class-names: #703daa
-        Name.Constant: "#4b21b0",  # --color-syntax-other-constants: #4b21b0
-        Name.Decorator: "#047cb0",  # --color-syntax-other-declarations: #047cb0
-        Name.Function: "#4b21b0",  # --color-syntax-other-function-and-method-names: #4b21b0
-        Name.Namespace: "#703daa",  # --color-syntax-other-instance-variables-and-globals: #703daa
-        Name.Preproc: "#78492a",  # --color-syntax-other-preprocessor-macros: #78492a
-        Name.Builtin: "#703daa",  # --color-syntax-other-instance-variables-and-globals: #703daa
-        Name.Builtin.Pseudo: "#703daa",  # --color-syntax-other-instance-variables-and-globals: #703daa
-        # Generic insertions and deletions
-        Generic.Deleted: "#FF0000",  # --color-syntax-deletion: red
-        Generic.Inserted: "#008000",  # --color-syntax-addition: green
-        Generic.Heading: "#ba2da2",  # --color-syntax-heading: #ba2da2
-        Generic.Subheading: "#506375",  # --color-syntax-documentation-markup-keywords: #506375
+        Text: "#000",
+        Error: "#000",
+        Keyword: "#ad3da4",  # --color-syntax-keywords
+        Keyword.Constant: "#ad3da4",  # --color-syntax-keywords
+        Keyword.Declaration: "#ad3da4",  # --color-syntax-keywords
+        Keyword.Reserved: "#ad3da4",  # --color-syntax-keywords
+        Name: "#000",
+        Name.Builtin: "#703daa",  # --color-syntax-other-type-names
+        Name.Builtin.Pseudo: "#000",
+        Name.Class: "#703daa",  # --color-syntax-other-type-names
+        Name.Function: "#703daa",  # --color-syntax-other-type-names
+        Name.Variable: "#000",
+        String: "#d12f1b",  # --color-syntax-strings
+        String.Escape: "#d12f1b",  # --color-syntax-strings
+        String.Interpol: "#000",
+        Number: "#272ad8",  # --color-syntax-numbers
+        Operator: "#000",
+        Punctuation: "#000",
+        Comment: "#707f8c",  # --color-syntax-comments
+        Comment.Special: "#506375",  # --color-syntax-documentation-markup-keywords
+    }
+
+
+class CustomSwiftBookDarkStyle(Style):
+    styles = {
+        Text: "#fff",
+        Error: "#fff",
+        Keyword: "#ff7ab2",  # --color-syntax-keywords
+        Keyword.Constant: "#ff7ab2",  # --color-syntax-keywords
+        Keyword.Declaration: "#ff7ab2",  # --color-syntax-keywords
+        Keyword.Reserved: "#ff7ab2",  # --color-syntax-keywords
+        Name: "#fff",
+        Name.Builtin: "#dabaff",  # --color-syntax-other-type-names
+        Name.Builtin.Pseudo: "#fff",
+        Name.Class: "#dabaff",  # --color-syntax-other-type-names
+        Name.Function: "#dabaff",  # --color-syntax-other-type-names
+        Name.Variable: "#fff",
+        String: "#ff8170",  # --color-syntax-strings
+        String.Escape: "#ff8170",  # --color-syntax-strings
+        String.Interpol: "#fff",
+        Number: "#d9c97c",  # --color-syntax-numbers
+        Operator: "#fff",
+        Punctuation: "#fff",
+        Comment: "#7f8c98",  # --color-syntax-comments
+        Comment.Special: "#a3b1bf",  # --color-syntax-documentation-markup-keywords
     }

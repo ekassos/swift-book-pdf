@@ -69,6 +69,7 @@ class LaTeXConverter:
             file_name,
             self.config.assets_dir,
             self.config.doc_config.mode,
+            self.config.doc_config.appearance,
             self.config.font_config.main_font,
         )
         latex_lines.extend(body_latex)

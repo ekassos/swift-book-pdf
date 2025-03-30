@@ -16,7 +16,7 @@ import re
 
 from typing import Optional
 
-from swift_book_pdf.schema import ChapterMetadata, RenderingMode
+from swift_book_pdf.schema import Appearance, ChapterMetadata, RenderingMode
 
 
 def remove_directives(file_content: list[str]) -> list[str]:
@@ -75,6 +75,7 @@ def replace_chapter_href_with_toc_item(
     file_content: list[str],
     chapter_metadata: dict[str, ChapterMetadata],
     mode: RenderingMode,
+    appearance: Appearance,
 ) -> list[str]:
     """
     Replace the chapter references with the corresponding Table of Contents item.
@@ -97,7 +98,7 @@ def replace_chapter_href_with_toc_item(
                 subtitle = (
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line or ""
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon.png}}}}] \nameref{{{key}}} \\ {subtitle}"
+                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} \\ {subtitle}"
 
         case RenderingMode.PRINT:
             pattern = re.compile(r"\\item \\ParagraphStyle{\\fallbackrefbook{(.*?)}}")
@@ -107,7 +108,7 @@ def replace_chapter_href_with_toc_item(
                 subtitle = (
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line or ""
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon.png}}}}] \nameref{{{key}}} {{\textcolor{{noteBorder}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
+                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
 
         case _:
             raise ValueError("Invalid rendering mode specified.")

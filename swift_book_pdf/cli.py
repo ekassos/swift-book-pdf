@@ -95,6 +95,14 @@ def cli() -> None:
     help="Font for text in the header and footer",
 )
 @click.option("--dark", is_flag=True, help="Render the book in dark mode")
+@click.option(
+    "--input-path",
+    "-i",
+    help="Path to the root of a local copy of the swift-book repo. If not provided,\
+        the repository will be cloned from GitHub.",
+    type=click.Path(resolve_path=True),
+    required=False,
+)
 @click.option("--verbose", is_flag=True)
 @click.option("--version", is_flag=True)
 def run(
@@ -110,6 +118,7 @@ def run(
     header_footer: Optional[str],
     dark: bool,
     version: bool,
+    input_path: Optional[str] = None,
 ) -> None:
     if version:
         current_version = importlib.metadata.version("swift-book-pdf")
@@ -134,7 +143,7 @@ def run(
         return
 
     with TemporaryDirectory() as temp:
-        config = Config(temp, output_path, font_config, doc_config)
+        config = Config(temp, output_path, font_config, doc_config, input_path)
         try:
             Book(config).process()
         except Exception as e:

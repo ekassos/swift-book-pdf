@@ -7,17 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2025-04-05
+
 ### Added
-- Add new `--dark` flag to enable rendering in dark mode.
-- Add new `--input-path`/`-i` option to use local copy of the swift-book repo.
-- Add a new detection mechanism for the minted requiring shell escape by typesetting a simple document containing a minted box.
-- Add new `--gutter/--no-gutter` option to control whether the typeset document has a book gutter and different layout for left/right pages.
+- Add new `--dark` flag to enable rendering in dark mode. ([#33](https://github.com/ekassos/swift-book-pdf/pull/33))
+- Add new `--input-path`/`-i` option to use local copy of the swift-book repo. ([#34](https://github.com/ekassos/swift-book-pdf/pull/34))
+- Add a new detection mechanism for the minted requiring shell escape by typesetting a simple document containing a minted box. ([#35](https://github.com/ekassos/swift-book-pdf/pull/35))
+- Add new `--gutter/--no-gutter` option to control whether the typeset document has a book gutter and different layout for left/right pages. ([#36](https://github.com/ekassos/swift-book-pdf/pull/36))
 
 ### Fixed
-- Fix an issue where some 2024 TeX Live installations may not be able to typeset TSPL because minted still requires the `-shell-escape` option.
+- Fix an issue where some 2024 TeX Live installations may not be able to typeset TSPL because minted still requires the `-shell-escape` option. ([#35](https://github.com/ekassos/swift-book-pdf/pull/35))
 
 ### Internal
-- Change regular expression used for detecting URLs in Markdown that may have caused exponential backtracking on strings starting with '[\](http://' and containing many repetitions of '!'.
+- Change regular expression used for detecting URLs in Markdown that may have caused exponential backtracking on strings starting with '[\](http://' and containing many repetitions of '!'. ([#32](https://github.com/ekassos/swift-book-pdf/pull/32))
 
 ## [1.3.0] - 2025-03-23
 
@@ -99,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.0.2...v1.1.0

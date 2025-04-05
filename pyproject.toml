@@ -1,6 +1,6 @@
 [project]
 name = "swift-book-pdf"
-version = "1.3.0"
+version = "1.4.0"
 description = "A tool to generate a PDF version of The Swift Programming Language book."
 license = "Apache-2.0"
 readme = "README.md"

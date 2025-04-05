@@ -4,11 +4,17 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 
 <table>
   <tr>
-    <td colspan="2"><b>Preview Books</b></td>
+    <td colspan="3"><b>Preview Books</b></td>
   </tr>
   <tr>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.3.0/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.3.0/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
+    <td>Light Mode</td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
+  </tr>
+    <tr>
+    <td>Dark Mode</td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode,_dark)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode,_dark)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
   </tr>
 </table>
 
@@ -53,9 +59,15 @@ When invoked, `swift_book_pdf` will:
 > swift_book_pdf will create a temporary directory to store the swift-book repository, LaTeX file and intermediate files produced during typesetting. This temporary directory is removed after the PDF is generated.
 
 ### Output path
-You can also specify an output path:
+You can specify an output path:
 ```
 swift_book_pdf /path/to/output.pdf
+```
+
+### Input path
+Use the `--input-path`/`-i` option to specify a path to the root of a local copy of the swift-book [repository](https://github.com/swiftlang/swift-book). If not provided, the repository will be cloned from GitHub.
+```
+swift_book_pdf -i /path/to/swift-book/
 ```
 
 ### Rendering modes

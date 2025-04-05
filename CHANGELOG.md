@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add new `--dark` flag to enable rendering in dark mode.
+- Add new `--input-path`/`-i` option to use local copy of the swift-book repo.
 
 ### Internal
 - Change regular expression used for detecting URLs in Markdown that may have caused exponential backtracking on strings starting with '[\](http://' and containing many repetitions of '!'.

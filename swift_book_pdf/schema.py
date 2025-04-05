@@ -33,6 +33,12 @@ class PaperSize(StrEnum):
     LEGAL = "legal"
 
 
+class SwiftBookRepoFilePaths(BaseModel):
+    toc_file_path: str
+    root_dir: str
+    assets_dir: str
+
+
 class ChapterMetadata(BaseModel):
     file_path: str | None = None
     header_line: str | None = None

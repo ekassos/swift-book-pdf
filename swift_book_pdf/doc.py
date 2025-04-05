@@ -28,4 +28,4 @@ class DocConfig:
         self.paper_size = paper_size
         self.typesets = typesets
         self.appearance = Appearance.DARK if dark_mode else Appearance.LIGHT
-        self.gutter = gutter or True
+        self.gutter = True if gutter is None else gutter

@@ -3,6 +3,9 @@ name: Enforce allowable branch names for PRs to main
 on:
   pull_request:
     branches: [main]
+  merge_group:
+    types: [checks_requested]
+
 
 jobs:
   check-branch-name:

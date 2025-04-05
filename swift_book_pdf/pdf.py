@@ -75,7 +75,9 @@ class PDFConverter:
             "Package minted Error: You must invoke LaTeX with the -shell-escape flag."
             in output
         ):
+            logger.debug("Minted package requires shell escape.")
             return True
+        logger.debug("Minted package does not require shell escape.")
         return False
 
     def get_latex_command(self) -> list[str]:

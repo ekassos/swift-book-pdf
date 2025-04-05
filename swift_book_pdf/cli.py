@@ -103,6 +103,12 @@ def cli() -> None:
     type=click.Path(resolve_path=True),
     required=False,
 )
+@click.option(
+    "--gutter/--no-gutter",
+    " /-G",
+    required=False,
+    help="Enable or disable the book gutter",
+)
 @click.option("--verbose", is_flag=True)
 @click.option("--version", is_flag=True)
 def run(
@@ -118,6 +124,7 @@ def run(
     header_footer: Optional[str],
     dark: bool,
     version: bool,
+    gutter: bool | None = None,
     input_path: Optional[str] = None,
 ) -> None:
     if version:
@@ -137,7 +144,9 @@ def run(
             emoji_font_custom=emoji,
             header_footer_font_custom=header_footer,
         )
-        doc_config = DocConfig(RenderingMode(mode), PaperSize(paper), typesets, dark)
+        doc_config = DocConfig(
+            RenderingMode(mode), PaperSize(paper), typesets, dark, gutter
+        )
     except ValueError as e:
         logger.error(str(e))
         return

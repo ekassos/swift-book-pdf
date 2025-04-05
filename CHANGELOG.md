@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new `--dark` flag to enable rendering in dark mode.
 - Add new `--input-path`/`-i` option to use local copy of the swift-book repo.
 - Add a new detection mechanism for the minted requiring shell escape by typesetting a simple document containing a minted box.
+- Add new `--gutter/--no-gutter` option to control whether the typeset document has a book gutter and different layout for left/right pages.
 
 ### Fixed
 - Fix an issue where some 2024 TeX Live installations may not be able to typeset TSPL because minted still requires the `-shell-escape` option.

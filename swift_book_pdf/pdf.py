@@ -32,7 +32,7 @@ class PDFConverter:
         self.config = config
 
     def get_latex_command(self) -> list[str]:
-        command = ["lualatex"]
+        command = ["lualatex", "--interaction=nonstopmode"]
 
         pattern = r"(TeX Live|MiKTeX) (\d{2,4})"
 

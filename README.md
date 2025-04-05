@@ -89,6 +89,13 @@ swift_book_pdf --paper legal
 swift_book_pdf --dark
 ```
 
+### Book Gutter
+`swift_book_pdf` renders *The Swift Programming Language* book with a book gutter by default. To render the book without a gutter, use the `--no-gutter` flag.
+
+```
+swift_book_pdf --no-gutter
+```
+
 ### Fonts
 swift-book-pdf requires a set of fonts to typeset *The Swift Programming Language* book. You can use any of the available default options, or specify your own fonts. To learn more about fonts and available configuration options, see [this article](https://github.com/ekassos/swift-book-pdf/wiki/Fonts/).
 

@@ -22,10 +22,10 @@ class DocConfig:
         paper_size: PaperSize = PaperSize.LETTER,
         typesets: int = 4,
         dark_mode: bool = False,
-        no_gutter: bool = False,
+        gutter: bool | None = None,
     ):
         self.mode = mode
         self.paper_size = paper_size
         self.typesets = typesets
         self.appearance = Appearance.DARK if dark_mode else Appearance.LIGHT
-        self.gutter = not no_gutter
+        self.gutter = gutter or True

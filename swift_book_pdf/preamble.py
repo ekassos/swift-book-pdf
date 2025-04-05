@@ -382,7 +382,7 @@ PREAMBLE = Template(r"""
 }
 
 \newcommand{\BodyStyle}{%
-\mainFontWithFallback{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\justifying
+\mainFontWithFallback{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
 }
 
 \newcommand{\ParagraphStyle}[1]{%
@@ -396,7 +396,6 @@ PREAMBLE = Template(r"""
 \global\AtPageTopfalse%
 \setlength{\parskip}{0.09in}%
 \begin{flushleft}%
-\justifying%
 #1%
 \end{flushleft}%
 }
@@ -605,7 +604,7 @@ PREAMBLE = Template(r"""
   after skip=0in,
   after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\AtPageTopfalse},
   left=8.8pt, right=8pt, top=8pt, bottom=8pt,
-  before upper={\justifying\color{aside_text}},
+  before upper={\raggedright\color{aside_text}},
 }
 
 

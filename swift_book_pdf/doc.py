@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from swift_book_pdf.schema import PaperSize, RenderingMode, Appearance
+
+logger = logging.getLogger(__name__)
 
 
 class DocConfig:
@@ -29,3 +33,8 @@ class DocConfig:
         self.typesets = typesets
         self.appearance = Appearance.DARK if dark_mode else Appearance.LIGHT
         self.gutter = True if gutter is None else gutter
+        logger.debug(f"Rendering mode: {self.mode}")
+        logger.debug(f"Paper size: {self.paper_size}")
+        logger.debug(f"Typesets: {self.typesets}")
+        logger.debug(f"Appearance: {self.appearance}")
+        logger.debug(f"Book Gutter: {self.gutter}")

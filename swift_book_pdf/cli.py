@@ -128,7 +128,6 @@ def run(
     gutter: bool | None = None,
     input_path: Optional[str] = None,
 ) -> None:
-    print(f"Gutter: {gutter}")
     if version:
         current_version = importlib.metadata.version("swift-book-pdf")
         click.echo(f"swift-book-pdf {current_version}")

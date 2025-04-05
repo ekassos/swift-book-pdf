@@ -80,7 +80,7 @@ def find_or_clone_swift_book_repo(
             f"Couldn't find the Table of Contents file (The-Swift-Programming-Language.md) in {root_dir}."
         )
 
-    assets_dir = os.path.join(clone_dir, "Assets/")
+    assets_dir = os.path.join(root_dir, "Assets/")
     if not os.path.exists(assets_dir):
         raise FileNotFoundError(f"Couldn't find the Assets directory ({assets_dir}).")
     return SwiftBookRepoFilePaths(

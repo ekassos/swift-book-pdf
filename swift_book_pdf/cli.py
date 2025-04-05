@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib
 from typing import Optional
 import click
 import logging
@@ -111,7 +110,10 @@ def cli() -> None:
     help="Enable or disable the book gutter",
 )
 @click.option("--verbose", is_flag=True)
-@click.option("--version", is_flag=True)
+@click.version_option(
+    prog_name="Swift-Book-PDF",
+    message="\033[1m%(prog)s\033[0m (version \033[36m%(version)s\033[0m)",
+)
 def run(
     output_path: str,
     mode: str,
@@ -124,15 +126,9 @@ def run(
     emoji: Optional[str],
     header_footer: Optional[str],
     dark: bool,
-    version: bool,
     gutter: bool | None = None,
     input_path: Optional[str] = None,
 ) -> None:
-    if version:
-        current_version = importlib.metadata.version("swift-book-pdf")
-        click.echo(f"swift-book-pdf {current_version}")
-        return
-
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
 

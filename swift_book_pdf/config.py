@@ -43,7 +43,7 @@ class Config:
         self.output_path = output_path
         self.font_config = font_config
         self.doc_config = doc_config
-        logger.debug(f"Swift book repository cloned to {self.root_dir}")
+        logger.debug(f"Swift book repository directory: {self.root_dir}")
         logger.debug(f"Assets directory: {self.assets_dir}")
         logger.debug(f"Output path: {self.output_path}")
         logger.debug(f"Font configuration: {self.font_config}")

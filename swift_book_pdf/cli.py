@@ -95,6 +95,7 @@ def cli() -> None:
     help="Font for text in the header and footer",
 )
 @click.option("--dark", is_flag=True, help="Render the book in dark mode")
+@click.option("--no-gutter", is_flag=True, help="Disable the gutter")
 @click.option("--verbose", is_flag=True)
 @click.option("--version", is_flag=True)
 def run(
@@ -110,6 +111,7 @@ def run(
     header_footer: Optional[str],
     dark: bool,
     version: bool,
+    no_gutter: bool,
 ) -> None:
     if version:
         current_version = importlib.metadata.version("swift-book-pdf")
@@ -128,7 +130,9 @@ def run(
             emoji_font_custom=emoji,
             header_footer_font_custom=header_footer,
         )
-        doc_config = DocConfig(RenderingMode(mode), PaperSize(paper), typesets, dark)
+        doc_config = DocConfig(
+            RenderingMode(mode), PaperSize(paper), typesets, dark, no_gutter
+        )
     except ValueError as e:
         logger.error(str(e))
         return

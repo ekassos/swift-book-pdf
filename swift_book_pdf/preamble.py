@@ -18,12 +18,15 @@ from string import Template
 from .colors import get_document_colors
 
 
-def get_geometry_opts(paper_size: PaperSize) -> str:
+def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
     return {
-        PaperSize.A4: "a4paper,inner=1.67in",
-        PaperSize.LETTER: "letterpaper,inner=1.9in",
-        PaperSize.LEGAL: "legalpaper,inner=1.9in",
-    }.get(paper_size, "letterpaper,inner=1.9in")
+        PaperSize.A4: f"a4paper,{'inner=1.67in,outer=0.9in' if gutter else 'hmargin=1.285in'}",
+        PaperSize.LETTER: f"letterpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
+        PaperSize.LEGAL: f"legalpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
+    }.get(
+        paper_size,
+        f"letterpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
+    )
 
 
 def generate_preamble(config: Config) -> str:
@@ -46,14 +49,224 @@ def generate_preamble(config: Config) -> str:
         code_border=colors.code_border,
         code_background=colors.code_background,
         code_style=colors.code_style,
-        geometry_opts=get_geometry_opts(config.doc_config.paper_size),
+        geometry_opts=get_geometry_opts(
+            config.doc_config.paper_size, config.doc_config.gutter
+        ),
         main_font=config.font_config.main_font,
         mono_font=config.font_config.mono_font,
         emoji_font=config.font_config.emoji_font,
         unicode_font=unicode_fallback,
         header_footer_font=config.font_config.header_footer_font,
+        fancyhead_fancyfoot_hero=(
+            HEADER_FOOTER_HERO_WITH_GUTTER.substitute(
+                header_footer_font=config.font_config.header_footer_font,
+            )
+            if config.doc_config.gutter
+            else HEADER_FOOTER_HERO_NO_GUTTER.substitute(
+                header_footer_font=config.font_config.header_footer_font,
+            )
+        ),
     )
 
+
+HEADER_FOOTER_HERO_WITH_GUTTER = Template(r"""
+\fancyhead[HO]{%
+\global\AtPageToptrue%
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[header_background] ([yshift=-0.5in]current page.north west)
+  rectangle ([yshift=-0.9in]current page.north east);
+
+  \node[anchor=east] at ([yshift=-0.7in,xshift=-0.7in]current page.north east) {
+    \includegraphics[height=0.18in]{Swift_logo_color.png}
+  };
+
+  \node[anchor=east,white] at ([yshift=-0.70in,xshift=-0.95in]current page.north east) {
+    \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}{LetterSpace=-3.5} \fontsize{13pt}{0pt}\selectfont \customheader}
+  };
+\end{tikzpicture}%
+}
+
+\fancyhead[HE]{%
+\global\AtPageToptrue%
+\begin{tikzpicture}[remember picture, overlay]
+\fill[header_background] ([yshift=-0.5in]current page.north west)
+ rectangle ([yshift=-0.9in]current page.north east);
+
+\node[anchor=west] at ([yshift=-0.7in,xshift=0.7in]current page.north west) {
+  \includegraphics[height=0.18in]{Swift_logo_color.png}
+};
+
+\node[anchor=west,white] at ([yshift=-0.71in,xshift=0.95in]current page.north west) {
+  \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}{LetterSpace=-3.5} \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
+};
+\end{tikzpicture}%
+}
+
+\fancyfoot[FO]{%
+\begin{tikzpicture}[remember picture, overlay]
+\fill[header_background] ([yshift=0.5in]current page.south west)
+ rectangle ([yshift=0.9in]current page.south east);
+
+\node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
+  \includegraphics[height=0.18in]{Swift_logo_white.png}
+};
+
+\node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
+  \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
+};
+\end{tikzpicture}%
+}
+
+\fancyfoot[FE]{%
+\begin{tikzpicture}[remember picture, overlay]
+\fill[header_background] ([yshift=0.5in]current page.south west)
+ rectangle ([yshift=0.9in]current page.south east);
+
+\node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
+  \includegraphics[height=0.18in]{Swift_logo_white.png}
+};
+
+\node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
+  \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
+};
+\end{tikzpicture}%
+}
+
+\fancypagestyle{firstpagestyle}{
+  \fancyhf{}
+  \fancyfoot[FO]{%
+  \begin{tikzpicture}[remember picture, overlay]
+  \fill[header_background] ([yshift=0.5in]current page.south west)
+   rectangle ([yshift=0.9in]current page.south east);
+
+  \node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
+    \includegraphics[height=0.18in]{Swift_logo_white.png}
+  };
+
+  \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
+    \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
+  };
+  \end{tikzpicture}%
+  }
+
+  \fancyfoot[FE]{%
+  \begin{tikzpicture}[remember picture, overlay]
+  \fill[header_background] ([yshift=0.5in]current page.south west)
+   rectangle ([yshift=0.9in]current page.south east);
+
+  \node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
+    \includegraphics[height=0.18in]{Swift_logo_white.png}
+  };
+
+  \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
+    \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
+  };
+  \end{tikzpicture}%
+  }
+}
+
+\newcommand{\HeroBox}[3]{%
+  \checkoddpage
+  \ifoddpage
+    % -- Odd page
+    \hspace*{-2in}
+    \fcolorbox{hero_background}{hero_background}{%
+      \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
+        \hspace{1.9in}
+        \begin{minipage}[t]{0.7\textwidth}
+          \color{hero_text}
+          \vspace*{0.4in}
+          \TitleSection{#1}{#2}  % Title
+          {\SubtitleStyle #3\par}  % Subtitle
+          \vspace*{0.28in}
+        \end{minipage}%
+      \end{minipage}
+    }
+  \else
+    % -- Even page
+    \hspace*{-0.53in}
+    \fcolorbox{hero_background}{hero_background}{%
+      \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
+        \color{hero_text}
+        \hspace{0.4in}
+        \begin{minipage}[t]{0.7\textwidth}
+          \vspace*{0.4in}
+          \TitleSection{#1}{#2}  % Title
+          {\SubtitleStyle #3\par}  % Subtitle
+          \vspace*{0.28in}
+        \end{minipage}%
+      \end{minipage}
+    }
+  \fi
+}
+""")
+
+HEADER_FOOTER_HERO_NO_GUTTER = Template(r"""
+\fancyhead{%
+\global\AtPageToptrue%
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[header_background] ([yshift=-0.5in]current page.north west)
+  rectangle ([yshift=-0.9in]current page.north east);
+
+  \node[anchor=east] at ([yshift=-0.7in,xshift=-0.7in]current page.north east) {
+    \includegraphics[height=0.18in]{Swift_logo_color.png}
+  };
+
+  \node[anchor=east,white] at ([yshift=-0.70in,xshift=-0.95in]current page.north east) {
+    \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}{LetterSpace=-3.5} \fontsize{13pt}{0pt}\selectfont \customheader}
+  };
+\end{tikzpicture}%
+}
+
+\fancyfoot{%
+\begin{tikzpicture}[remember picture, overlay]
+\fill[header_background] ([yshift=0.5in]current page.south west)
+ rectangle ([yshift=0.9in]current page.south east);
+
+\node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
+  \includegraphics[height=0.18in]{Swift_logo_white.png}
+};
+
+\node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
+  \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
+};
+\end{tikzpicture}%
+}
+
+\fancypagestyle{firstpagestyle}{
+  \fancyhf{}
+  \fancyfoot{%
+  \begin{tikzpicture}[remember picture, overlay]
+  \fill[header_background] ([yshift=0.5in]current page.south west)
+   rectangle ([yshift=0.9in]current page.south east);
+
+  \node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
+    \includegraphics[height=0.18in]{Swift_logo_white.png}
+  };
+
+  \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
+    \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
+  };
+  \end{tikzpicture}%
+  }
+}
+
+\newcommand{\HeroBox}[3]{%
+  \hspace*{-2in}
+  \fcolorbox{hero_background}{hero_background}{%
+    \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
+      \hspace{1.9in}
+      \begin{minipage}[t]{0.7\textwidth}
+        \color{hero_text}
+        \vspace*{0.4in}
+        \TitleSection{#1}{#2}  % Title
+        {\SubtitleStyle #3\par}  % Subtitle
+        \vspace*{0.28in}
+      \end{minipage}%
+    \end{minipage}
+  }
+}
+""")
 
 PREAMBLE = Template(r"""
 % main.tex
@@ -62,7 +275,7 @@ PREAMBLE = Template(r"""
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
-\usepackage[$geometry_opts,top=1.2in,outer=0.9in,headheight=0.8in,headsep=0.3in,bottom=1.2in]{geometry}
+\usepackage[$geometry_opts,top=1.2in,headheight=0.8in,headsep=0.3in,bottom=1.2in]{geometry}
 \usepackage{adjustbox}
 \usepackage{ifoddpage}
 \usepackage{enumitem}
@@ -75,6 +288,7 @@ PREAMBLE = Template(r"""
 \usepackage{hyperref}
 \usepackage{parskip}
 \usepackage{tabulary}
+\usepackage{ragged2e}
 \usepackage[table]{xcolor}
 \usepackage[hang,flushmargin,bottom,perpage,ragged]{footmisc}
 \usepackage{lua-ul}
@@ -168,7 +382,7 @@ PREAMBLE = Template(r"""
 }
 
 \newcommand{\BodyStyle}{%
-\mainFontWithFallback{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
+\mainFontWithFallback{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\justifying
 }
 
 \newcommand{\ParagraphStyle}[1]{%
@@ -182,6 +396,7 @@ PREAMBLE = Template(r"""
 \global\AtPageTopfalse%
 \setlength{\parskip}{0.09in}%
 \begin{flushleft}%
+\justifying%
 #1%
 \end{flushleft}%
 }
@@ -390,7 +605,7 @@ PREAMBLE = Template(r"""
   after skip=0in,
   after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\AtPageTopfalse},
   left=8.8pt, right=8pt, top=8pt, bottom=8pt,
-  before upper={\raggedright\color{aside_text}},
+  before upper={\justifying\color{aside_text}},
 }
 
 
@@ -410,135 +625,7 @@ PREAMBLE = Template(r"""
 \renewcommand{\headrulewidth}{0pt}
 \newcommand{\customheader}{ } % Default header text
 
-\fancyhead[HO]{%
-\global\AtPageToptrue%
-\begin{tikzpicture}[remember picture, overlay]
-  \fill[header_background] ([yshift=-0.5in]current page.north west)
-  rectangle ([yshift=-0.9in]current page.north east);
-
-  \node[anchor=east] at ([yshift=-0.7in,xshift=-0.7in]current page.north east) {
-    \includegraphics[height=0.18in]{Swift_logo_color.png}
-  };
-
-  \node[anchor=east,white] at ([yshift=-0.70in,xshift=-0.95in]current page.north east) {
-    \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}{LetterSpace=-3.5} \fontsize{13pt}{0pt}\selectfont \customheader}
-  };
-\end{tikzpicture}%
-}
-
-\fancyhead[HE]{%
-\global\AtPageToptrue%
-\begin{tikzpicture}[remember picture, overlay]
-\fill[header_background] ([yshift=-0.5in]current page.north west)
- rectangle ([yshift=-0.9in]current page.north east);
-
-\node[anchor=west] at ([yshift=-0.7in,xshift=0.7in]current page.north west) {
-  \includegraphics[height=0.18in]{Swift_logo_color.png}
-};
-
-\node[anchor=west,white] at ([yshift=-0.71in,xshift=0.95in]current page.north west) {
-  \scalebox{1.10}[1]{\headerFontWithFallback{$header_footer_font}{LetterSpace=-3.5} \fontsize{13pt}{0pt}\selectfont The Swift Programming Language}
-};
-\end{tikzpicture}%
-}
-
-\fancyfoot[FO]{%
-\begin{tikzpicture}[remember picture, overlay]
-\fill[header_background] ([yshift=0.5in]current page.south west)
- rectangle ([yshift=0.9in]current page.south east);
-
-\node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
-  \includegraphics[height=0.18in]{Swift_logo_white.png}
-};
-
-\node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-  \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
-};
-\end{tikzpicture}%
-}
-
-\fancyfoot[FE]{%
-\begin{tikzpicture}[remember picture, overlay]
-\fill[header_background] ([yshift=0.5in]current page.south west)
- rectangle ([yshift=0.9in]current page.south east);
-
-\node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
-  \includegraphics[height=0.18in]{Swift_logo_white.png}
-};
-
-\node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-  \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
-};
-\end{tikzpicture}%
-}
-
-\fancypagestyle{firstpagestyle}{
-  \fancyhf{}
-  \fancyfoot[FO]{%
-  \begin{tikzpicture}[remember picture, overlay]
-  \fill[header_background] ([yshift=0.5in]current page.south west)
-   rectangle ([yshift=0.9in]current page.south east);
-
-  \node[anchor=east] at ([yshift=0.7in,xshift=-0.7in]current page.south east) {
-    \includegraphics[height=0.18in]{Swift_logo_white.png}
-  };
-
-  \node[anchor=east,white] at ([yshift=0.7in,xshift=-1in]current page.south east) {
-    \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
-  };
-  \end{tikzpicture}%
-  }
-
-  \fancyfoot[FE]{%
-  \begin{tikzpicture}[remember picture, overlay]
-  \fill[header_background] ([yshift=0.5in]current page.south west)
-   rectangle ([yshift=0.9in]current page.south east);
-
-  \node[anchor=west] at ([yshift=0.7in,xshift=0.7in]current page.south west) {
-    \includegraphics[height=0.18in]{Swift_logo_white.png}
-  };
-
-  \node[anchor=west,white] at ([yshift=0.7in,xshift=1in]current page.south west) {
-    \headerFontWithFallback{$header_footer_font}{} \fontsize{13pt}{0pt}\selectfont \thepage
-  };
-  \end{tikzpicture}%
-  }
-}
-
-\newcommand{\HeroBox}[3]{%
-  \checkoddpage
-  \ifoddpage
-    % -- Odd page
-    \hspace*{-2in}
-    \fcolorbox{hero_background}{hero_background}{%
-      \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
-        \hspace{1.9in}
-        \begin{minipage}[t]{0.7\textwidth}
-          \color{hero_text}
-          \vspace*{0.4in}
-          \TitleSection{#1}{#2}  % Title
-          {\SubtitleStyle #3\par}  % Subtitle
-          \vspace*{0.28in}
-        \end{minipage}%
-      \end{minipage}
-    }
-  \else
-    % -- Even page
-    \hspace*{-0.53in}
-    \fcolorbox{hero_background}{hero_background}{%
-      \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
-        \color{hero_text}
-        \hspace{0.4in}
-        \begin{minipage}[t]{0.7\textwidth}
-          \vspace*{0.4in}
-          \TitleSection{#1}{#2}  % Title
-          {\SubtitleStyle #3\par}  % Subtitle
-          \vspace*{0.28in}
-        \end{minipage}%
-      \end{minipage}
-    }
-  \fi
-}
+$fancyhead_fancyfoot_hero
 
 \raggedbottom
 

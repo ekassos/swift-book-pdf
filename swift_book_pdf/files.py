@@ -15,6 +15,9 @@
 import logging
 import os
 import subprocess
+from typing import Optional
+
+from .schema import SwiftBookRepoFilePaths
 
 logger = logging.getLogger(__name__)
 
@@ -23,13 +26,41 @@ def get_file_name(file_path: str) -> str:
     return os.path.basename(file_path).replace(".md", "")
 
 
-def clone_swift_book_repo(temp: str) -> None:
+def find_or_clone_swift_book_repo(
+    temp: str, input_path: Optional[str] = None
+) -> SwiftBookRepoFilePaths:
     """
     Clone the Swift book repository.
 
     Args:
         temp: The temporary directory to clone the repository
+        input_path: The path to the local copy of the swift-book repo, if available
     """
+    if input_path:
+        root_dir = os.path.join(input_path, "TSPL.docc/")
+        toc_file_path = os.path.join(root_dir, "The-Swift-Programming-Language.md")
+        assets_dir = os.path.join(root_dir, "Assets/")
+        if not os.path.exists(root_dir):
+            raise FileNotFoundError(
+                f"The specified input path {input_path} does not contain the Swift book repository."
+            )
+        elif not os.path.exists(toc_file_path):
+            raise FileNotFoundError(
+                f"Couldn't find the Table of Contents file (The-Swift-Programming-Language.md) in {root_dir}."
+            )
+        elif not os.path.exists(assets_dir):
+            raise FileNotFoundError(
+                f"Couldn't find the Assets directory ({assets_dir})."
+            )
+        else:
+            logger.info("Using local TSPL files...")
+            return SwiftBookRepoFilePaths(
+                toc_file_path=toc_file_path,
+                root_dir=root_dir,
+                assets_dir=assets_dir,
+            )
+
+    logger.info("Downloading TSPL files...")
     repo_url = "https://github.com/swiftlang/swift-book.git"
     clone_dir = os.path.join(temp, "swift-book")
 
@@ -40,6 +71,22 @@ def clone_swift_book_repo(temp: str) -> None:
         check=True,
         stdout=None if is_debug else subprocess.DEVNULL,
         stderr=None if is_debug else subprocess.DEVNULL,
+    )
+
+    root_dir = os.path.join(clone_dir, "TSPL.docc/")
+    toc_file_path = os.path.join(root_dir, "The-Swift-Programming-Language.md")
+    if not os.path.exists(toc_file_path):
+        raise FileNotFoundError(
+            f"Couldn't find the Table of Contents file (The-Swift-Programming-Language.md) in {root_dir}."
+        )
+
+    assets_dir = os.path.join(root_dir, "Assets/")
+    if not os.path.exists(assets_dir):
+        raise FileNotFoundError(f"Couldn't find the Assets directory ({assets_dir}).")
+    return SwiftBookRepoFilePaths(
+        toc_file_path=toc_file_path,
+        root_dir=root_dir,
+        assets_dir=assets_dir,
     )
 
 

@@ -14,8 +14,8 @@
 
 import logging
 import os
-import re
 import subprocess
+import tempfile
 
 from swift_book_pdf.config import Config
 from swift_book_pdf.fonts import check_for_missing_font_logs
@@ -31,41 +31,62 @@ class PDFConverter:
         )
         self.config = config
 
+    def does_minted_need_shell_escape(self) -> bool:
+        """
+        Check if minted package needs shell escape by running a test LaTeX document.
+        Returns True if shell escape is needed, False otherwise.
+        """
+        tex_code = r"""
+        \documentclass{article}
+        \usepackage{minted}
+        \usepackage[svgnames]{xcolor}
+        \begin{document}
+        \begin{minted}[bgcolor=Beige, bgcolorpadding=0.5em]{c}
+        int main() {
+        printf("hello, world");
+        return 0;
+        }
+        \end{minted}
+        \end{document}
+        """
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tex_filename = "check_minted.tex"
+            tex_file_path = os.path.join(tmpdir, tex_filename)
+            with open(tex_file_path, "w", encoding="utf-8") as tex_file:
+                tex_file.write(tex_code)
+            try:
+                result = subprocess.run(
+                    ["lualatex", "--interaction=nonstopmode", tex_filename],
+                    cwd=tmpdir,
+                    capture_output=True,
+                    text=True,
+                )
+                output = result.stdout + "\n" + result.stderr
+                logger.debug(f"Batch minted shell escape check output:\n{output}")
+            except Exception as e:
+                logger.error(
+                    "Error occurred while running lualatex for minted shell escape check",
+                    exc_info=e,
+                )
+                return True
+
+        if (
+            "Package minted Error: You must invoke LaTeX with the -shell-escape flag."
+            in output
+        ):
+            logger.debug("Minted package requires shell escape.")
+            return True
+        logger.debug("Minted package does not require shell escape.")
+        return False
+
     def get_latex_command(self) -> list[str]:
         command = ["lualatex", "--interaction=nonstopmode"]
 
-        pattern = r"(TeX Live|MiKTeX) (\d{2,4})"
+        if self.does_minted_need_shell_escape():
+            command.append("--shell-escape")
+            command.append("--enable-write18")
 
-        result = subprocess.run(
-            ["lualatex", "--version"],
-            capture_output=True,
-            text=True,
-        )
-
-        if result.returncode != 0:
-            raise RuntimeError(f"Failed to get LaTeX version: {result.stderr}")
-
-        match = re.search(pattern, result.stdout)
-        if match:
-            tex_distribution = match.group(1)
-            tex_version = match.group(2)
-
-            if tex_distribution == "TeX Live":
-                if int(tex_version) < 2024:
-                    command.append("--shell-escape")
-                    command.append("--enable-write18")
-            elif tex_distribution == "MiKTeX":
-                command.append("--shell-escape")
-                command.append("--enable-write18")
-            else:
-                raise RuntimeError(
-                    f"Unsupported LaTeX distribution: {tex_distribution}"
-                )
-        else:
-            raise RuntimeError(f"Failed to get LaTeX version: {result.stderr}")
-        logger.debug(
-            f"Using LaTeX distribution: {tex_distribution}, version: {tex_version}"
-        )
         logger.debug(f"LaTeX Command: {command}")
         return command
 

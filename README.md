@@ -35,8 +35,8 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 ## Requirements
 - Python 3.9+
 - Git
-- LuaTeX (see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org))
-- Fonts for typesetting. See [the Fonts article](https://github.com/ekassos/swift-book-pdf/wiki/Fonts) for more details.
+- LuaTeX. If you don't have an existing LaTeX installation, see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org).
+- Fonts for typesetting. Learn [which fonts are required to typeset the TSPL book](https://github.com/ekassos/swift-book-pdf/wiki/Fonts).
 
 ## Installation
 ### Latest PyPI stable release
@@ -63,73 +63,8 @@ When invoked, `swift_book_pdf` will:
 > [!NOTE]
 > swift_book_pdf will create a temporary directory to store the swift-book repository, LaTeX file and intermediate files produced during typesetting. This temporary directory is removed after the PDF is generated.
 
-### Output path
-You can specify an output path:
-```
-swift_book_pdf /path/to/output.pdf
-```
-
-### Input path
-Use the `--input-path`/`-i` option to specify a path to the root of a local copy of the swift-book [repository](https://github.com/swiftlang/swift-book). If not provided, the repository will be cloned from GitHub.
-```
-swift_book_pdf -i /path/to/swift-book/
-```
-
-### Rendering modes
-`swift_book_pdf` supports two rendering modes:
-
-1. `digital` (default): Best for browsing _The Swift Programming Language_ book as a PDF, the `digital` mode renders internal references and external links in blue hyperlinks.
-2. `print`: Best for reading through _The Swift Programming Language_ book in print, the `print` mode includes page numbers for all internal references and complete URLs in footnotes for external links.
-
-Use the `--mode` option to set your preferred rendering option:
-
-```
-swift_book_pdf /path/to/output.pdf --mode print
-```
-
-### Paper sizes
-`swift_book_pdf` supports three paper sizes:
-
-1. `letter` (default)
-2. `legal`
-3. `A4`
-
-Use the `--paper` option to set your preferred paper size:
-```
-swift_book_pdf --paper legal
-```
-
-### Appearance
-`swift_book_pdf` renders *The Swift Programming Language* book in light mode by default. To render the book in dark mode, use the `--dark` flag.
-
-```
-swift_book_pdf --dark
-```
-
-### Book Gutter
-`swift_book_pdf` renders *The Swift Programming Language* book with a book gutter by default. To render the book without a gutter, use the `--no-gutter` flag.
-
-```
-swift_book_pdf --no-gutter
-```
-
-### Fonts
-swift-book-pdf requires a set of fonts to typeset *The Swift Programming Language* book. You can use any of the available default options, or specify your own fonts. To learn more about fonts and available configuration options, see [this article](https://github.com/ekassos/swift-book-pdf/wiki/Fonts/).
-
-### Number of typesetting passes
-This package uses LaTeX to typeset the TSPL book. LaTeX arranges page elements dynamically, so references added in the second pass may shift the page content, and alter the placement of headers and footers. To ensure everything is properly rendered, swift_book_pdf typesets the document four times.
-
-If needed, you can adjust the number of typesets:
-```
-swift_book_pdf /path/to/output.pdf --typesets 5
-```
-
-> [!CAUTION]
-> Only increase the number of typesets if the document has missing references or misaligned headers or footers.
->
-> Do not decrease the number of typesets. Given the document's complexity (650+ pages with relative anchors), the extra typesets ensure proper rendering of headers and footers.
->
-> **Always run at least two typesets.** Skipping this may break internal references to other sections.
+### Customization
+swift-book-pdf offers a range of options to customize your rendering of _The Swift Programming Language_ book. Learn how to [make the TSPL book your own](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options).
 
 ## Acknowledgments
 

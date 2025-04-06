@@ -27,7 +27,7 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 
 ## Features
 - Generate a PDF version of the _The Swift Programming Language_ book, perfect for offline browsing or printing.
-- Choose from one of two [rendering modes](#rendering-modes):
+- Choose from one of two [rendering modes](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--):
    - Digital mode with hyperlinks for cross-references between chapters and external links.
    - Print mode with page numbers accompanying cross-references between chapters and full URLs shown in footnotes for external links.
 - Both versions follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
@@ -46,7 +46,7 @@ pip install swift-book-pdf
 
 ## Usage
 ### Basic usage
-Call `swift_book_pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](#rendering-modes) in Letter [paper size](#paper-sizes).
+Call `swift_book_pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--) in Letter [paper size](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#paper-sizes--).
 ```
 $ swift_book_pdf
 

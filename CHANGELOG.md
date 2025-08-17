@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2025-08-17
+
+### Changed
+- Use `shutil.move` instead of `os.replace` to support saving files in a different partition from the one the temporary directory gets created in. ([#47](https://github.com/ekassos/swift-book-pdf/pull/47))
+
 ## [1.4.0] - 2025-04-05
 
 ### Added

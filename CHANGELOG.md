@@ -106,7 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.0...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.1
 [1.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.1.0...v1.2.0

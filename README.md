@@ -4,7 +4,12 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 
 <table>
   <tr>
-    <td colspan="3"><b>Preview Books</b> (see also <a href="https://github.com/ekassos/swift-book-pdf-archive">swift-book-pdf-archive</a>)</td>
+    <td colspan="3"><b>Preview Books</b> (see <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a> for versioned archives)</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>Digital Mode<br><i>Clickable links, best for on-screen reading</i></td>
+    <td>Print Mode<br><i>Page numbers & full URLs, best for printing</i></td>
   </tr>
   <tr>
     <td>Light Mode</td>

@@ -4,17 +4,17 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 
 <table>
   <tr>
-    <td colspan="3"><b>Preview Books</b></td>
+    <td colspan="3"><b>Preview Books</b> (see also <a href="https://github.com/ekassos/swift-book-pdf-archive">swift-book-pdf-archive</a>)</td>
   </tr>
   <tr>
     <td>Light Mode</td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
   </tr>
     <tr>
     <td>Dark Mode</td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode,_dark)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf/releases/download/v1.4.0/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode,_dark)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode,_dark)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
+    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode,_dark)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
   </tr>
 </table>
 

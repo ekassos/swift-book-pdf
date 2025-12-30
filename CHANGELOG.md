@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Removed
+- Remove support for Python v3.9. Update minimum Python version requirement to 3.10.
+
+### Security
+- Update `filelock` (`3.19.1` -> `3.20.1`) to resolve [filelock has a TOCTOU race condition which allows symlink attacks during lock file creation](https://github.com/ekassos/swift-book-pdf/security/dependabot/1).
+
+### Changed
+- Update dependencies:
+  - Update `pygments` (`2.19.1` -> `2.19.2`)
+  - Update `pydantic` (`2.10.6` -> `2.12.5`)
+  - Update `click` (`8.1.8` -> `8.3.1`)
+  - Update `latexminted` (`0.5.0` -> `0.5.1`)
+  - Update `pre-commit` (`4.1.0` -> `4.5.1`)
 
 ## [1.4.1] - 2025-08-17
 

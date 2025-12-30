@@ -9,6 +9,7 @@ on:
 
 jobs:
   check-branch-name:
+    permissions: {}
     runs-on: ubuntu-latest
     steps:
       - name: Check if source branch is allowed

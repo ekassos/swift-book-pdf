@@ -14,6 +14,7 @@
 
 import os
 import logging
+import shutil
 
 from tqdm import trange
 from swift_book_pdf.config import Config
@@ -67,7 +68,7 @@ class Book:
             return
 
         try:
-            os.replace(temp_pdf_path, self.config.output_path)
+            shutil.move(temp_pdf_path, self.config.output_path)
             logger.info(f"PDF saved to {self.config.output_path}")
-        except OSError as e:
+        except (OSError, shutil.Error) as e:
             logger.error(f"Failed to save PDF to {self.config.output_path}: {e}")

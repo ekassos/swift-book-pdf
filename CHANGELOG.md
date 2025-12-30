@@ -6,11 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.0] - 2025-12-30
 ### Removed
 - Remove support for Python v3.9. Update minimum Python version requirement to 3.10.
 
 ### Security
-- Update `filelock` (`3.19.1` -> `3.20.1`) to resolve [filelock has a TOCTOU race condition which allows symlink attacks during lock file creation](https://github.com/ekassos/swift-book-pdf/security/dependabot/1).
+- Update `filelock` (`3.19.1` -> `3.20.1`) to resolve [filelock has a TOCTOU race condition which allows symlink attacks during lock file creation](https://github.com/ekassos/swift-book-pdf/security/dependabot/1). ([#49](https://github.com/ekassos/swift-book-pdf/pull/49))
 
 ### Changed
 - Update dependencies:
@@ -19,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update `click` (`8.1.8` -> `8.3.1`)
   - Update `latexminted` (`0.5.0` -> `0.5.1`)
   - Update `pre-commit` (`4.1.0` -> `4.5.1`)
+- Use `click`’s own `click.version_option` option for more intuitive versioning info. ([#38](https://github.com/ekassos/swift-book-pdf/pull/38))
+- Remove direct instructions from README and redirects to Wiki guides for more detailed information, including the new Customization page. ([#41](https://github.com/ekassos/swift-book-pdf/pull/41))
+
+### Added
+- Add dark mode chapter icon acknowledgement to README. ([#42](https://github.com/ekassos/swift-book-pdf/pull/42))
+
+### Fixed
+- Fix anchors for removed sections in README. ([#43](https://github.com/ekassos/swift-book-pdf/pull/43))
 
 ## [1.4.1] - 2025-08-17
 
@@ -124,7 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.1...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.1...v2.0.0
 [1.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.1
 [1.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.2.0...v1.3.0

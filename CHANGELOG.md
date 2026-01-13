@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-01-13
+### Security
+- Update `virtualenv` (`20.35.4` -> `20.36.1`) to resolve [virtualenv Has TOCTOU Vulnerabilities in Directory Creation](https://github.com/ekassos/swift-book-pdf/security/dependabot/2). ([#51](https://github.com/ekassos/swift-book-pdf/pull/51))
+- Update `filelock` (`3.20.1` -> `3.20.3`) to resolve [filelock Time-of-Check-Time-of-Use (TOCTOU) Symlink Vulnerability in SoftFileLock](https://github.com/ekassos/swift-book-pdf/security/dependabot/52). ([#49](https://github.com/ekassos/swift-book-pdf/pull/52))
+
 ## [2.0.0] - 2025-12-30
 ### Removed
 - Remove support for Python v3.9. Update minimum Python version requirement to 3.10.
@@ -134,7 +139,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.1...v2.0.0
 [1.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.1
 [1.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.0

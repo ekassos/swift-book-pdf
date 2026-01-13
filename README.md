@@ -33,7 +33,7 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 - Both versions follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 ## Requirements
-- Python 3.9+
+- Python 3.10+
 - Git
 - LuaTeX. If you don't have an existing LaTeX installation, see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org).
 - Fonts for typesetting. Learn [which fonts are required to typeset the TSPL book](https://github.com/ekassos/swift-book-pdf/wiki/Fonts).

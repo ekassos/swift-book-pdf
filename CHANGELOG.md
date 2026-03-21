@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add `swift-book-pdf` CLI alias for `swift_book_pdf`.
+
 ### Changed
 - Switch to `uv` for dependency management.
 - Update dependencies:
@@ -44,11 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix anchors for removed sections in README. ([#43](https://github.com/ekassos/swift-book-pdf/pull/43))
-
-## [1.4.1] - 2025-08-17
-
-### Changed
-- Use `shutil.move` instead of `os.replace` to support saving files in a different partition from the one the temporary directory gets created in. ([#47](https://github.com/ekassos/swift-book-pdf/pull/47))
 
 ## [1.4.1] - 2025-08-17
 

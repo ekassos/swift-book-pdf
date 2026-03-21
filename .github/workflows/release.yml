@@ -18,11 +18,11 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install Poetry
-        run: pip install poetry
+      - name: Install uv
+        run: pip install uv
 
       - name: Build release distributions
-        run: poetry build
+        run: uv build
 
       - name: Upload distributions
         uses: actions/upload-artifact@v4

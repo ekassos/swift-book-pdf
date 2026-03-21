@@ -7,7 +7,13 @@ readme = "README.md"
 authors = [{ name = "Evangelos Kassos", email = "github@evangeloskassos.com" }]
 keywords = ["swift", "book", "pdf"]
 requires-python = ">=3.10"
-dependencies = ["pygments (>=2.9.0,<3.0.0)", "tqdm (>=4.67.1,<5.0.0)", "pydantic (>=2.10.6,<3.0.0)", "click (>=8.1.8,<9.0.0)", "latexminted (>=0.5.0,<0.6.0)"]
+dependencies = [
+    "pygments>=2.19.2,<3.0.0",
+    "tqdm>=4.67.3,<5.0.0",
+    "pydantic>=2.12.5,<3.0.0",
+    "click>=8.3.1,<9.0.0",
+    "latexminted>=0.7.1,<0.8.0",
+]
 
 [project.urls]
 repository = "https://github.com/ekassos/swift-book-pdf.git"
@@ -17,16 +23,21 @@ documentation = "https://github.com/ekassos/swift-book-pdf/wiki"
 releasenotes = "https://github.com/ekassos/swift-book-pdf/releases"
 
 [project.scripts]
-swift_book_pdf = 'swift_book_pdf.cli:run'
+swift_book_pdf = "swift_book_pdf.cli:run"
 
 [project.entry-points."pygments.styles"]
 swift_book_style = "swift_book_pdf.styles:CustomSwiftBookStyle"
 swift_book_dark_style = "swift_book_pdf.styles:CustomSwiftBookDarkStyle"
 
-[tool.poetry.group.dev.dependencies]
-filelock = ">=3.20.1,<4.0.0"
-pre-commit = "^4.1.0"
+[dependency-groups]
+dev = [
+    "filelock>=3.25.2,<4.0.0",
+    "pre-commit>=4.5.1,<5.0.0",
+]
+
+[tool.uv.build-backend]
+module-root = ""
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.10.12,<0.11.0"]
+build-backend = "uv_build"

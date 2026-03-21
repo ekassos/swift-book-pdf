@@ -26,10 +26,10 @@ repos:
     hooks:
       - id: mypy
         args: [--ignore-missing-imports, --install-types, --non-interactive]
-  - repo: https://github.com/python-poetry/poetry
-    rev: 2.1.1
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.10.12
     hooks:
-      - id: poetry-check
+      - id: uv-lock
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:

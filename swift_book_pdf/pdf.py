@@ -14,8 +14,13 @@
 
 import logging
 import os
+import re
+import shutil
 import subprocess
+import sys
 import tempfile
+from importlib import metadata
+from pathlib import Path
 
 from swift_book_pdf.config import Config
 from swift_book_pdf.fonts import check_for_missing_font_logs
@@ -24,8 +29,71 @@ from swift_book_pdf.log import run_process_with_logs
 logger = logging.getLogger(__name__)
 
 
+def parse_version(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in re.findall(r"\d+", version))
+
+
+def get_installed_latexminted_version() -> str | None:
+    try:
+        return metadata.version("latexminted")
+    except metadata.PackageNotFoundError:
+        return None
+
+
+def get_installed_minted_sty_version() -> str | None:
+    kpsewhich = shutil.which("kpsewhich")
+    if kpsewhich is None:
+        return None
+
+    try:
+        minted_sty_path = subprocess.run(
+            [kpsewhich, "minted.sty"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    except subprocess.CalledProcessError:
+        return None
+
+    content = Path(minted_sty_path).read_text(encoding="utf-8")
+    match = re.search(r"\[[0-9]{4}/[0-9]{2}/[0-9]{2} v([0-9.]+) ", content)
+    return match.group(1) if match else None
+
+
+def check_minted_runtime_compatibility() -> None:
+    latexminted_executable = shutil.which("latexminted")
+    latexminted_version = get_installed_latexminted_version()
+    minted_sty_version = get_installed_minted_sty_version()
+
+    if latexminted_executable is None or latexminted_version is None:
+        raise RuntimeError(
+            "latexminted is not installed or not available on PATH. "
+            "Install the project dependencies before generating PDFs.",
+        )
+
+    if sys.version_info >= (3, 14) and parse_version(latexminted_version) < (0, 7, 1):
+        raise RuntimeError(
+            f"latexminted {latexminted_version} is incompatible with Python "
+            f"{sys.version_info.major}.{sys.version_info.minor}. "
+            "Use Python 3.13 or earlier, or install latexminted >= 0.7.1.",
+        )
+
+    if (
+        minted_sty_version is not None
+        and parse_version(latexminted_version) >= (0, 7, 1)
+        and parse_version(minted_sty_version) < (3, 8, 0)
+    ):
+        raise RuntimeError(
+            f"latexminted {latexminted_version} requires minted.sty >= 3.8.0, "
+            f"but TeX provides minted.sty {minted_sty_version}. "
+            "Upgrade TeX Live/minted or use Python 3.13 or earlier so the "
+            "project can install latexminted 0.6.x instead.",
+        )
+
+
 class PDFConverter:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
+        check_minted_runtime_compatibility()
         self.local_assets_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "assets"
         )

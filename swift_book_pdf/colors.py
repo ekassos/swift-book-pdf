@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .schema import DocumentColors, RenderingMode, Appearance
+from .schema import Appearance, DocumentColors, RenderingMode
 
 
 def get_document_colors(

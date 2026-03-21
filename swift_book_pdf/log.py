@@ -15,12 +15,11 @@
 import logging
 import sys
 import textwrap
-
 from subprocess import Popen
 from typing import Callable, Optional
 
 
-def configure_logging(verbose: bool):
+def configure_logging(verbose: bool) -> None:
     """Configures logging globally based on verbosity."""
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
@@ -37,7 +36,7 @@ def run_process_with_logs(
     MAX_LINE_LENGTH: int = 80,
     log_check_func: Optional[Callable] = None,
 ) -> None:
-    last_lines = []
+    last_lines: list[str] = []
     printed_lines = 0
     GRAY = "\033[37m"
     RESET = "\033[0m"
@@ -57,22 +56,11 @@ def run_process_with_logs(
             if log_check_func is not None:
                 log_check_func(line)
 
-            # Split long lines
-            if len(line.rstrip("\n")) > MAX_LINE_LENGTH:
-                wrapped_lines = textwrap.wrap(line.rstrip("\n"), width=MAX_LINE_LENGTH)
-                for wrapped_line in wrapped_lines:
-                    last_lines.append(wrapped_line)
-            else:
-                last_lines.append(line.rstrip("\n"))
-
-            # Keep only the last max_lines lines
-            if max_lines is not None and len(last_lines) > max_lines:
-                last_lines = last_lines[-max_lines:]
+            _append_wrapped_line(last_lines, line, MAX_LINE_LENGTH)
+            last_lines = _trim_output_buffer(last_lines, max_lines)
 
             if not is_debug:
-                for _ in range(printed_lines):
-                    sys.stdout.write("\033[F")
-                    sys.stdout.write("\033[2K")
+                _clear_printed_lines(printed_lines)
 
             out = "\n".join(last_lines)
             sys.stdout.write(GRAY + out + RESET + "\n")
@@ -82,9 +70,7 @@ def run_process_with_logs(
         process.wait()
 
         if not is_debug:
-            for _ in range(printed_lines):
-                sys.stdout.write("\033[F")
-                sys.stdout.write("\033[2K")
+            _clear_printed_lines(printed_lines)
             sys.stdout.write("\033[F")
 
         sys.stdout.flush()
@@ -92,3 +78,26 @@ def run_process_with_logs(
         process.kill()
         process.wait()
         raise
+
+
+def _append_wrapped_line(
+    last_lines: list[str], line: str, max_line_length: int
+) -> None:
+    stripped_line = line.rstrip("\n")
+    if len(stripped_line) > max_line_length:
+        last_lines.extend(textwrap.wrap(stripped_line, width=max_line_length))
+        return
+
+    last_lines.append(stripped_line)
+
+
+def _trim_output_buffer(last_lines: list[str], max_lines: int | None) -> list[str]:
+    if max_lines is None or len(last_lines) <= max_lines:
+        return last_lines
+    return last_lines[-max_lines:]
+
+
+def _clear_printed_lines(printed_lines: int) -> None:
+    for _ in range(printed_lines):
+        sys.stdout.write("\033[F")
+        sys.stdout.write("\033[2K")

@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.config import Config
-from .schema import PaperSize
 from string import Template
+
+from swift_book_pdf.config import Config
+
 from .colors import get_document_colors
+from .schema import PaperSize
 
 
 def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
@@ -31,7 +33,10 @@ def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
 
 def generate_preamble(config: Config) -> str:
     unicode_fallback = "\n".join(
-        [f'      "{font}:mode=node;",' for font in config.font_config.unicode_font_list]
+        [
+            f'      "{font}:mode=node;",'
+            for font in config.font_config.unicode_font_list
+        ],
     )
     colors = get_document_colors(config.doc_config.mode, config.doc_config.appearance)
     return PREAMBLE.substitute(
@@ -50,7 +55,8 @@ def generate_preamble(config: Config) -> str:
         code_background=colors.code_background,
         code_style=colors.code_style,
         geometry_opts=get_geometry_opts(
-            config.doc_config.paper_size, config.doc_config.gutter
+            config.doc_config.paper_size,
+            config.doc_config.gutter,
         ),
         main_font=config.font_config.main_font,
         mono_font=config.font_config.mono_font,

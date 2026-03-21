@@ -14,15 +14,15 @@
 
 from pygments.style import Style
 from pygments.token import (
-    Text,
+    Comment,
+    Error,
     Keyword,
     Name,
-    Operator,
-    Comment,
-    String,
     Number,
+    Operator,
     Punctuation,
-    Error,
+    String,
+    Text,
 )
 
 

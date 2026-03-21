@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional
-import click
 import logging
-
 from tempfile import TemporaryDirectory
+from typing import Optional
+
+import click
 
 from swift_book_pdf.book import Book
 from swift_book_pdf.config import Config
@@ -49,7 +49,8 @@ def cli() -> None:
 @click.option(
     "--paper",
     type=click.Choice(
-        [paper_size.value for paper_size in PaperSize], case_sensitive=False
+        [paper_size.value for paper_size in PaperSize],
+        case_sensitive=False,
     ),
     default=PaperSize.LETTER.value,
     help="Paper size for the document",
@@ -142,7 +143,11 @@ def run(
             header_footer_font_custom=header_footer,
         )
         doc_config = DocConfig(
-            RenderingMode(mode), PaperSize(paper), typesets, dark, gutter
+            RenderingMode(mode),
+            PaperSize(paper),
+            typesets,
+            dark,
+            gutter,
         )
     except ValueError as e:
         logger.error(str(e))
@@ -154,7 +159,7 @@ def run(
             Book(config).process()
         except Exception as e:
             logger.error(
-                f"Couldn't build The Swift Programming Language book: {e}\n{font_config}"
+                f"Couldn't build The Swift Programming Language book: {e}\n{font_config}",
             )
 
 

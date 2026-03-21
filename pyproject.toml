@@ -42,3 +42,24 @@ module-root = ""
 [build-system]
 requires = ["uv_build>=0.10.12,<0.11.0"]
 build-backend = "uv_build"
+
+[tool.ruff.lint]
+select = [
+    "ERA", # eradicate
+    "ANN", # flake8-annotations
+    "B",   # flake8-bugbear
+    "A",   # flake8-builtins
+    "C4",  # flake8-comprehensions
+    "PIE", # flake8-pie
+    "PYI", # flake8-pyi
+    "Q",   # flake8-quotes
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "TID", # flake8-tidy-imports
+    "TC",  # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "PTH", # flake8-pathlib
+    "S",   # flake8-string-format
+    "I",   # isort
+    "C90", # mccabe
+]

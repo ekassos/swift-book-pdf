@@ -14,6 +14,7 @@
 
 import logging
 import shutil
+
 from swift_book_pdf.doc import DocConfig
 from swift_book_pdf.files import find_or_clone_swift_book_repo
 from swift_book_pdf.fonts import FontConfig
@@ -29,7 +30,7 @@ class Config:
         font_config: FontConfig,
         doc_config: DocConfig,
         input_path: str | None = None,
-    ):
+    ) -> None:
         if not shutil.which("git"):
             raise RuntimeError("Git is not installed or not in PATH.")
 

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import re
-
 from typing import Optional
 
 from swift_book_pdf.schema import Appearance, ChapterMetadata, RenderingMode
@@ -90,10 +89,10 @@ def replace_chapter_href_with_toc_item(
     match mode:
         case RenderingMode.DIGITAL:
             pattern = re.compile(
-                r"\\item \\ParagraphStyle{\\fallbackrefdigital{(.*?)}}"
+                r"\\item \\ParagraphStyle{\\fallbackrefdigital{(.*?)}}",
             )
 
-            def replacement(match):
+            def replacement(match: re.Match[str]) -> str:
                 key = match.group(1)
                 subtitle = (
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line or ""
@@ -103,7 +102,7 @@ def replace_chapter_href_with_toc_item(
         case RenderingMode.PRINT:
             pattern = re.compile(r"\\item \\ParagraphStyle{\\fallbackrefbook{(.*?)}}")
 
-            def replacement(match):
+            def replacement(match: re.Match[str]) -> str:
                 key = match.group(1)
                 subtitle = (
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line or ""

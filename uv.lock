@@ -1,6 +1,10 @@
 version = 1
 revision = 3
 requires-python = ">=3.10"
+resolution-markers = [
+    "python_full_version >= '3.14'",
+    "python_full_version < '3.14'",
+]
 
 [[package]]
 name = "annotated-types"
@@ -79,12 +83,32 @@ wheels = [
 
 [[package]]
 name = "latexminted"
+version = "0.6.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.14'",
+]
+dependencies = [
+    { name = "latex2pydata", marker = "python_full_version < '3.14'" },
+    { name = "latexrestricted", marker = "python_full_version < '3.14'" },
+    { name = "pygments", marker = "python_full_version < '3.14'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/bb/37/f13797c24033aaa2e18f990ec6d9ee934bba5eabe995be65e54332dae141/latexminted-0.6.0.tar.gz", hash = "sha256:5a9628f428b7aec86e55db1b02fe078f1f2f4f614b4629e136c56b706a0f5f25", size = 30196, upload-time = "2025-05-15T01:27:21.294Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/53/ef/b5743be0c9d9d7b86a4e787b347cfcedb8111f09506d4f19cde021288eed/latexminted-0.6.0-py3-none-any.whl", hash = "sha256:71896680d6a7f66a33ce37d9814df08a0fbe32b9ea3cda15af320cbd33b0001d", size = 36265, upload-time = "2025-05-15T01:27:19.601Z" },
+]
+
+[[package]]
+name = "latexminted"
 version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14'",
+]
 dependencies = [
-    { name = "latex2pydata" },
-    { name = "latexrestricted" },
-    { name = "pygments" },
+    { name = "latex2pydata", marker = "python_full_version >= '3.14'" },
+    { name = "latexrestricted", marker = "python_full_version >= '3.14'" },
+    { name = "pygments", marker = "python_full_version >= '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fb/da/f511f0411a2ce7705ebe859d93a23a9420031173b1cc39571216c778b5ce/latexminted-0.7.1.tar.gz", hash = "sha256:d724096f3460f220fdbeae207d5ab2bc0e34e359497f33df9814f8bb024640fa", size = 29965, upload-time = "2026-03-04T04:06:25.296Z" }
 wheels = [
@@ -359,7 +383,8 @@ version = "2.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
-    { name = "latexminted" },
+    { name = "latexminted", version = "0.6.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
+    { name = "latexminted", version = "0.7.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
     { name = "pydantic" },
     { name = "pygments" },
     { name = "tqdm" },
@@ -374,7 +399,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.1,<9.0.0" },
-    { name = "latexminted", specifier = ">=0.7.1,<0.8.0" },
+    { name = "latexminted", marker = "python_full_version < '3.14'", specifier = ">=0.6.0,<0.7.0" },
+    { name = "latexminted", marker = "python_full_version >= '3.14'", specifier = ">=0.7.1,<0.8.0" },
     { name = "pydantic", specifier = ">=2.12.5,<3.0.0" },
     { name = "pygments", specifier = ">=2.19.2,<3.0.0" },
     { name = "tqdm", specifier = ">=4.67.3,<5.0.0" },

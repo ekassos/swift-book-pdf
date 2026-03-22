@@ -1,0 +1,43 @@
+name: Python
+
+on:
+  push:
+    branches: [main]
+    paths: [swift_book_pdf/**, uv.lock, pyproject.toml, .github/workflows/**]
+  pull_request:
+    branches: [main]
+    paths: [swift_book_pdf/**, uv.lock, pyproject.toml, .github/workflows/**]
+
+jobs:
+  build:
+    name: Test Python
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    env:
+      wd: ./
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Setup uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82
+        with:
+          enable-cache: true
+
+      - name: Set up Python3.x
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.11.6
+        id: py
+
+      - name: Get requirements
+        working-directory: ${{env.wd}}
+        run: |
+          uv sync --locked --color never
+
+      - name: Linting, formatting, and type checking
+        working-directory: ${{env.wd}}
+        run: uv run pre-commit run --show-diff-on-failure --all-files

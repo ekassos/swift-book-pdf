@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update `filelock` (`3.20.1` -> `3.25.2`)
   - Update `pre-commit` (`4.1.0` -> `4.5.1`)
 
+### Fixed
+- Escape literal dollar signs in paragraph text so generated LaTeX does not enter math mode and fail on currency amounts like `$1.23`.
+
 ## [2.0.1] - 2026-01-13
 ### Security
 - Update `virtualenv` (`20.35.4` -> `20.36.1`) to resolve [virtualenv Has TOCTOU Vulnerabilities in Directory Creation](https://github.com/ekassos/swift-book-pdf/security/dependabot/2). ([#51](https://github.com/ekassos/swift-book-pdf/pull/51))

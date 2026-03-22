@@ -126,7 +126,9 @@ def _format_missing_latex_packages_error(
 ) -> str:
     unique_package_names = list(dict.fromkeys(package_names))
     if len(unique_package_names) == 1:
-        package_list = f"the required LaTeX package '{unique_package_names[0]}'"
+        package_list = (
+            f"the required LaTeX package '{unique_package_names[0]}'"
+        )
         install_hint = f"Install it with your TeX package manager (for TeX Live: tlmgr install {unique_package_names[0]})."
     else:
         package_list = "required LaTeX packages: " + ", ".join(
@@ -281,6 +283,7 @@ class PDFConverter:
 
     def convert_to_pdf(self, latex_file_path: str) -> None:
         env = os.environ.copy()
+        expected_pdf_path = Path(latex_file_path).with_suffix(".pdf")
 
         env["TEXINPUTS"] = os.pathsep.join(
             [
@@ -306,7 +309,7 @@ class PDFConverter:
             process, log_check_func=check_for_missing_dependency_logs
         )
 
-        if process.returncode:
+        if process.returncode and not expected_pdf_path.exists():
             raise RuntimeError(
                 "lualatex failed while generating the PDF. "
                 "Re-run with --verbose to inspect the full TeX output."

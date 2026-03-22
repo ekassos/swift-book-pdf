@@ -28,6 +28,32 @@ from swift_book_pdf.log import run_process_with_logs
 
 logger = logging.getLogger(__name__)
 
+REQUIRED_LATEX_PACKAGES = (
+    "fontspec",
+    "xcolor",
+    "graphicx",
+    "fancyhdr",
+    "geometry",
+    "adjustbox",
+    "ifoddpage",
+    "enumitem",
+    "listings",
+    "minted",
+    "tcolorbox",
+    "tikz",
+    "needspace",
+    "textcomp",
+    "hyperref",
+    "parskip",
+    "tabulary",
+    "ragged2e",
+    "footmisc",
+    "lua-ul",
+)
+MISSING_TEX_FILE_PATTERN = re.compile(
+    r"! LaTeX Error: File [`'](?P<filename>[^`']+)['`] not found\."
+)
+
 
 def parse_version(version: str) -> tuple[int, ...]:
     return tuple(int(part) for part in re.findall(r"\d+", version))
@@ -95,15 +121,99 @@ def check_minted_runtime_compatibility() -> None:
         )
 
 
+def _format_missing_latex_packages_error(
+    package_names: list[str], *, from_logs: bool = False
+) -> str:
+    unique_package_names = list(dict.fromkeys(package_names))
+    if len(unique_package_names) == 1:
+        package_list = (
+            f"the required LaTeX package '{unique_package_names[0]}'"
+        )
+        install_hint = f"Install it with your TeX package manager (for TeX Live: tlmgr install {unique_package_names[0]})."
+    else:
+        package_list = "required LaTeX packages: " + ", ".join(
+            f"'{package_name}'" for package_name in unique_package_names
+        )
+        install_hint = (
+            "Install them with your TeX package manager "
+            f"(for TeX Live: tlmgr install {' '.join(unique_package_names)})."
+        )
+
+    detection_hint = (
+        "TeX reported that it could not find "
+        if from_logs
+        else "Your TeX installation is missing "
+    )
+
+    return (
+        f"{detection_hint}{package_list} "
+        f"{install_hint} On MiKTeX, install the missing package(s) from "
+        "MiKTeX Console or install a fuller TeX distribution."
+    )
+
+
+def _extract_missing_latex_package_name(log_line: str) -> str | None:
+    match = MISSING_TEX_FILE_PATTERN.search(log_line)
+    if not match:
+        return None
+
+    missing_file = match.group("filename")
+    if missing_file.endswith(".sty"):
+        return missing_file.removesuffix(".sty")
+
+    return missing_file
+
+
+def check_for_missing_latex_package_logs(log_line: str) -> None:
+    package_name = _extract_missing_latex_package_name(log_line)
+    if package_name:
+        raise RuntimeError(
+            _format_missing_latex_packages_error(
+                [package_name], from_logs=True
+            )
+        )
+
+
+def check_required_latex_packages_installed() -> None:
+    kpsewhich = shutil.which("kpsewhich")
+    if kpsewhich is None:
+        logger.debug(
+            "kpsewhich is not available; skipping LaTeX package preflight check."
+        )
+        return
+
+    missing_packages: list[str] = []
+    for package_name in REQUIRED_LATEX_PACKAGES:
+        result = subprocess.run(  # noqa: S603
+            [kpsewhich, f"{package_name}.sty"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            missing_packages.append(package_name)
+
+    if missing_packages:
+        raise RuntimeError(
+            _format_missing_latex_packages_error(missing_packages)
+        )
+
+
+def check_for_missing_dependency_logs(log_line: str) -> None:
+    check_for_missing_font_logs(log_line)
+    check_for_missing_latex_package_logs(log_line)
+
+
 class PDFConverter:
     def __init__(self, config: Config) -> None:
-        check_minted_runtime_compatibility()
-        self.local_assets_dir = str(Path(__file__).resolve().parent / "assets")
-        self.config = config
         lualatex_executable = shutil.which("lualatex")
         if lualatex_executable is None:
             raise RuntimeError("lualatex is not installed or not in PATH.")
         self.lualatex_executable = lualatex_executable
+        check_required_latex_packages_installed()
+        check_minted_runtime_compatibility()
+        self.local_assets_dir = str(Path(__file__).resolve().parent / "assets")
+        self.config = config
 
     def does_minted_need_shell_escape(self) -> bool:
         """
@@ -173,6 +283,7 @@ class PDFConverter:
 
     def convert_to_pdf(self, latex_file_path: str) -> None:
         env = os.environ.copy()
+        expected_pdf_path = Path(latex_file_path).with_suffix(".pdf")
 
         env["TEXINPUTS"] = os.pathsep.join(
             [
@@ -195,5 +306,11 @@ class PDFConverter:
         )
 
         run_process_with_logs(
-            process, log_check_func=check_for_missing_font_logs
+            process, log_check_func=check_for_missing_dependency_logs
         )
+
+        if process.returncode and not expected_pdf_path.exists():
+            raise RuntimeError(
+                "lualatex failed while generating the PDF. "
+                "Re-run with --verbose to inspect the full TeX output."
+            )

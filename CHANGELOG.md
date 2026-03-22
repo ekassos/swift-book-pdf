@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add `swift-book-pdf` CLI alias for `swift_book_pdf`.
 - Add `latexminted` version check to ensure compatibility with `minted.sty` versions older than 3.8.0.
+- Detect missing LaTeX packages before typesetting and surface clearer package-specific errors during PDF generation.
 
 ### Changed
 - Switch to `uv` for dependency management.

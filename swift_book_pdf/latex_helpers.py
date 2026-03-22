@@ -146,6 +146,10 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
 
     text = re.sub(r"(\{\\CodeStyle\s+\\texttt\{.*?\}\})", replace_inline, text)
 
+    # Escape literal currency/math markers from source text before we inject
+    # formatter-owned LaTeX snippets that intentionally use math mode.
+    text = text.replace("$", r"\$")
+
     # Apply formatting to the rest of the text.
     text = text.replace("→", r"\scalebox{1.2}{$\rightarrow$}")
     text = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", text)

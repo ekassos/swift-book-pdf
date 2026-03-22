@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .schema import DocumentColors, RenderingMode, Appearance
+from .schema import Appearance, DocumentColors, RenderingMode
 
 
 def get_document_colors(
@@ -36,7 +36,9 @@ def light_colors(rendering_mode: RenderingMode) -> DocumentColors:
         header_text="255, 255, 255",
         hero_background="240, 240, 240",
         hero_text="0, 0, 0",
-        link="51, 102, 255" if rendering_mode == RenderingMode.DIGITAL else "0, 0, 0",
+        link="51, 102, 255"
+        if rendering_mode == RenderingMode.DIGITAL
+        else "0, 0, 0",
         aside_background="245, 245, 245",
         aside_text="0, 0, 0",
         aside_border="102, 102, 102",

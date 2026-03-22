@@ -12,22 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import ClassVar
+
 from pygments.style import Style
 from pygments.token import (
-    Text,
+    Comment,
+    Error,
     Keyword,
     Name,
-    Operator,
-    Comment,
-    String,
     Number,
+    Operator,
     Punctuation,
-    Error,
+    String,
+    Text,
 )
 
 
 class CustomSwiftBookStyle(Style):
-    styles = {
+    styles: ClassVar[dict[object, str]] = {
         Text: "#000",
         Error: "#000",
         Keyword: "#ad3da4",  # --color-syntax-keywords
@@ -52,7 +54,7 @@ class CustomSwiftBookStyle(Style):
 
 
 class CustomSwiftBookDarkStyle(Style):
-    styles = {
+    styles: ClassVar[dict[object, str]] = {
         Text: "#fff",
         Error: "#fff",
         Keyword: "#ff7ab2",  # --color-syntax-keywords

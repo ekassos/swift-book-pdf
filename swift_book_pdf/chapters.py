@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+from pathlib import Path
 
 from swift_book_pdf.schema import ChapterMetadata
 
 
 def generate_chapter_metadata(
-    root_dir: str, target_directories: list[str]
+    root_dir: str,
+    target_directories: list[str],
 ) -> dict[str, ChapterMetadata]:
     """
     Generate metadata for all chapters in the specified `target_directories`.
@@ -31,17 +32,17 @@ def generate_chapter_metadata(
         A dictionary mapping the lowercase chapter key to the ChapterMetadata object.
     """
     chapter_metadata: dict[str, ChapterMetadata] = {}
+    root_path = Path(root_dir)
     for directory in target_directories:
-        dir_path = os.path.join(root_dir, directory)
-        if not os.path.exists(dir_path):
+        dir_path = root_path / directory
+        if not dir_path.exists():
             raise FileNotFoundError(f"Directory not found: {dir_path}")
-        for file_name in os.listdir(dir_path):
-            if file_name.endswith(".md"):
-                file_key = file_name.replace(".md", "")
-                file_path = os.path.join(dir_path, file_name)
+        for file_path in dir_path.iterdir():
+            if file_path.suffix == ".md":
+                file_key = file_path.stem
                 header_line = None
                 subtitle_line = None
-                with open(file_path, "r", encoding="utf-8") as f:
+                with file_path.open("r", encoding="utf-8") as f:
                     line = f.readline()
                     while line:
                         if line.startswith("# "):
@@ -53,7 +54,7 @@ def generate_chapter_metadata(
                             break
                         line = f.readline()
                 chapter_metadata[file_key.lower()] = ChapterMetadata(
-                    file_path=file_path,
+                    file_path=str(file_path),
                     header_line=header_line,
                     subtitle_line=subtitle_line,
                 )

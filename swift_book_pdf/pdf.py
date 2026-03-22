@@ -46,7 +46,7 @@ def get_installed_minted_sty_version() -> str | None:
         return None
 
     try:
-        minted_sty_path = subprocess.run(
+        minted_sty_path = subprocess.run(  # noqa: S603
             [kpsewhich, "minted.sty"],
             check=True,
             capture_output=True,
@@ -71,7 +71,11 @@ def check_minted_runtime_compatibility() -> None:
             "Install the project dependencies before generating PDFs.",
         )
 
-    if sys.version_info >= (3, 14) and parse_version(latexminted_version) < (0, 7, 1):
+    if sys.version_info >= (3, 14) and parse_version(latexminted_version) < (
+        0,
+        7,
+        1,
+    ):
         raise RuntimeError(
             f"latexminted {latexminted_version} is incompatible with Python "
             f"{sys.version_info.major}.{sys.version_info.minor}. "
@@ -94,10 +98,12 @@ def check_minted_runtime_compatibility() -> None:
 class PDFConverter:
     def __init__(self, config: Config) -> None:
         check_minted_runtime_compatibility()
-        self.local_assets_dir = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "assets"
-        )
+        self.local_assets_dir = str(Path(__file__).resolve().parent / "assets")
         self.config = config
+        lualatex_executable = shutil.which("lualatex")
+        if lualatex_executable is None:
+            raise RuntimeError("lualatex is not installed or not in PATH.")
+        self.lualatex_executable = lualatex_executable
 
     def does_minted_need_shell_escape(self) -> bool:
         """
@@ -120,18 +126,25 @@ class PDFConverter:
 
         with tempfile.TemporaryDirectory() as tmpdir:
             tex_filename = "check_minted.tex"
-            tex_file_path = os.path.join(tmpdir, tex_filename)
-            with open(tex_file_path, "w", encoding="utf-8") as tex_file:
+            tex_file_path = Path(tmpdir) / tex_filename
+            with tex_file_path.open("w", encoding="utf-8") as tex_file:
                 tex_file.write(tex_code)
             try:
-                result = subprocess.run(
-                    ["lualatex", "--interaction=nonstopmode", tex_filename],
+                result = subprocess.run(  # noqa: S603
+                    [
+                        self.lualatex_executable,
+                        "--interaction=nonstopmode",
+                        tex_filename,
+                    ],
                     cwd=tmpdir,
                     capture_output=True,
                     text=True,
+                    check=False,
                 )
                 output = result.stdout + "\n" + result.stderr
-                logger.debug(f"Batch minted shell escape check output:\n{output}")
+                logger.debug(
+                    f"Batch minted shell escape check output:\n{output}"
+                )
             except Exception as e:
                 logger.error(
                     "Error occurred while running lualatex for minted shell escape check",
@@ -149,7 +162,7 @@ class PDFConverter:
         return False
 
     def get_latex_command(self) -> list[str]:
-        command = ["lualatex", "--interaction=nonstopmode"]
+        command = [self.lualatex_executable, "--interaction=nonstopmode"]
 
         if self.does_minted_need_shell_escape():
             command.append("--shell-escape")
@@ -166,11 +179,11 @@ class PDFConverter:
                 "",
                 self.local_assets_dir,
                 env.get("TEXINPUTS", ""),
-            ]
+            ],
         )
 
-        process = subprocess.Popen(
-            self.get_latex_command() + [latex_file_path],
+        process = subprocess.Popen(  # noqa: S603
+            [*self.get_latex_command(), latex_file_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -181,4 +194,6 @@ class PDFConverter:
             bufsize=1,
         )
 
-        run_process_with_logs(process, log_check_func=check_for_missing_font_logs)
+        run_process_with_logs(
+            process, log_check_func=check_for_missing_font_logs
+        )

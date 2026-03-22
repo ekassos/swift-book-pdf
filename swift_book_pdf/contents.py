@@ -14,8 +14,6 @@
 
 import re
 
-from typing import Optional
-
 from swift_book_pdf.schema import Appearance, ChapterMetadata, RenderingMode
 
 
@@ -47,7 +45,7 @@ def remove_directives(file_content: list[str]) -> list[str]:
 
 def replace_and_extract_version(
     file_content: list[str],
-) -> tuple[list[str], Optional[str]]:
+) -> tuple[list[str], str | None]:
     """
     Replace the version format in the file content and extract the version number."
     """
@@ -90,23 +88,27 @@ def replace_chapter_href_with_toc_item(
     match mode:
         case RenderingMode.DIGITAL:
             pattern = re.compile(
-                r"\\item \\ParagraphStyle{\\fallbackrefdigital{(.*?)}}"
+                r"\\item \\ParagraphStyle{\\fallbackrefdigital{(.*?)}}",
             )
 
-            def replacement(match):
+            def replacement(match: re.Match[str]) -> str:
                 key = match.group(1)
                 subtitle = (
-                    chapter_metadata.get(key, ChapterMetadata()).subtitle_line or ""
+                    chapter_metadata.get(key, ChapterMetadata()).subtitle_line
+                    or ""
                 )
                 return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} \\ {subtitle}"
 
         case RenderingMode.PRINT:
-            pattern = re.compile(r"\\item \\ParagraphStyle{\\fallbackrefbook{(.*?)}}")
+            pattern = re.compile(
+                r"\\item \\ParagraphStyle{\\fallbackrefbook{(.*?)}}"
+            )
 
-            def replacement(match):
+            def replacement(match: re.Match[str]) -> str:
                 key = match.group(1)
                 subtitle = (
-                    chapter_metadata.get(key, ChapterMetadata()).subtitle_line or ""
+                    chapter_metadata.get(key, ChapterMetadata()).subtitle_line
+                    or ""
                 )
                 return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
 

@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
-from pathlib import PureWindowsPath
 import re
 import struct
+from pathlib import Path, PureWindowsPath
 
 from swift_book_pdf.schema import (
     Appearance,
@@ -34,8 +35,13 @@ from swift_book_pdf.schema import (
     UnorderedListBlock,
 )
 
+logger = logging.getLogger(__name__)
+MAX_IMAGE_WIDTH_IN = 6.5
 
-def generate_chapter_title(lines: list[str], file_name: str) -> tuple[str, list[str]]:
+
+def generate_chapter_title(
+    lines: list[str], file_name: str
+) -> tuple[str, list[str]]:
     """
     Generate the chapter title LaTeX from the provided lines.
 
@@ -109,9 +115,7 @@ def escape_texttt(text: str) -> str:
     # Replace it before any chance of interfering with its hyphen.
     text = text.replace("->", r"{->}")
 
-    text = override_characters(text)
-
-    return text
+    return override_characters(text)
 
 
 def override_characters(text: str, in_code_block: bool = False) -> str:
@@ -135,7 +139,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     # Temporarily extract inline code segments produced by convert_inline_code
     inline_segments: dict[str, str] = {}
 
-    def replace_inline(match):
+    def replace_inline(match: re.Match[str]) -> str:
         token = f"%%INLINE-CODE-{len(inline_segments)}%%"
         inline_segments[token] = match.group(0)
         return token
@@ -159,7 +163,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     text = re.sub(r"(?<!\\)_", r"\_", text)
     text = re.sub(r"---", r"\\textemdash \\ ", text)
     text = re.sub(r"--", r"\\textendash", text)
-    text = re.sub(r"\(\\\`\)", "(\;\`\; )", text)
+    text = re.sub(r"\(\\\`\)", r"(\;\`\; )", text)
     text = re.sub(
         r"<doc:([^>#]+)#([^>]+)>",
         lambda m: (
@@ -190,14 +194,13 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     for token, segment in inline_segments.items():
         text = text.replace(token, segment)
 
-    text = override_characters(text)
-    return text
+    return override_characters(text)
 
 
 def convert_inline_code(text: str) -> str:
     """
     Replace inline code delimited by unescaped backticks with
-    `{\CodeStyle \texttt{...}}`.
+    `{\\CodeStyle \texttt{...}}`.
 
     This converter supports two kinds of delimiters:
       • Double backticks (``...``): These blocks are processed first
@@ -210,9 +213,11 @@ def convert_inline_code(text: str) -> str:
     # Protect double-backtick replacements with placeholders.
     double_placeholder: dict[str, str] = {}
 
-    def repl_double(match):
+    def repl_double(match: re.Match[str]) -> str:
         inner = match.group(1)  # Everything between the double backticks.
-        processed = r"{\CodeStyle \texttt{" + escape_texttt(inner).strip() + "}}"
+        processed = (
+            r"{\CodeStyle \texttt{" + escape_texttt(inner).strip() + "}}"
+        )
         # Create a unique token unlikely to appear in the text.
         token = f"@@DOUBLE{len(double_placeholder)}@@"
         double_placeholder[token] = processed
@@ -223,7 +228,7 @@ def convert_inline_code(text: str) -> str:
     text = re.sub(r"(?<!\\)``(.*?)``", repl_double, text)
 
     # Now process single-backtick code.
-    def repl_single(match):
+    def repl_single(match: re.Match[str]) -> str:
         inner = match.group(1)
         return r"{\CodeStyle \texttt{" + escape_texttt(inner).strip() + "}}"
 
@@ -239,25 +244,23 @@ def convert_inline_code(text: str) -> str:
 def convert_nested_block(block: Block, mode: RenderingMode) -> str:
     if isinstance(block, ParagraphBlock):
         para = " ".join(block.lines)
-        para_conv = apply_formatting(convert_inline_code(para), mode)
-        return para_conv
-    elif isinstance(block, CodeBlock):
+        return apply_formatting(convert_inline_code(para), mode)
+    if isinstance(block, CodeBlock):
         out = (
             "\\parskip=0pt\n"
             r"\begin{swiftstyledbox}" + "\n"
         )
         for line in block.lines:
-            line2 = line.replace("%", "\%")
+            line2 = line.replace("%", r"\%")
             out += override_characters(line2) + "\n"
         out += r"\end{swiftstyledbox}" + "\n"
         return out
-    else:  # fallback
-        text = " ".join(block.lines if "lines" in block.model_fields else [])
-        text_conv = apply_formatting(convert_inline_code(text), mode)
-        return text_conv
+    # fallback
+    text = " ".join(block.lines if "lines" in block.model_fields else [])
+    return apply_formatting(convert_inline_code(text), mode)
 
 
-def convert_blocks_to_latex(
+def convert_blocks_to_latex(  # noqa: PLR0913
     blocks: list[Block],
     file_name: str,
     assets_dir: str,
@@ -278,170 +281,262 @@ def convert_blocks_to_latex(
     """
     output: list[str] = []
     for block in blocks:
-        if isinstance(block, CodeBlock):
-            output.append(
-                "\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"
-            )
-            for line in block.lines:
-                # Escape % characters
-                line = line.replace("%", "\%")
-                # Escape non-latin and emoji characters
-                output.append(override_characters(line, True))
-            output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
-        elif isinstance(block, UnorderedListBlock):
-            output.append(r"\begin{itemize}")
-            # Each item is a list (i.e. a list of nested blocks)
-            for item in block.items:
-                if not item:
-                    continue
-                first = True
-                for sub_block in item:
-                    latex_sub = convert_nested_block(sub_block, mode)
-                    if first:
-                        output.append(f"\\item \\ParagraphStyle{{{latex_sub}}}\n")
-                        first = False
-                    else:
-                        if not latex_sub.startswith("\parskip"):
-                            output.append(f"\\ParagraphStyle{{{latex_sub}}}\n")
-                        else:
-                            output.append(latex_sub)
-            output.append(r"\end{itemize}" + "\n\global\AtPageTopfalse\n")
-        elif isinstance(block, OrderedListBlock):
-            output.append(r"\begin{enumerate}")
-            for ol_item in block.items:
-                item_conv = apply_formatting(convert_inline_code(ol_item), mode)
-                output.append(f"\\item {item_conv}")
-            output.append(r"\end{enumerate}" + "\n\global\AtPageTopfalse\n")
-        elif isinstance(block, TermListBlock):
-            output.append("\\ParagraphStyle{")
-            for term in block.items:
-                label_conv = apply_formatting(convert_inline_code(term.label), mode)
-                content_conv = apply_formatting(convert_inline_code(term.content), mode)
-                output.append(
-                    f"\\needspace{{3\\baselineskip}} {label_conv} \\vspace*{{-0.09in}} \\begin{{quote}} {content_conv} \\end{{quote}}"
-                )
-            output.append(" }\n")
-        elif isinstance(block, ImageBlock):
-            # TODO: Add support for image captions
-            _ = block.alt
-            imgname = block.imgname
-
-            img_path = os.path.join(
+        output.extend(
+            _convert_block_to_latex(
+                block,
+                file_name,
                 assets_dir,
-                f"{imgname}{'~dark' if appearance == Appearance.DARK else ''}@2x.png",
-            )
-            if os.sep == "\\":
-                img_path = PureWindowsPath(img_path).as_posix()
-            final_width = "auto"
-            width = None
-            try:
-                with open(img_path, "rb") as f:
-                    f.seek(16)  # Width and height are stored at byte 16 in a PNG
-                    width, _ = struct.unpack(">II", f.read(8))
-                width = width / 273.2  # Convert pixels to inches
-            except Exception:
-                continue
-
-            if width is not None:
-                if width > 6.5:
-                    final_width = "6.5in"
-                else:
-                    final_width = f"{width}in"
-
-            output.append(
-                f"\\begin{{figure}}[H]\n\\centering\\includegraphics[width={final_width}]{{{img_path}}}\n\\end{{figure}}\n\\global\\AtPageTopfalse\n"
-            )
-        elif isinstance(block, Header2Block):
-            content = convert_inline_code(block.content)
-            label_name = "-".join(content.title().split()).lower()
-            output.append(
-                f"\\SectionHeader{{{apply_formatting(content, mode)}}}{{"
-                + file_name.replace("'", "")
-                + "_"
-                + label_name.replace("'", "")
-                + "}\n"
-            )
-        elif isinstance(block, Header3Block):
-            content = convert_inline_code(block.content)
-            label_name = "-".join(content.title().split()).lower()
-            output.append(
-                f"\\SubsectionHeader{{{apply_formatting(content, mode)}}}{{"
-                + file_name.replace("'", "")
-                + "_"
-                + label_name.replace("'", "")
-                + "}\n"
-            )
-        elif isinstance(block, Header4Block):
-            content = convert_inline_code(block.content)
-            label_name = "-".join(content.title().split()).lower()
-            output.append(
-                f"\\SubsubsectionHeader{{{apply_formatting(content, mode)}}}{{"
-                + file_name.replace("'", "")
-                + "_"
-                + label_name.replace("'", "")
-                + "}\n"
-            )
-        elif isinstance(block, NoteBlock):
-            label = block.label
-            aside_lines = []
-            for sub_block in block.blocks:
-                aside_lines.append(convert_nested_block(sub_block, mode))
-            aside_content = "\n".join(aside_lines)
-            output.append("\\begin{flushleft}\\begin{asideNote}")
-            output.append(f" \\textbf{{{label}}} \\vspace*{{4pt}} \\\\")
-            output.append(aside_content)
-            output.append("\\end{asideNote}\\end{flushleft}" + "\n")
-        elif isinstance(block, ParagraphBlock):
-            para = " ".join(block.lines)
-            para_conv = convert_inline_code(para)
-            para_conv = apply_formatting(para_conv, mode)
-            output.append(f"\\ParagraphStyle{{{para_conv}}}\n")
-        elif isinstance(block, TableBlock):
-            output.append(
-                "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{table_border}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
-                + main_font
-                + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright"
-            )
-            header_row = block.rows[0]
-            output.append(
-                f"\\begin{{tabulary}}{{1.0\\textwidth}}{{{'|'.join(['L' for _ in header_row])}}}"
-            )
-            # Add the header row
-            output.append(
-                " & ".join(
-                    map(
-                        lambda x: f"\\textbf{{{apply_formatting(convert_inline_code(x), mode)}}}",
-                        header_row,
-                    )
-                )
-                + " \\\\ \\hline"
-            )
-            for row in block.rows[1:-1]:
-                output.append(
-                    " & ".join(
-                        map(
-                            lambda x: apply_formatting(convert_inline_code(x), mode),
-                            row,
-                        )
-                    )
-                    + " \\\\ \\hline"
-                )
-            # Add the last row without a trailing hline
-            if block.rows[-1]:
-                output.append(
-                    " & ".join(
-                        map(
-                            lambda x: apply_formatting(convert_inline_code(x), mode),
-                            block.rows[-1],
-                        )
-                    )
-                    + " \\\\"
-                )
-            output.append("\\end{tabulary}")
-            output.append("\\end{table}")
-            output.append("\n")
-        else:
-            text = " ".join(block.get("lines", []))
-            text_conv = convert_inline_code(text)
-            output.append(f"\\ParagraphStyle{{{text_conv}}}\n")
+                mode,
+                appearance,
+                main_font,
+            ),
+        )
     return output
+
+
+def _convert_block_to_latex(  # noqa: PLR0913,PLR0911
+    block: Block,
+    file_name: str,
+    assets_dir: str,
+    mode: RenderingMode,
+    appearance: Appearance,
+    main_font: str,
+) -> list[str]:
+    if isinstance(block, CodeBlock):
+        return _convert_code_block(block)
+    list_block = _convert_list_like_block(block, mode)
+    if list_block is not None:
+        return list_block
+    if isinstance(block, ImageBlock):
+        return _convert_image_block(block, assets_dir, appearance)
+    header_block = _convert_header_like_block(block, file_name, mode)
+    if header_block is not None:
+        return header_block
+    if isinstance(block, NoteBlock):
+        return _convert_note_block(block, mode)
+    if isinstance(block, ParagraphBlock):
+        return [_convert_paragraph_block(block, mode)]
+    if isinstance(block, TableBlock):
+        return _convert_table_block(block, mode, main_font)
+    text = " ".join(block.get("lines", []))
+    return [f"\\ParagraphStyle{{{convert_inline_code(text)}}}\n"]
+
+
+def _convert_list_like_block(
+    block: Block,
+    mode: RenderingMode,
+) -> list[str] | None:
+    if isinstance(block, UnorderedListBlock):
+        return _convert_unordered_list_block(block, mode)
+    if isinstance(block, OrderedListBlock):
+        return _convert_ordered_list_block(block, mode)
+    if isinstance(block, TermListBlock):
+        return _convert_term_list_block(block, mode)
+    return None
+
+
+def _convert_header_like_block(
+    block: Block,
+    file_name: str,
+    mode: RenderingMode,
+) -> list[str] | None:
+    if isinstance(block, Header2Block):
+        return [
+            _convert_header_block(
+                block.content, file_name, mode, "SectionHeader"
+            )
+        ]
+    if isinstance(block, Header3Block):
+        return [
+            _convert_header_block(
+                block.content, file_name, mode, "SubsectionHeader"
+            )
+        ]
+    if isinstance(block, Header4Block):
+        return [
+            _convert_header_block(
+                block.content, file_name, mode, "SubsubsectionHeader"
+            )
+        ]
+    return None
+
+
+def _convert_code_block(block: CodeBlock) -> list[str]:
+    output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
+    output.extend(
+        override_characters(line.replace("%", r"\%"), True)
+        for line in block.lines
+    )
+    output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
+    return output
+
+
+def _convert_unordered_list_block(
+    block: UnorderedListBlock,
+    mode: RenderingMode,
+) -> list[str]:
+    output = [r"\begin{itemize}"]
+    for item in block.items:
+        if item:
+            output.extend(_convert_unordered_list_item(item, mode))
+    output.append(r"\end{itemize}" + "\n\\global\\AtPageTopfalse\n")
+    return output
+
+
+def _convert_unordered_list_item(
+    item: list[Block], mode: RenderingMode
+) -> list[str]:
+    output: list[str] = []
+    for index, sub_block in enumerate(item):
+        latex_sub = convert_nested_block(sub_block, mode)
+        if index == 0:
+            output.append(f"\\item \\ParagraphStyle{{{latex_sub}}}\n")
+        elif latex_sub.startswith(r"\parskip"):
+            output.append(latex_sub)
+        else:
+            output.append(f"\\ParagraphStyle{{{latex_sub}}}\n")
+    return output
+
+
+def _convert_ordered_list_block(
+    block: OrderedListBlock,
+    mode: RenderingMode,
+) -> list[str]:
+    output = [r"\begin{enumerate}"]
+    output.extend(
+        f"\\item {apply_formatting(convert_inline_code(item), mode)}"
+        for item in block.items
+    )
+    output.append(r"\end{enumerate}" + "\n\\global\\AtPageTopfalse\n")
+    return output
+
+
+def _convert_term_list_block(
+    block: TermListBlock, mode: RenderingMode
+) -> list[str]:
+    output = ["\\ParagraphStyle{"]
+    for term in block.items:
+        label_conv = apply_formatting(convert_inline_code(term.label), mode)
+        content_conv = apply_formatting(
+            convert_inline_code(term.content), mode
+        )
+        output.append(
+            f"\\needspace{{3\\baselineskip}} {label_conv} \\vspace*{{-0.09in}} \\begin{{quote}} {content_conv} \\end{{quote}}",
+        )
+    output.append(" }\n")
+    return output
+
+
+def _convert_image_block(
+    block: ImageBlock,
+    assets_dir: str,
+    appearance: Appearance,
+) -> list[str]:
+    img_path = Path(assets_dir) / (
+        f"{block.imgname}{'~dark' if appearance == Appearance.DARK else ''}@2x.png"
+    )
+    latex_img_path = (
+        PureWindowsPath(img_path).as_posix()
+        if os.sep == "\\"
+        else str(img_path)
+    )
+    width = _read_image_width(img_path)
+    if width is None:
+        return []
+
+    final_width = (
+        f"{MAX_IMAGE_WIDTH_IN}in"
+        if width > MAX_IMAGE_WIDTH_IN
+        else f"{width}in"
+    )
+    return [
+        f"\\begin{{figure}}[H]\n\\centering\\includegraphics[width={final_width}]{{{latex_img_path}}}\n\\end{{figure}}\n\\global\\AtPageTopfalse\n",
+    ]
+
+
+def _read_image_width(img_path: Path) -> float | None:
+    try:
+        with img_path.open("rb") as f:
+            f.seek(16)
+            width, _ = struct.unpack(">II", f.read(8))
+        return width / 273.2
+    except (OSError, struct.error) as exc:
+        logger.debug(f"Failed to read image width for {img_path}: {exc}")
+        return None
+
+
+def _convert_header_block(
+    content: str,
+    file_name: str,
+    mode: RenderingMode,
+    command: str,
+) -> str:
+    inline_content = convert_inline_code(content)
+    label_name = (
+        "-".join(inline_content.title().split()).lower().replace("'", "")
+    )
+    file_label = file_name.replace("'", "")
+    return (
+        f"\\{command}{{{apply_formatting(inline_content, mode)}}}"
+        f"{{{file_label}_{label_name}}}\n"
+    )
+
+
+def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
+    aside_content = "\n".join(
+        convert_nested_block(sub_block, mode) for sub_block in block.blocks
+    )
+    return [
+        "\\begin{flushleft}\\begin{asideNote}",
+        f" \\textbf{{{block.label}}} \\vspace*{{4pt}} \\\\",
+        aside_content,
+        "\\end{asideNote}\\end{flushleft}" + "\n",
+    ]
+
+
+def _convert_paragraph_block(
+    block: ParagraphBlock, mode: RenderingMode
+) -> str:
+    para_conv = apply_formatting(
+        convert_inline_code(" ".join(block.lines)), mode
+    )
+    return f"\\ParagraphStyle{{{para_conv}}}\n"
+
+
+def _convert_table_block(
+    block: TableBlock,
+    mode: RenderingMode,
+    main_font: str,
+) -> list[str]:
+    output = [
+        "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{table_border}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
+        + main_font
+        + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright",
+    ]
+    header_row = block.rows[0]
+    output.append(
+        f"\\begin{{tabulary}}{{1.0\\textwidth}}{{{'|'.join('L' for _ in header_row)}}}",
+    )
+    output.append(
+        _format_table_row(header_row, mode, bold=True) + " \\\\ \\hline"
+    )
+    output.extend(
+        _format_table_row(row, mode) + " \\\\ \\hline"
+        for row in block.rows[1:-1]
+    )
+    if block.rows[-1]:
+        output.append(_format_table_row(block.rows[-1], mode) + " \\\\")
+    output.extend(["\\end{tabulary}", "\\end{table}", "\n"])
+    return output
+
+
+def _format_table_row(
+    row: list[str],
+    mode: RenderingMode,
+    *,
+    bold: bool = False,
+) -> str:
+    cells = [apply_formatting(convert_inline_code(cell), mode) for cell in row]
+    if bold:
+        cells = [f"\\textbf{{{cell}}}" for cell in cells]
+    return " & ".join(cells)

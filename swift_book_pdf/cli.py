@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional
-import click
 import logging
-
 from tempfile import TemporaryDirectory
+
+import click
 
 from swift_book_pdf.book import Book
 from swift_book_pdf.config import Config
@@ -41,7 +40,9 @@ def cli() -> None:
 )
 @click.option(
     "--mode",
-    type=click.Choice([mode.value for mode in RenderingMode], case_sensitive=False),
+    type=click.Choice(
+        [mode.value for mode in RenderingMode], case_sensitive=False
+    ),
     default=RenderingMode.DIGITAL.value,
     help="Rendering mode",
     show_default="digital",
@@ -49,7 +50,8 @@ def cli() -> None:
 @click.option(
     "--paper",
     type=click.Choice(
-        [paper_size.value for paper_size in PaperSize], case_sensitive=False
+        [paper_size.value for paper_size in PaperSize],
+        case_sensitive=False,
     ),
     default=PaperSize.LETTER.value,
     help="Paper size for the document",
@@ -114,20 +116,20 @@ def cli() -> None:
     prog_name="Swift-Book-PDF",
     message="\033[1m%(prog)s\033[0m (version \033[36m%(version)s\033[0m)",
 )
-def run(
+def run(  # noqa: PLR0913
     output_path: str,
     mode: str,
     verbose: bool,
     typesets: int,
     paper: str,
-    main: Optional[str],
-    mono: Optional[str],
+    main: str | None,
+    mono: str | None,
     unicode: list[str],
-    emoji: Optional[str],
-    header_footer: Optional[str],
+    emoji: str | None,
+    header_footer: str | None,
     dark: bool,
     gutter: bool | None = None,
-    input_path: Optional[str] = None,
+    input_path: str | None = None,
 ) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
@@ -142,7 +144,11 @@ def run(
             header_footer_font_custom=header_footer,
         )
         doc_config = DocConfig(
-            RenderingMode(mode), PaperSize(paper), typesets, dark, gutter
+            RenderingMode(mode),
+            PaperSize(paper),
+            typesets,
+            dark,
+            gutter,
         )
     except ValueError as e:
         logger.error(str(e))
@@ -154,7 +160,7 @@ def run(
             Book(config).process()
         except Exception as e:
             logger.error(
-                f"Couldn't build The Swift Programming Language book: {e}\n{font_config}"
+                f"Couldn't build The Swift Programming Language book: {e}\n{font_config}",
             )
 
 

@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+from pathlib import Path
+
 from swift_book_pdf.blocks import parse_blocks
 from swift_book_pdf.config import Config
 from swift_book_pdf.files import get_file_name
@@ -27,24 +28,29 @@ from swift_book_pdf.markdown_helpers import (
 
 
 class LaTeXConverter:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.config = config
 
     def generate_latex(self, file_path: str) -> str:
         file_name = get_file_name(file_path)
-        if not os.path.exists(file_path):
+        path = Path(file_path)
+        if not path.exists():
             raise FileNotFoundError(
-                f"Couldn't find the file {file_name} at {file_path}."
+                f"Couldn't find the file {file_name} at {file_path}.",
             )
 
-        with open(file_path, "r", encoding="utf-8") as file:
+        with path.open("r", encoding="utf-8") as file:
             file_content = file.readlines()
 
-        latex_lines = self.convert_file_to_latex(file_content, file_name.lower())
+        latex_lines = self.convert_file_to_latex(
+            file_content, file_name.lower()
+        )
         return "\n".join(latex_lines)
 
     def convert_file_to_latex(
-        self, file_content: list[str], file_name: str
+        self,
+        file_content: list[str],
+        file_name: str,
     ) -> list[str]:
         """
         Convert the markdown content to LaTeX.
@@ -56,7 +62,8 @@ class LaTeXConverter:
             return []
 
         chapter_title_box, file_content = generate_chapter_title(
-            file_content, file_name
+            file_content,
+            file_name,
         )
 
         latex_lines = []

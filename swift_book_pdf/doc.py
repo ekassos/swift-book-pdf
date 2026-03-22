@@ -14,7 +14,7 @@
 
 import logging
 
-from swift_book_pdf.schema import PaperSize, RenderingMode, Appearance
+from swift_book_pdf.schema import Appearance, PaperSize, RenderingMode
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class DocConfig:
         typesets: int = 4,
         dark_mode: bool = False,
         gutter: bool | None = None,
-    ):
+    ) -> None:
         self.mode = mode
         self.paper_size = paper_size
         self.typesets = typesets

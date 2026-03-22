@@ -26,10 +26,16 @@ def remove_multiline_comments(lines: list[str]) -> list[str]:
         if not in_comment:
             if "<!--" in line:
                 if "-->" in line:
-                    # Remove comment content on same line
-                    line = re.sub(r"<!--.*?-->", "", line)
-                    if line.strip():
-                        output.append(line)
+                    # Remove same-line comment content without regex-based HTML parsing.
+                    comment_start = line.find("<!--")
+                    comment_end = line.find("-->", comment_start)
+                    if comment_end != -1:
+                        comment_end += len("-->")
+                    line_without_comment = line[:comment_start] + (
+                        line[comment_end:] if comment_end != -1 else ""
+                    )
+                    if line_without_comment.strip():
+                        output.append(line_without_comment)
                 else:
                     in_comment = True
                     before = line.split("<!--")[0]
@@ -37,16 +43,17 @@ def remove_multiline_comments(lines: list[str]) -> list[str]:
                         output.append(before)
             else:
                 output.append(line)
-        else:
-            if "-->" in line:
-                in_comment = False
-                after = line.split("-->", 1)[1]
-                if after.strip():
-                    output.append(after)
+        elif "-->" in line:
+            in_comment = False
+            after = line.split("-->", 1)[1]
+            if after.strip():
+                output.append(after)
     return output
 
 
-def convert_reference_links_in_line(line: str, references: dict[str, str]) -> str:
+def convert_reference_links_in_line(
+    line: str, references: dict[str, str]
+) -> str:
     """
     Substitute Markdown links in the provided line to the normal Markdown format.
 
@@ -56,18 +63,16 @@ def convert_reference_links_in_line(line: str, references: dict[str, str]) -> st
     """
     pattern = re.compile(r"\[(.*?)\](?:\[(.*?)\])?")
 
-    def repl(match):
+    def repl(match: re.Match[str]) -> str:
         ref_1 = match.group(1)
         ref_2 = match.group(2)
         if ref_1 and ref_1 in references:
             return f"[{ref_1}]({references[ref_1]})"
-        elif ref_2 and ref_2 in references:
+        if ref_2 and ref_2 in references:
             if ref_1:
                 return f"[{ref_1}]({references[ref_2]})"
-            else:
-                return f"[{ref_2}]({references[ref_2]})"
-        else:
-            return match.group(0)
+            return f"[{ref_2}]({references[ref_2]})"
+        return match.group(0)
 
     return pattern.sub(repl, line)
 
@@ -100,4 +105,7 @@ def convert_markdown_links(lines: list[str]) -> list[str]:
             references[m.group(1)] = m.group(2)
         else:
             content_lines.append(line)
-    return [convert_reference_links_in_line(line, references) for line in content_lines]
+    return [
+        convert_reference_links_in_line(line, references)
+        for line in content_lines
+    ]

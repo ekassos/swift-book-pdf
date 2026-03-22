@@ -26,8 +26,14 @@ def remove_multiline_comments(lines: list[str]) -> list[str]:
         if not in_comment:
             if "<!--" in line:
                 if "-->" in line:
-                    # Remove comment content on same line
-                    line_without_comment = re.sub(r"<!--.*?-->", "", line)
+                    # Remove same-line comment content without regex-based HTML parsing.
+                    comment_start = line.find("<!--")
+                    comment_end = line.find("-->", comment_start)
+                    if comment_end != -1:
+                        comment_end += len("-->")
+                    line_without_comment = line[:comment_start] + (
+                        line[comment_end:] if comment_end != -1 else ""
+                    )
                     if line_without_comment.strip():
                         output.append(line_without_comment)
                 else:

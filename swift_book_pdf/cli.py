@@ -14,7 +14,6 @@
 
 import logging
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 import click
 
@@ -41,7 +40,9 @@ def cli() -> None:
 )
 @click.option(
     "--mode",
-    type=click.Choice([mode.value for mode in RenderingMode], case_sensitive=False),
+    type=click.Choice(
+        [mode.value for mode in RenderingMode], case_sensitive=False
+    ),
     default=RenderingMode.DIGITAL.value,
     help="Rendering mode",
     show_default="digital",
@@ -115,20 +116,20 @@ def cli() -> None:
     prog_name="Swift-Book-PDF",
     message="\033[1m%(prog)s\033[0m (version \033[36m%(version)s\033[0m)",
 )
-def run(
+def run(  # noqa: PLR0913
     output_path: str,
     mode: str,
     verbose: bool,
     typesets: int,
     paper: str,
-    main: Optional[str],
-    mono: Optional[str],
+    main: str | None,
+    mono: str | None,
     unicode: list[str],
-    emoji: Optional[str],
-    header_footer: Optional[str],
+    emoji: str | None,
+    header_footer: str | None,
     dark: bool,
     gutter: bool | None = None,
-    input_path: Optional[str] = None,
+    input_path: str | None = None,
 ) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)

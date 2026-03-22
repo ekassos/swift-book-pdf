@@ -81,12 +81,19 @@ class _BlockParser:
         if not re.match(r"^\|\s*[-:]+(\s*\|\s*[-:]+)+\s*\|?$", next_line):
             return False
 
-        table_rows = [[cell.strip() for cell in line.strip().strip("|").split("|")]]
+        table_rows = [
+            [cell.strip() for cell in line.strip().strip("|").split("|")]
+        ]
         self.idx += 2
-        while self.idx < self.n and self.lines[self.idx].strip().startswith("|"):
+        while self.idx < self.n and self.lines[self.idx].strip().startswith(
+            "|"
+        ):
             data_line = self.lines[self.idx].rstrip("\n")
             table_rows.append(
-                [cell.strip() for cell in data_line.strip().strip("|").split("|")],
+                [
+                    cell.strip()
+                    for cell in data_line.strip().strip("|").split("|")
+                ],
             )
             self.idx += 1
         self.blocks.append(TableBlock(rows=table_rows))
@@ -107,7 +114,9 @@ class _BlockParser:
         if not ordered_match:
             return False
 
-        ol_items = [self._consume_ordered_list_item(ordered_match.group(1).strip())]
+        ol_items = [
+            self._consume_ordered_list_item(ordered_match.group(1).strip())
+        ]
         while self.idx < self.n:
             if not self.lines[self.idx].strip():
                 self.idx += 1
@@ -115,14 +124,18 @@ class _BlockParser:
             match = re.match(r"^\s*\d+\.\s+(.*)$", self.lines[self.idx])
             if not match:
                 break
-            ol_items.append(self._consume_ordered_list_item(match.group(1).strip()))
+            ol_items.append(
+                self._consume_ordered_list_item(match.group(1).strip())
+            )
         self.blocks.append(OrderedListBlock(items=ol_items))
         return True
 
     def _consume_ordered_list_item(self, item_text: str) -> str:
         current_item = item_text
         self.idx += 1
-        while self.idx < self.n and re.match(r"^\s{2,}\S", self.lines[self.idx]):
+        while self.idx < self.n and re.match(
+            r"^\s{2,}\S", self.lines[self.idx]
+        ):
             current_item += " " + self.lines[self.idx].strip()
             self.idx += 1
         return current_item
@@ -171,9 +184,13 @@ class _BlockParser:
 
     def _build_note_block(self, match: re.Match[str]) -> NoteBlock:
         label = match.group(1).strip()
-        aside_content = [match.group(2).strip()] if match.group(2).strip() else []
+        aside_content = (
+            [match.group(2).strip()] if match.group(2).strip() else []
+        )
         self.idx += 1
-        while self.idx < self.n and self.lines[self.idx].lstrip().startswith(">"):
+        while self.idx < self.n and self.lines[self.idx].lstrip().startswith(
+            ">"
+        ):
             aside_line = self.lines[self.idx].lstrip()[1:]
             aside_content.append(aside_line.rstrip("\n"))
             self.idx += 1
@@ -191,7 +208,8 @@ class _BlockParser:
 
     def _is_note_paragraph_continuation(self, line: str) -> bool:
         return bool(
-            line.strip() and not re.match(r"^\s*([#>-]|```swift|[-]\s+)", line),
+            line.strip()
+            and not re.match(r"^\s*([#>-]|```swift|[-]\s+)", line),
         )
 
     def _consume_unordered_list(self, line: str) -> bool:
@@ -217,10 +235,14 @@ class _BlockParser:
             self.blocks.append(UnorderedListBlock(items=ul_items))
         return True
 
-    def _consume_unordered_list_item(self, match: re.Match[str]) -> list[Block]:
+    def _consume_unordered_list_item(
+        self, match: re.Match[str]
+    ) -> list[Block]:
         base_indent = len(match.group(1))
         item_first_line = match.group(2)
-        sub_blocks: list[Block] = [ParagraphBlock(lines=[item_first_line.strip()])]
+        sub_blocks: list[Block] = [
+            ParagraphBlock(lines=[item_first_line.strip()])
+        ]
         self.idx += 1
         pending_new_paragraph = False
 
@@ -250,7 +272,9 @@ class _BlockParser:
 
         return sub_blocks
 
-    def _append_code_sub_block(self, sub_blocks: list[Block], base_indent: int) -> None:
+    def _append_code_sub_block(
+        self, sub_blocks: list[Block], base_indent: int
+    ) -> None:
         self.idx += 1
         code_lines = []
         while self.idx < self.n:
@@ -284,7 +308,9 @@ class _BlockParser:
         )
 
 
-def _extract_term_list_items(ul_items: list[list[Block]]) -> list[TermListItem]:
+def _extract_term_list_items(
+    ul_items: list[list[Block]],
+) -> list[TermListItem]:
     term_items: list[TermListItem] = []
     for sub_blocks in ul_items:
         merged_text = _merge_paragraph_text(sub_blocks)

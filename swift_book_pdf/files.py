@@ -17,7 +17,6 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Optional
 
 from .schema import SwiftBookRepoFilePaths
 
@@ -30,7 +29,7 @@ def get_file_name(file_path: str) -> str:
 
 def find_or_clone_swift_book_repo(
     temp: str,
-    input_path: Optional[str] = None,
+    input_path: str | None = None,
 ) -> SwiftBookRepoFilePaths:
     """
     Clone the Swift book repository.
@@ -87,7 +86,9 @@ def find_or_clone_swift_book_repo(
 
     assets_dir = root_dir / "Assets"
     if not assets_dir.exists():
-        raise FileNotFoundError(f"Couldn't find the Assets directory ({assets_dir}).")
+        raise FileNotFoundError(
+            f"Couldn't find the Assets directory ({assets_dir})."
+        )
     return SwiftBookRepoFilePaths(
         toc_file_path=str(toc_file_path),
         root_dir=str(root_dir),
@@ -97,7 +98,9 @@ def find_or_clone_swift_book_repo(
 
 def validate_output_path(output_path: str) -> str:
     output_path_obj = Path(output_path)
-    output_dir = output_path_obj.parent if output_path_obj.parent != Path() else Path()
+    output_dir = (
+        output_path_obj.parent if output_path_obj.parent != Path() else Path()
+    )
 
     if output_path_obj.is_dir():
         output_path_obj = _resolve_directory_output_path(output_path_obj)
@@ -135,11 +138,15 @@ def _ensure_directory_exists(path: Path) -> None:
         raise ValueError(f"Cannot create output directory {path}: {e}") from e
 
 
-def _verify_output_permissions(output_path_obj: Path, output_dir: Path) -> None:
+def _verify_output_permissions(
+    output_path_obj: Path, output_dir: Path
+) -> None:
     if not os.access(output_dir, os.W_OK):
         raise ValueError(f"Cannot write to output directory: {output_dir}")
 
     if output_path_obj.exists():
         if not os.access(output_path_obj, os.W_OK):
-            raise ValueError(f"Cannot overwrite existing file: {output_path_obj}")
+            raise ValueError(
+                f"Cannot overwrite existing file: {output_path_obj}"
+            )
         logger.debug(f"Will overwrite existing file: {output_path_obj}")

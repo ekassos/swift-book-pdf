@@ -18,7 +18,6 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -96,10 +95,15 @@ def batch_check_fonts(font_names: list[str]) -> dict[str, bool]:
             tex_file.write(tex_code)
         try:
             result = subprocess.run(  # noqa: S603
-                [lualatex_executable, "--interaction=nonstopmode", tex_filename],
+                [
+                    lualatex_executable,
+                    "--interaction=nonstopmode",
+                    tex_filename,
+                ],
                 cwd=tmpdir,
                 capture_output=True,
                 text=True,
+                check=False,
             )
             output = result.stdout + "\n" + result.stderr
             logger.debug(f"Batch font check output:\n{output}")
@@ -128,7 +132,9 @@ def batch_check_fonts(font_names: list[str]) -> dict[str, bool]:
     return font_cache
 
 
-def find_font(font_list: list[str], latex_font_cache: dict[str, bool]) -> Optional[str]:
+def find_font(
+    font_list: list[str], latex_font_cache: dict[str, bool]
+) -> str | None:
     """
     Return the first font in font_list that is available, or None if none are found.
     """
@@ -140,7 +146,9 @@ def find_font(font_list: list[str], latex_font_cache: dict[str, bool]) -> Option
     return None
 
 
-def find_all_fonts(font_list: list[str], latex_font_cache: dict[str, bool]) -> bool:
+def find_all_fonts(
+    font_list: list[str], latex_font_cache: dict[str, bool]
+) -> bool:
     """
     Return True if all fonts in font_list are available, or False if any are not found.
     """
@@ -154,7 +162,7 @@ def find_all_fonts(font_list: list[str], latex_font_cache: dict[str, bool]) -> b
 
 
 def gather_all_candidate_fonts(
-    custom_fonts: list[Optional[str]],
+    custom_fonts: list[str | None],
     default_font_lists: list[list[str]],
 ) -> dict[str, bool]:
     """
@@ -173,13 +181,13 @@ def gather_all_candidate_fonts(
 
 
 class FontConfig:
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
-        main_font_custom: Optional[str] = None,
-        mono_font_custom: Optional[str] = None,
-        emoji_font_custom: Optional[str] = None,
-        unicode_fonts_custom_list: Optional[list[str]] = None,
-        header_footer_font_custom: Optional[str] = None,
+        main_font_custom: str | None = None,
+        mono_font_custom: str | None = None,
+        emoji_font_custom: str | None = None,
+        unicode_fonts_custom_list: list[str] | None = None,
+        header_footer_font_custom: str | None = None,
         main_font_list: list[str] = MAIN_FONT_LIST,
         mono_font_list: list[str] = MONO_FONT_LIST,
         emoji_font_list: list[str] = EMOJI_FONT_LIST,
@@ -192,7 +200,9 @@ class FontConfig:
         logger.debug(f"Main font: {main_font_custom}")
         logger.debug(f"Monospace font: {mono_font_custom}")
         logger.debug(f"Emoji font: {emoji_font_custom}")
-        logger.debug(f"Unicode font(s): {', '.join(unicode_fonts_custom_list)}")
+        logger.debug(
+            f"Unicode font(s): {', '.join(unicode_fonts_custom_list)}"
+        )
         logger.debug(f"Header/Footer font: {header_footer_font_custom}")
 
         latex_font_cache = gather_all_candidate_fonts(
@@ -265,7 +275,7 @@ class FontConfig:
 
 def _resolve_font_config_value(
     font_role: str,
-    custom_font: Optional[str],
+    custom_font: str | None,
     default_font_list: list[str],
     latex_font_cache: dict[str, bool],
     custom_warning_label: str,

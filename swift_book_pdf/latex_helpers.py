@@ -36,9 +36,12 @@ from swift_book_pdf.schema import (
 )
 
 logger = logging.getLogger(__name__)
+MAX_IMAGE_WIDTH_IN = 6.5
 
 
-def generate_chapter_title(lines: list[str], file_name: str) -> tuple[str, list[str]]:
+def generate_chapter_title(
+    lines: list[str], file_name: str
+) -> tuple[str, list[str]]:
     """
     Generate the chapter title LaTeX from the provided lines.
 
@@ -160,7 +163,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     text = re.sub(r"(?<!\\)_", r"\_", text)
     text = re.sub(r"---", r"\\textemdash \\ ", text)
     text = re.sub(r"--", r"\\textendash", text)
-    text = re.sub(r"\(\\\`\)", "(\;\`\; )", text)
+    text = re.sub(r"\(\\\`\)", r"(\;\`\; )", text)
     text = re.sub(
         r"<doc:([^>#]+)#([^>]+)>",
         lambda m: (
@@ -197,7 +200,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
 def convert_inline_code(text: str) -> str:
     """
     Replace inline code delimited by unescaped backticks with
-    `{\CodeStyle \texttt{...}}`.
+    `{\\CodeStyle \texttt{...}}`.
 
     This converter supports two kinds of delimiters:
       • Double backticks (``...``): These blocks are processed first
@@ -212,7 +215,9 @@ def convert_inline_code(text: str) -> str:
 
     def repl_double(match: re.Match[str]) -> str:
         inner = match.group(1)  # Everything between the double backticks.
-        processed = r"{\CodeStyle \texttt{" + escape_texttt(inner).strip() + "}}"
+        processed = (
+            r"{\CodeStyle \texttt{" + escape_texttt(inner).strip() + "}}"
+        )
         # Create a unique token unlikely to appear in the text.
         token = f"@@DOUBLE{len(double_placeholder)}@@"
         double_placeholder[token] = processed
@@ -246,7 +251,7 @@ def convert_nested_block(block: Block, mode: RenderingMode) -> str:
             r"\begin{swiftstyledbox}" + "\n"
         )
         for line in block.lines:
-            line2 = line.replace("%", "\%")
+            line2 = line.replace("%", r"\%")
             out += override_characters(line2) + "\n"
         out += r"\end{swiftstyledbox}" + "\n"
         return out
@@ -255,7 +260,7 @@ def convert_nested_block(block: Block, mode: RenderingMode) -> str:
     return apply_formatting(convert_inline_code(text), mode)
 
 
-def convert_blocks_to_latex(
+def convert_blocks_to_latex(  # noqa: PLR0913
     blocks: list[Block],
     file_name: str,
     assets_dir: str,
@@ -289,7 +294,7 @@ def convert_blocks_to_latex(
     return output
 
 
-def _convert_block_to_latex(
+def _convert_block_to_latex(  # noqa: PLR0913,PLR0911
     block: Block,
     file_name: str,
     assets_dir: str,
@@ -336,22 +341,32 @@ def _convert_header_like_block(
     mode: RenderingMode,
 ) -> list[str] | None:
     if isinstance(block, Header2Block):
-        return [_convert_header_block(block.content, file_name, mode, "SectionHeader")]
+        return [
+            _convert_header_block(
+                block.content, file_name, mode, "SectionHeader"
+            )
+        ]
     if isinstance(block, Header3Block):
         return [
-            _convert_header_block(block.content, file_name, mode, "SubsectionHeader")
+            _convert_header_block(
+                block.content, file_name, mode, "SubsectionHeader"
+            )
         ]
     if isinstance(block, Header4Block):
         return [
-            _convert_header_block(block.content, file_name, mode, "SubsubsectionHeader")
+            _convert_header_block(
+                block.content, file_name, mode, "SubsubsectionHeader"
+            )
         ]
     return None
 
 
 def _convert_code_block(block: CodeBlock) -> list[str]:
     output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
-    for line in block.lines:
-        output.append(override_characters(line.replace("%", "\%"), True))
+    output.extend(
+        override_characters(line.replace("%", r"\%"), True)
+        for line in block.lines
+    )
     output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
     return output
 
@@ -364,17 +379,19 @@ def _convert_unordered_list_block(
     for item in block.items:
         if item:
             output.extend(_convert_unordered_list_item(item, mode))
-    output.append(r"\end{itemize}" + "\n\global\AtPageTopfalse\n")
+    output.append(r"\end{itemize}" + "\n\\global\\AtPageTopfalse\n")
     return output
 
 
-def _convert_unordered_list_item(item: list[Block], mode: RenderingMode) -> list[str]:
+def _convert_unordered_list_item(
+    item: list[Block], mode: RenderingMode
+) -> list[str]:
     output: list[str] = []
     for index, sub_block in enumerate(item):
         latex_sub = convert_nested_block(sub_block, mode)
         if index == 0:
             output.append(f"\\item \\ParagraphStyle{{{latex_sub}}}\n")
-        elif latex_sub.startswith("\parskip"):
+        elif latex_sub.startswith(r"\parskip"):
             output.append(latex_sub)
         else:
             output.append(f"\\ParagraphStyle{{{latex_sub}}}\n")
@@ -390,15 +407,19 @@ def _convert_ordered_list_block(
         f"\\item {apply_formatting(convert_inline_code(item), mode)}"
         for item in block.items
     )
-    output.append(r"\end{enumerate}" + "\n\global\AtPageTopfalse\n")
+    output.append(r"\end{enumerate}" + "\n\\global\\AtPageTopfalse\n")
     return output
 
 
-def _convert_term_list_block(block: TermListBlock, mode: RenderingMode) -> list[str]:
+def _convert_term_list_block(
+    block: TermListBlock, mode: RenderingMode
+) -> list[str]:
     output = ["\\ParagraphStyle{"]
     for term in block.items:
         label_conv = apply_formatting(convert_inline_code(term.label), mode)
-        content_conv = apply_formatting(convert_inline_code(term.content), mode)
+        content_conv = apply_formatting(
+            convert_inline_code(term.content), mode
+        )
         output.append(
             f"\\needspace{{3\\baselineskip}} {label_conv} \\vspace*{{-0.09in}} \\begin{{quote}} {content_conv} \\end{{quote}}",
         )
@@ -415,13 +436,19 @@ def _convert_image_block(
         f"{block.imgname}{'~dark' if appearance == Appearance.DARK else ''}@2x.png"
     )
     latex_img_path = (
-        PureWindowsPath(img_path).as_posix() if os.sep == "\\" else str(img_path)
+        PureWindowsPath(img_path).as_posix()
+        if os.sep == "\\"
+        else str(img_path)
     )
     width = _read_image_width(img_path)
     if width is None:
         return []
 
-    final_width = "6.5in" if width > 6.5 else f"{width}in"
+    final_width = (
+        f"{MAX_IMAGE_WIDTH_IN}in"
+        if width > MAX_IMAGE_WIDTH_IN
+        else f"{width}in"
+    )
     return [
         f"\\begin{{figure}}[H]\n\\centering\\includegraphics[width={final_width}]{{{latex_img_path}}}\n\\end{{figure}}\n\\global\\AtPageTopfalse\n",
     ]
@@ -445,7 +472,9 @@ def _convert_header_block(
     command: str,
 ) -> str:
     inline_content = convert_inline_code(content)
-    label_name = "-".join(inline_content.title().split()).lower().replace("'", "")
+    label_name = (
+        "-".join(inline_content.title().split()).lower().replace("'", "")
+    )
     file_label = file_name.replace("'", "")
     return (
         f"\\{command}{{{apply_formatting(inline_content, mode)}}}"
@@ -465,8 +494,12 @@ def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
     ]
 
 
-def _convert_paragraph_block(block: ParagraphBlock, mode: RenderingMode) -> str:
-    para_conv = apply_formatting(convert_inline_code(" ".join(block.lines)), mode)
+def _convert_paragraph_block(
+    block: ParagraphBlock, mode: RenderingMode
+) -> str:
+    para_conv = apply_formatting(
+        convert_inline_code(" ".join(block.lines)), mode
+    )
     return f"\\ParagraphStyle{{{para_conv}}}\n"
 
 
@@ -484,9 +517,13 @@ def _convert_table_block(
     output.append(
         f"\\begin{{tabulary}}{{1.0\\textwidth}}{{{'|'.join('L' for _ in header_row)}}}",
     )
-    output.append(_format_table_row(header_row, mode, bold=True) + " \\\\ \\hline")
-    for row in block.rows[1:-1]:
-        output.append(_format_table_row(row, mode) + " \\\\ \\hline")
+    output.append(
+        _format_table_row(header_row, mode, bold=True) + " \\\\ \\hline"
+    )
+    output.extend(
+        _format_table_row(row, mode) + " \\\\ \\hline"
+        for row in block.rows[1:-1]
+    )
     if block.rows[-1]:
         output.append(_format_table_row(block.rows[-1], mode) + " \\\\")
     output.extend(["\\end{tabulary}", "\\end{table}", "\n"])

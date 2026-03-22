@@ -42,7 +42,9 @@ class LaTeXConverter:
         with path.open("r", encoding="utf-8") as file:
             file_content = file.readlines()
 
-        latex_lines = self.convert_file_to_latex(file_content, file_name.lower())
+        latex_lines = self.convert_file_to_latex(
+            file_content, file_name.lower()
+        )
         return "\n".join(latex_lines)
 
     def convert_file_to_latex(

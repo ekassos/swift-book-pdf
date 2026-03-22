@@ -15,8 +15,8 @@
 import logging
 import sys
 import textwrap
+from collections.abc import Callable
 from subprocess import Popen
-from typing import Callable, Optional
 
 
 def configure_logging(verbose: bool) -> None:
@@ -32,17 +32,17 @@ def configure_logging(verbose: bool) -> None:
 
 def run_process_with_logs(
     process: Popen[str],
-    MAX_LINES: int = 10,
-    MAX_LINE_LENGTH: int = 80,
-    log_check_func: Optional[Callable] = None,
+    max_lines_default: int = 10,
+    max_line_length: int = 80,
+    log_check_func: Callable | None = None,
 ) -> None:
     last_lines: list[str] = []
     printed_lines = 0
-    GRAY = "\033[37m"
-    RESET = "\033[0m"
+    gray = "\033[37m"
+    reset = "\033[0m"
 
     is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
-    max_lines = None if is_debug else MAX_LINES
+    max_lines = None if is_debug else max_lines_default
 
     try:
         while True:
@@ -56,14 +56,14 @@ def run_process_with_logs(
             if log_check_func is not None:
                 log_check_func(line)
 
-            _append_wrapped_line(last_lines, line, MAX_LINE_LENGTH)
+            _append_wrapped_line(last_lines, line, max_line_length)
             last_lines = _trim_output_buffer(last_lines, max_lines)
 
             if not is_debug:
                 _clear_printed_lines(printed_lines)
 
             out = "\n".join(last_lines)
-            sys.stdout.write(GRAY + out + RESET + "\n")
+            sys.stdout.write(gray + out + reset + "\n")
             sys.stdout.flush()
             printed_lines = len(last_lines)
 
@@ -91,7 +91,9 @@ def _append_wrapped_line(
     last_lines.append(stripped_line)
 
 
-def _trim_output_buffer(last_lines: list[str], max_lines: int | None) -> list[str]:
+def _trim_output_buffer(
+    last_lines: list[str], max_lines: int | None
+) -> list[str]:
     if max_lines is None or len(last_lines) <= max_lines:
         return last_lines
     return last_lines[-max_lines:]

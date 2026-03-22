@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from pathlib import Path
-from typing import Optional
 
 from swift_book_pdf.chapters import generate_chapter_metadata
 from swift_book_pdf.contents import (
@@ -49,7 +48,7 @@ class TableOfContents:
     def generate_toc_latex(
         self,
         converter: LaTeXConverter,
-    ) -> tuple[str, Optional[str]]:
+    ) -> tuple[str, str | None]:
         processed_lines = remove_directives(self.file_content)
         processed_lines = replace_chapter_href_with_toc_item(
             processed_lines,
@@ -57,9 +56,13 @@ class TableOfContents:
             converter.config.doc_config.mode,
             converter.config.doc_config.appearance,
         )
-        processed_lines, version_info = replace_and_extract_version(processed_lines)
+        processed_lines, version_info = replace_and_extract_version(
+            processed_lines
+        )
         file_name = get_file_name(self.tspl_file_path)
-        toc_latex_lines = converter.convert_file_to_latex(processed_lines, file_name)
+        toc_latex_lines = converter.convert_file_to_latex(
+            processed_lines, file_name
+        )
         toc_latex_lines = self.toc_latex_overrides(
             toc_latex_lines,
             converter.config.doc_config.mode,
@@ -75,8 +78,12 @@ class TableOfContents:
         appearance: Appearance,
     ) -> list[str]:
         latex_text = "\n".join(latex_lines)
-        latex_text = latex_text.replace(r"\SectionHeader", r"\SectionHeaderTOC")
-        latex_text = latex_text.replace(r"\SubsectionHeader", r"\SubsectionHeaderTOC")
+        latex_text = latex_text.replace(
+            r"\SectionHeader", r"\SectionHeaderTOC"
+        )
+        latex_text = latex_text.replace(
+            r"\SubsectionHeader", r"\SubsectionHeaderTOC"
+        )
         return replace_chapter_href_with_toc_item(
             latex_text.splitlines(),
             self.chapter_metadata,

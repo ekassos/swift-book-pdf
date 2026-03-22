@@ -38,7 +38,9 @@ def generate_preamble(config: Config) -> str:
             for font in config.font_config.unicode_font_list
         ],
     )
-    colors = get_document_colors(config.doc_config.mode, config.doc_config.appearance)
+    colors = get_document_colors(
+        config.doc_config.mode, config.doc_config.appearance
+    )
     return PREAMBLE.substitute(
         background=colors.background,
         text=colors.text,

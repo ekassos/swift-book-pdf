@@ -27,9 +27,9 @@ def remove_multiline_comments(lines: list[str]) -> list[str]:
             if "<!--" in line:
                 if "-->" in line:
                     # Remove comment content on same line
-                    line = re.sub(r"<!--.*?-->", "", line)
-                    if line.strip():
-                        output.append(line)
+                    line_without_comment = re.sub(r"<!--.*?-->", "", line)
+                    if line_without_comment.strip():
+                        output.append(line_without_comment)
                 else:
                     in_comment = True
                     before = line.split("<!--")[0]
@@ -37,16 +37,17 @@ def remove_multiline_comments(lines: list[str]) -> list[str]:
                         output.append(before)
             else:
                 output.append(line)
-        else:
-            if "-->" in line:
-                in_comment = False
-                after = line.split("-->", 1)[1]
-                if after.strip():
-                    output.append(after)
+        elif "-->" in line:
+            in_comment = False
+            after = line.split("-->", 1)[1]
+            if after.strip():
+                output.append(after)
     return output
 
 
-def convert_reference_links_in_line(line: str, references: dict[str, str]) -> str:
+def convert_reference_links_in_line(
+    line: str, references: dict[str, str]
+) -> str:
     """
     Substitute Markdown links in the provided line to the normal Markdown format.
 
@@ -98,4 +99,7 @@ def convert_markdown_links(lines: list[str]) -> list[str]:
             references[m.group(1)] = m.group(2)
         else:
             content_lines.append(line)
-    return [convert_reference_links_in_line(line, references) for line in content_lines]
+    return [
+        convert_reference_links_in_line(line, references)
+        for line in content_lines
+    ]

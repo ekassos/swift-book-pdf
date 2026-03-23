@@ -39,6 +39,7 @@ class Book:
         toc_latex, _ = self.toc.generate_toc_latex(converter=self.converter)
         latex += toc_latex + "\n"
         for tag in self.toc.doc_tags:
+            file_path = None
             chapter_metadata = self.toc.chapter_metadata.get(tag.lower())
             if chapter_metadata:
                 file_path = chapter_metadata.file_path

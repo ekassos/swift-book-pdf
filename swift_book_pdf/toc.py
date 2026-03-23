@@ -22,12 +22,18 @@ from swift_book_pdf.contents import (
 )
 from swift_book_pdf.doc_tags import extract_doc_tags
 from swift_book_pdf.files import get_file_name
+from swift_book_pdf.grammar_summary import generate_missing_chapter_metadata
 from swift_book_pdf.latex import LaTeXConverter
 from swift_book_pdf.schema import Appearance, RenderingMode
 
 
 class TableOfContents:
-    def __init__(self, root_dir: str, tspl_file_path: str) -> None:
+    def __init__(
+        self,
+        root_dir: str,
+        tspl_file_path: str,
+        temp_dir: str,
+    ) -> None:
         self.tspl_file_path = tspl_file_path
         self.target_directories = [
             "GuidedTour",
@@ -39,11 +45,19 @@ class TableOfContents:
         with Path(tspl_file_path).open("r", encoding="utf-8") as file:
             self.file_content = file.readlines()
 
+        self.doc_tags = extract_doc_tags(self.file_content)
         self.chapter_metadata = generate_chapter_metadata(
             root_dir,
             self.target_directories,
         )
-        self.doc_tags = extract_doc_tags(self.file_content)
+        self.chapter_metadata.update(
+            generate_missing_chapter_metadata(
+                root_dir,
+                temp_dir,
+                self.doc_tags,
+                self.chapter_metadata,
+            ),
+        )
 
     def generate_toc_latex(
         self,

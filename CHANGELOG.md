@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `latexminted` version check to ensure compatibility with `minted.sty` versions older than 3.8.0.
 - Detect missing LaTeX packages before typesetting and surface clearer package-specific errors during PDF generation.
 - Add `--font-size` option to scale the PDF typography from a custom base paragraph font size.
+- Generate `SummaryOfTheGrammar` during PDF assembly when the upstream `swift-book` repo no longer ships the chapter as a committed Markdown file, using `bin/publish-book` metadata and `bin/extract_grammar.awk` with a built-in fallback.
 
 ### Changed
 - Make code and aside boxes breakable to support larger font sizes, while keeping short boxes intact by moving them to the next page when possible and only splitting boxes that are longer than a page.
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix an issue where a chapter may appear multiple times in the generated PDF when the Markdown file for the subsequent chapter is missing.
 - Escape literal dollar signs in paragraph text so generated LaTeX does not enter math mode and fail on currency amounts like `$1.23`.
+- Fix an issue where `Summary of the Grammar` could be missing from the generated PDF when upstream generates it only during publication.
 
 ## [2.0.1] - 2026-01-13
 ### Security

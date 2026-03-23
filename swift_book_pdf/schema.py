@@ -46,6 +46,18 @@ class ChapterMetadata(BaseModel):
     subtitle_line: str | None = None
 
 
+class GeneratedSummary(BaseModel):
+    path: str
+    title: str
+    subtitle: str
+
+
+class PublishBookSummaryConfig(BaseModel):
+    title: str | None = None
+    subtitle: str | None = None
+    source_paths: list[str] = []
+
+
 class TableBlock(BaseModel):
     type: Literal["table"] = "table"
     rows: list[list[str]]

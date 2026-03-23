@@ -30,7 +30,11 @@ logger = logging.getLogger(__name__)
 class Book:
     def __init__(self, config: Config) -> None:
         self.config = config
-        self.toc = TableOfContents(config.root_dir, config.toc_file_path)
+        self.toc = TableOfContents(
+            config.root_dir,
+            config.toc_file_path,
+            config.temp_dir,
+        )
         self.converter = LaTeXConverter(config)
 
     def process_files_in_order(self, latex_file_path: str) -> None:

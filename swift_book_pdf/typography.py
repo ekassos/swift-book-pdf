@@ -29,7 +29,6 @@ DEFAULT_BODY_FONT_SIZE = 9.0
 # | Code             | 9pt      | 1.000x |
 # | Minted code      | 7.9pt    | 0.878x |
 # | Minted leading   | 13.2pt   | 1.467x |
-# | Header/footer    | 13pt     | 1.444x |
 #
 DEFAULT_FONT_SIZES = {
     "footnote": 8.0,

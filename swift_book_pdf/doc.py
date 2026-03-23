@@ -20,21 +20,26 @@ logger = logging.getLogger(__name__)
 
 
 class DocConfig:
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         mode: RenderingMode = RenderingMode.DIGITAL,
         paper_size: PaperSize = PaperSize.LETTER,
         typesets: int = 4,
         dark_mode: bool = False,
         gutter: bool | None = None,
+        font_size: float | None = None,
     ) -> None:
         self.mode = mode
         self.paper_size = paper_size
         self.typesets = typesets
         self.appearance = Appearance.DARK if dark_mode else Appearance.LIGHT
         self.gutter = True if gutter is None else gutter
+        self.font_size = font_size if font_size is not None else 9.0
+        if self.font_size <= 0:
+            raise ValueError("Font size must be a positive number.")
         logger.debug(f"Rendering mode: {self.mode}")
         logger.debug(f"Paper size: {self.paper_size}")
         logger.debug(f"Typesets: {self.typesets}")
         logger.debug(f"Appearance: {self.appearance}")
         logger.debug(f"Book Gutter: {self.gutter}")
+        logger.debug(f"Font size: {self.font_size}pt")

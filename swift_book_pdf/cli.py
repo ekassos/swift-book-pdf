@@ -95,6 +95,13 @@ def cli() -> None:
     default=None,
     help="Font for text in the header and footer",
 )
+@click.option(
+    "--font-size",
+    type=float,
+    default=None,
+    help="Base paragraph font size in points. All other font sizes scale proportionally",
+    show_default="9",
+)
 @click.option("--dark", is_flag=True, help="Render the book in dark mode")
 @click.option(
     "--input-path",
@@ -127,6 +134,7 @@ def run(  # noqa: PLR0913
     unicode: list[str],
     emoji: str | None,
     header_footer: str | None,
+    font_size: float | None,
     dark: bool,
     gutter: bool | None = None,
     input_path: str | None = None,
@@ -149,6 +157,7 @@ def run(  # noqa: PLR0913
             typesets,
             dark,
             gutter,
+            font_size,
         )
     except ValueError as e:
         logger.error(str(e))

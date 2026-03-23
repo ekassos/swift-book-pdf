@@ -10,8 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `swift-book-pdf` CLI alias for `swift_book_pdf`.
 - Add `latexminted` version check to ensure compatibility with `minted.sty` versions older than 3.8.0.
 - Detect missing LaTeX packages before typesetting and surface clearer package-specific errors during PDF generation.
+- Add `--font-size` option to scale the PDF typography from a custom base paragraph font size.
 
 ### Changed
+- Make code and aside boxes breakable to support larger font sizes, while keeping short boxes intact by moving them to the next page when possible and only splitting boxes that are longer than a page.
 - Switch to `uv` for dependency management.
 - Update dependencies:
   - Update `pygments` (`2.9.0` -> `2.19.2`)

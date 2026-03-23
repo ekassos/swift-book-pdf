@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.1.0] - 2026-03-23
 ### Added
 - Add `swift-book-pdf` CLI alias for `swift_book_pdf`.
 - Add `latexminted` version check to ensure compatibility with `minted.sty` versions older than 3.8.0.
@@ -157,7 +159,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.1...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.1...v2.0.0
 [1.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.1

@@ -46,22 +46,24 @@ pip install swift-book-pdf
 
 ## Usage
 ### Basic usage
-Call `swift_book_pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--) in Letter [paper size](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#paper-sizes--).
+Call `swift-book-pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--) in Letter [paper size](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#paper-sizes--).
 ```
-$ swift_book_pdf
+$ swift-book-pdf
 
 [INFO]: Downloading TSPL files...
 [INFO]: Creating PDF in digital (light) mode...
 [INFO]: PDF saved to ./swift-book.pdf
 ```
 
-When invoked, `swift_book_pdf` will:
+When invoked, `swift-book-pdf` will:
 1. Clone the `swift-book` [repository](https://github.com/swiftlang/swift-book)
 2. Convert all Markdown source files into a single LaTeX document
 3. Render the LaTeX document into the final PDF document
 
 > [!NOTE]
-> swift_book_pdf will create a temporary directory to store the swift-book repository, LaTeX file and intermediate files produced during typesetting. This temporary directory is removed after the PDF is generated.
+> Starting with version 2.1.0, you can use either `swift-book-pdf` or `swift_book_pdf` to run the tool.
+>
+> swift-book-pdf will create a temporary directory to store the swift-book repository, LaTeX file and intermediate files produced during typesetting. This temporary directory is removed after the PDF is generated.
 
 ### Customization
 swift-book-pdf offers a range of options to customize your rendering of _The Swift Programming Language_ book. Learn how to [make the TSPL book your own](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options).

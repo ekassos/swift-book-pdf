@@ -61,7 +61,7 @@ When invoked, `swift-book-pdf` will:
 3. Render the LaTeX document into the final PDF document
 
 > [!NOTE]
-> Starting with version 2.1.0, you can use either `swift-book-pdf` or `swift_book_pdf` to run the tool.
+> Starting with version 2.1.0, you can use either `swift-book-pdf` or `swift_book_pdf` to run the tool. If you're using an earlier version, use `swift_book_pdf`.
 >
 > swift-book-pdf will create a temporary directory to store the swift-book repository, LaTeX file and intermediate files produced during typesetting. This temporary directory is removed after the PDF is generated.
 

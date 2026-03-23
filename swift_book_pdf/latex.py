@@ -78,6 +78,7 @@ class LaTeXConverter:
             self.config.doc_config.mode,
             self.config.doc_config.appearance,
             self.config.font_config.main_font,
+            self.config.doc_config.font_size,
         )
         latex_lines.extend(body_latex)
         latex_lines.append("}\n\\newpage\n")

@@ -12,12 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 from string import Template
 
 from swift_book_pdf.config import Config
+from swift_book_pdf.typography import compute_font_sizes, compute_spacing
 
 from .colors import get_document_colors
 from .schema import PaperSize
+
+logger = logging.getLogger(__name__)
 
 
 def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
@@ -31,6 +35,75 @@ def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
     )
 
 
+def get_keep_whole_box_patch() -> str:
+    r"""Return the LaTeX patch that keeps short breakable boxes intact.
+
+    `tcolorbox`'s `breakable` mode decides whether to split a box based on the
+    *remaining* space on the current page. That is usually correct for long
+    prose boxes, but it produces awkward output for highlighted content near
+    the bottom of a page: a box that would fit perfectly on the next page is
+    still split immediately because the current page does not have enough room.
+
+    The Swift book looks better when styled code examples and aside notes
+    follow a stricter rule: if a box fits on a fresh page, move the entire box
+    to the next page; only boxes that are genuinely taller than a page should
+    be split. There is no public `tcolorbox` option for that exact behavior, so
+    we patch the internal split-start routine and guard the behavior behind a
+    dedicated option, `whole on next page if possible`.
+
+    The option defaults to false so the patch does not affect other breakable
+    `tcolorbox` environments. `swiftstyledbox` and `asideNote` opt into it
+    explicitly.
+    """
+    return r"""
+\makeatletter
+\newif\iftcb@wholeonnextpageifpossible
+\tcbset{
+  whole on next page if possible/.is if=tcb@wholeonnextpageifpossible,
+  whole on next page if possible/.default=true,
+  whole on next page if possible=false,
+}
+
+\def\tcb@split@start{%
+  \tcb@breakat@init%
+  \tcb@comp@h@page%
+  \tcb@comp@h@total@standalone%
+  \iftcb@wholeonnextpageifpossible%
+    \ifdim\tcb@h@total>\tcb@h@page\relax%
+      \ifdim\tcb@h@total<\dimexpr\vsize+\kvtcb@enlargepage@flex\relax%
+        \tcb@split@pagebreak%
+        \tcb@comp@h@page%
+      \fi%
+    \fi%
+  \fi%
+  \let\tcb@split@next=\relax%
+  \tcb@check@for@final@box%
+  \iftcb@final@box%
+    \tcb@drawcolorbox@standalone%
+  \else%
+    \iftcb@break@allowed%
+      \ifdim\dimexpr\tcb@h@page-\tcb@h@padding-\tcb@h@padtitle<\kvtcb@breakminlines\baselineskip\relax%
+        \tcb@split@pagebreak%
+        \tcb@comp@h@page%
+        \tcb@check@for@final@box%
+        \iftcb@final@box%
+          \tcb@drawcolorbox@standalone%
+        \else%
+          \let\tcb@split@next=\tcb@split@first%
+        \fi%
+      \else%
+        \let\tcb@split@next=\tcb@split@first%
+      \fi%
+    \else%
+      \let\tcb@split@next=\tcb@split@first%
+    \fi%
+  \fi%
+  \tcb@split@next%
+}
+\makeatother
+"""
+
+
 def generate_preamble(config: Config) -> str:
     unicode_fallback = "\n".join(
         [
@@ -41,6 +114,13 @@ def generate_preamble(config: Config) -> str:
     colors = get_document_colors(
         config.doc_config.mode, config.doc_config.appearance
     )
+    font_sizes = compute_font_sizes(config.doc_config.font_size)
+    spacing = compute_spacing(config.doc_config.font_size)
+    template_vars = {**font_sizes, **spacing}
+    for key, value in sorted(font_sizes.items()):
+        logger.debug(f"{key}: {value}pt")
+    for key, value in sorted(spacing.items()):
+        logger.debug(f"{key}: {value}")
     return PREAMBLE.substitute(
         background=colors.background,
         text=colors.text,
@@ -65,15 +145,19 @@ def generate_preamble(config: Config) -> str:
         emoji_font=config.font_config.emoji_font,
         unicode_font=unicode_fallback,
         header_footer_font=config.font_config.header_footer_font,
+        keep_whole_box_patch=get_keep_whole_box_patch(),
         fancyhead_fancyfoot_hero=(
             HEADER_FOOTER_HERO_WITH_GUTTER.substitute(
                 header_footer_font=config.font_config.header_footer_font,
+                **template_vars,
             )
             if config.doc_config.gutter
             else HEADER_FOOTER_HERO_NO_GUTTER.substitute(
                 header_footer_font=config.font_config.header_footer_font,
+                **template_vars,
             )
         ),
+        **template_vars,
     )
 
 
@@ -183,10 +267,10 @@ HEADER_FOOTER_HERO_WITH_GUTTER = Template(r"""
         \hspace{1.9in}
         \begin{minipage}[t]{0.7\textwidth}
           \color{hero_text}
-          \vspace*{0.4in}
+          \vspace*{${spacing_hero_top}}
           \TitleSection{#1}{#2}  % Title
           {\SubtitleStyle #3\par}  % Subtitle
-          \vspace*{0.28in}
+          \vspace*{${spacing_hero_bottom}}
         \end{minipage}%
       \end{minipage}
     }
@@ -198,10 +282,10 @@ HEADER_FOOTER_HERO_WITH_GUTTER = Template(r"""
         \color{hero_text}
         \hspace{0.4in}
         \begin{minipage}[t]{0.7\textwidth}
-          \vspace*{0.4in}
+          \vspace*{${spacing_hero_top}}
           \TitleSection{#1}{#2}  % Title
           {\SubtitleStyle #3\par}  % Subtitle
-          \vspace*{0.28in}
+          \vspace*{${spacing_hero_bottom}}
         \end{minipage}%
       \end{minipage}
     }
@@ -266,10 +350,10 @@ HEADER_FOOTER_HERO_NO_GUTTER = Template(r"""
       \hspace{1.9in}
       \begin{minipage}[t]{0.7\textwidth}
         \color{hero_text}
-        \vspace*{0.4in}
+        \vspace*{${spacing_hero_top}}
         \TitleSection{#1}{#2}  % Title
         {\SubtitleStyle #3\par}  % Subtitle
-        \vspace*{0.28in}
+        \vspace*{${spacing_hero_bottom}}
       \end{minipage}%
     \end{minipage}
   }
@@ -371,8 +455,8 @@ PREAMBLE = Template(r"""
   \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{header_text}%
 }
 
-\renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{8pt}{8pt}\selectfont}
-\setlength{\footnotesep}{9pt}
+\renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{${font_size_footnote}pt}{${font_size_footnote}pt}\selectfont}
+\setlength{\footnotesep}{${spacing_footnotesep}}
 \makeatletter
 \renewcommand{\@makefnmark}{\mainFontWithFallback{$main_font}\selectfont\textsuperscript\@thefnmark}
 \renewcommand{\@makefntext}[1]{%
@@ -382,27 +466,27 @@ PREAMBLE = Template(r"""
 \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
 
 \newcommand{\TitleStyle}{%
-  \mainFontWithFallback{$main_font}\fontsize{22pt}{1.2\baselineskip}\selectfont
+  \mainFontWithFallback{$main_font}\fontsize{${font_size_title}pt}{${spacing_baselineskip_title}}\selectfont
 }
 
 \newcommand{\SubtitleStyle}{%
-\global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{11.07pt}{1.2\baselineskip}\selectfont
+\global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{${font_size_subtitle}pt}{${spacing_baselineskip_subtitle}}\selectfont
 }
 
 \newcommand{\BodyStyle}{%
-\mainFontWithFallback{$main_font}\fontsize{9pt}{1.15\baselineskip}\selectfont\setlength{\parskip}{0.09in}\raggedright
+\mainFontWithFallback{$main_font}\fontsize{${font_size_body}pt}{${spacing_baselineskip_body}}\selectfont\setlength{\parskip}{${spacing_parskip}}\raggedright
 }
 
 \newcommand{\ParagraphStyle}[1]{%
-\ifprecededbybox\vspace{0.12in}\fi%
-\ifprecededbysection\vspace{-0.09in}\fi%
-\ifprecededbynote\vspace{0.12in}\fi%
+\ifprecededbybox\vspace{${spacing_para_after_box}}\fi%
+\ifprecededbysection\vspace{-${spacing_section_adjust}}\fi%
+\ifprecededbynote\vspace{${spacing_para_after_box}}\fi%
 \global\precededbyboxfalse%
 \global\precededbysectionfalse%
 \global\precededbyparagraphtrue%
 \global\precededbynotefalse%
 \global\AtPageTopfalse%
-\setlength{\parskip}{0.09in}%
+\setlength{\parskip}{${spacing_parskip}}%
 \begin{flushleft}%
 #1%
 \end{flushleft}%
@@ -410,9 +494,9 @@ PREAMBLE = Template(r"""
 
 \makeatletter
 \def\section{\@startsection{section}{1}{0pt}%
-   {0.4in}
-   {0.1in}
-   {\mainFontWithFallback{$main_font}\fontsize{22pt}{1.5\baselineskip}\selectfont\global\AtPageTopfalse}}
+   {${spacing_section_before}}
+   {${spacing_section_after}}
+   {\mainFontWithFallback{$main_font}\fontsize{${font_size_section}pt}{${spacing_baselineskip_section}}\selectfont\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\TitleSection}[2]{%
@@ -423,17 +507,17 @@ PREAMBLE = Template(r"""
 
 \makeatletter
 \def\subsection{\@startsection{subsection}{2}{0pt}%
-   {\ifprecededbyparagraph 0.44in \else 0.41in \fi}
-   {0.16in}
-   {\mainFontWithFallback{$main_font}\fontsize{16.88pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\ifprecededbyparagraph ${spacing_subsection_before_para} \else ${spacing_subsection_before} \fi}
+   {${spacing_heading_after}}
+   {\mainFontWithFallback{$main_font}\fontsize{${font_size_subsection}pt}{${spacing_baselineskip_subsection}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SectionHeader}[2]{%
   {%
     \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-0.09in}\fi
+    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
     \pdfbookmark[2]{#1}{#2}\subsection*{#1}\label{#2}
-    \vspace*{-0.09in}
+    \vspace*{-${spacing_section_adjust}}
   }%
 }
 
@@ -441,23 +525,23 @@ PREAMBLE = Template(r"""
   {%
     \setlength{\parskip}{0pt}
     \pdfbookmark[2]{#1}{#2}\subsection*{#1}\label{#2}
-    \vspace*{0.20in}
+    \vspace*{${spacing_toc_section_after}}
   }%
 }
 
 \makeatletter
 \def\subsubsection{\@startsection{subsubsection}{3}{0pt}%
-   {\ifAtPageTop \ifintoc 0in \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi \else \ifprecededbyparagraph 0.37in \else 0.35in \fi \fi}
-   {0.16in}
-   {\mainFontWithFallback{$main_font}\fontsize{14.77pt}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\ifAtPageTop \ifintoc 0in \else \ifprecededbyparagraph ${spacing_subsubsection_before_para} \else ${spacing_subsubsection_before} \fi \fi \else \ifprecededbyparagraph ${spacing_subsubsection_before_para} \else ${spacing_subsubsection_before} \fi \fi}
+   {${spacing_heading_after}}
+   {\mainFontWithFallback{$main_font}\fontsize{${font_size_subsubsection}pt}{${spacing_baselineskip_subsubsection}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsectionHeader}[2]{%
   {%
     \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-0.09in}\fi
+    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
     \pdfbookmark[3]{#1}{#2}\subsubsection*{#1}\label{#2}
-    \vspace*{-0.09in}
+    \vspace*{-${spacing_section_adjust}}
   }%
 }
 
@@ -468,11 +552,11 @@ PREAMBLE = Template(r"""
     \intoctrue
     \setlength{\parskip}{0pt}
     \nopagebreak
-    \vspace*{-0.15in}
+    \vspace*{-${spacing_toc_adjust}}
     \nopagebreak
     \pdfbookmark[3]{#1}{#2}\subsubsection*{#1}\label{#2}
     \nopagebreak
-    \vspace*{-0.15in}
+    \vspace*{-${spacing_toc_adjust}}
     \nopagebreak
     \intocfalse
   }%
@@ -480,23 +564,23 @@ PREAMBLE = Template(r"""
 
 \makeatletter
 \def\paragraph{\@startsection{paragraph}{4}{0pt}%
-   {\ifprecededbyparagraph 0.34in \else 0.32in \fi}
-   {0.16in}
-   {\bfseries\mainFontWithFallback{$main_font}\fontsize{12.66}{1.5\baselineskip}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {\ifprecededbyparagraph ${spacing_paragraph_before_para} \else ${spacing_paragraph_before} \fi}
+   {${spacing_heading_after}}
+   {\bfseries\mainFontWithFallback{$main_font}\fontsize{${font_size_paragraph}pt}{${spacing_baselineskip_paragraph}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\SubsubsectionHeader}[2]{%
   {%
     \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-0.09in}\fi
+    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
     \pdfbookmark[4]{#1}{#2}\paragraph*{#1}\label{#2}
-    \vspace*{-0.09in}
+    \vspace*{-${spacing_section_adjust}}
   }%
 }
 
 \newcommand{\CodeStyle}{%
-  \monoFontWithFallback{$mono_font}\fontsize{9pt}{1.1\baselineskip}\selectfont
-  \setlength{\parskip}{7pt}\raggedright
+  \monoFontWithFallback{$mono_font}\fontsize{${font_size_code}pt}{${spacing_baselineskip_code}}\selectfont
+  \setlength{\parskip}{${spacing_code_parskip}}\raggedright
 }
 \setmonofont{$mono_font}[RawFeature={fallback=monoFallback}, Scale=1]
 
@@ -552,7 +636,7 @@ PREAMBLE = Template(r"""
 \setlist[itemize]{
   left=0pt,
   labelsep=0.5em,
-  itemsep=0.02in,
+  itemsep=${spacing_list_itemsep},
   topsep=0.0em,
   partopsep=0.0em
 }
@@ -560,7 +644,7 @@ PREAMBLE = Template(r"""
 \setlist[enumerate]{
   left=0pt,
   labelsep=0.5em,
-  itemsep=0.02in,
+  itemsep=${spacing_list_itemsep},
   topsep=0.0em,
   partopsep=0.0em
 }
@@ -570,9 +654,12 @@ PREAMBLE = Template(r"""
 % ----------------------------------------
 \tcbuselibrary{minted}
 \tcbset{listing engine=minted}
-\newcommand{\customsmall}{\fontsize{7.9pt}{13.2pt}\selectfont}
+$keep_whole_box_patch
+\newcommand{\customsmall}{\fontsize{${font_size_minted}pt}{${font_size_minted_leading}pt}\selectfont}
 \newtcblisting{swiftstyledbox}{
   listing only,
+  breakable,
+  whole on next page if possible,
   minted language=swift,
   minted options={
     fontsize=\customsmall,
@@ -589,10 +676,10 @@ PREAMBLE = Template(r"""
   colframe=code_border,
   boxrule=0.5pt,
   arc=4pt,
-  top=0.05in, bottom=0.05in,
-  left=0.10in, right=0.10in,
+  top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
+  left=${spacing_code_box_lr}, right=${spacing_code_box_lr},
   boxsep=0pt,
-  before skip={\dimexpr\ifprecededbybox0.19in\else0.21in\fi},
+  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
   after skip=0in,
   before lower=\color{text},
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
@@ -603,15 +690,17 @@ PREAMBLE = Template(r"""
 % ----------------------------------------
 \newtcolorbox{asideNote}{%
   enhanced,
+  breakable,
+  whole on next page if possible,
   colback=aside_background,
   arc=4pt,
   borderline west={3pt}{0pt}{aside_border},
   boxrule=0pt,
   frame empty,
-  before skip={\dimexpr\ifprecededbybox0.19in\else0.21in\fi},
+  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
   after skip=0in,
   after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\AtPageTopfalse},
-  left=8.8pt, right=8pt, top=8pt, bottom=8pt,
+  left=${spacing_aside_left}, right=${spacing_aside_pad}, top=${spacing_aside_pad}, bottom=${spacing_aside_pad},
   before upper={\raggedright\color{aside_text}},
 }
 

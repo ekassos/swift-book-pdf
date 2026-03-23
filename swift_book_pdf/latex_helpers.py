@@ -34,6 +34,7 @@ from swift_book_pdf.schema import (
     TermListBlock,
     UnorderedListBlock,
 )
+from swift_book_pdf.typography import get_font_size, get_spacing
 
 logger = logging.getLogger(__name__)
 MAX_IMAGE_WIDTH_IN = 6.5
@@ -271,6 +272,7 @@ def convert_blocks_to_latex(  # noqa: PLR0913
     mode: RenderingMode,
     appearance: Appearance,
     main_font: str,
+    body_font_size: float = 9.0,
 ) -> list[str]:
     """
     Convert parsed blocks into corresponding LaTeX lines.
@@ -281,6 +283,7 @@ def convert_blocks_to_latex(  # noqa: PLR0913
     :param mode: The rendering mode
     :param appearance: The appearance mode (light or dark)
     :param main_font: The font to be used for the main text
+    :param body_font_size: The body font size in points
     :return: A list of LaTeX lines
     """
     output: list[str] = []
@@ -293,6 +296,7 @@ def convert_blocks_to_latex(  # noqa: PLR0913
                 mode,
                 appearance,
                 main_font,
+                body_font_size,
             ),
         )
     return output
@@ -305,6 +309,7 @@ def _convert_block_to_latex(  # noqa: PLR0913,PLR0911
     mode: RenderingMode,
     appearance: Appearance,
     main_font: str,
+    body_font_size: float = 9.0,
 ) -> list[str]:
     if isinstance(block, CodeBlock):
         return _convert_code_block(block)
@@ -321,7 +326,7 @@ def _convert_block_to_latex(  # noqa: PLR0913,PLR0911
     if isinstance(block, ParagraphBlock):
         return [_convert_paragraph_block(block, mode)]
     if isinstance(block, TableBlock):
-        return _convert_table_block(block, mode, main_font)
+        return _convert_table_block(block, mode, main_font, body_font_size)
     text = " ".join(block.get("lines", []))
     return [f"\\ParagraphStyle{{{convert_inline_code(text)}}}\n"]
 
@@ -511,11 +516,21 @@ def _convert_table_block(
     block: TableBlock,
     mode: RenderingMode,
     main_font: str,
+    body_font_size: float = 9.0,
 ) -> list[str]:
+    font_size = get_font_size("body", body_font_size)
+    parskip = get_spacing("parskip", body_font_size)
+    baselineskip = get_spacing("baselineskip_table", body_font_size)
     output = [
         "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{table_border}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
         + main_font
-        + "}\\fontsize{9pt}{1.15\\baselineskip}\\selectfont\\setlength{\\parskip}{0.09in}\\raggedright",
+        + "}\\fontsize{"
+        + font_size
+        + "pt}{"
+        + baselineskip
+        + "}\\selectfont\\setlength{\\parskip}{"
+        + parskip
+        + "}\\raggedright",
     ]
     header_row = block.rows[0]
     output.append(

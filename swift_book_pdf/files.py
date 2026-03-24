@@ -18,13 +18,38 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from .schema import SwiftBookRepoFilePaths
+from .schema import OutputFormat, SwiftBookRepoFilePaths
 
 logger = logging.getLogger(__name__)
 
 
 def get_file_name(file_path: str) -> str:
     return Path(file_path).stem
+
+
+def get_swift_book_repository_revision(root_dir: str | Path) -> str | None:
+    repo_dir = Path(root_dir).parent
+    git_executable = shutil.which("git")
+    if git_executable is None:
+        return None
+
+    result = subprocess.run(  # noqa: S603
+        [git_executable, "rev-parse", "HEAD"],
+        cwd=repo_dir,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        logger.debug(
+            "Couldn't determine swift-book git revision from %s: %s",
+            repo_dir,
+            result.stderr.strip(),
+        )
+        return None
+
+    revision = result.stdout.strip()
+    return revision or None
 
 
 def find_or_clone_swift_book_repo(
@@ -96,16 +121,18 @@ def find_or_clone_swift_book_repo(
     )
 
 
-def validate_output_path(output_path: str) -> str:
+def validate_output_path(output_path: str, output_format: OutputFormat) -> str:
     output_path_obj = Path(output_path)
     output_dir = (
         output_path_obj.parent if output_path_obj.parent != Path() else Path()
     )
 
     if output_path_obj.is_dir():
-        output_path_obj = _resolve_directory_output_path(output_path_obj)
+        output_path_obj = _resolve_directory_output_path(
+            output_path_obj, output_format
+        )
     else:
-        _ensure_pdf_output_path(output_path_obj)
+        _ensure_output_path(output_path_obj, output_format)
         _ensure_directory_exists(output_dir)
 
     _verify_output_permissions(output_path_obj, output_dir)
@@ -115,16 +142,23 @@ def validate_output_path(output_path: str) -> str:
     return str(output_path_obj)
 
 
-def _resolve_directory_output_path(output_path_obj: Path) -> Path:
+def _resolve_directory_output_path(
+    output_path_obj: Path, output_format: OutputFormat
+) -> Path:
     _ensure_directory_exists(output_path_obj)
-    resolved_path = output_path_obj / "swift_book.pdf"
+    resolved_path = output_path_obj / f"swift_book.{output_format.value}"
     logger.debug(f"Output path is a directory, will save to: {resolved_path}")
     return resolved_path
 
 
-def _ensure_pdf_output_path(output_path_obj: Path) -> None:
-    if output_path_obj.suffix.lower() != ".pdf":
-        raise ValueError(f"Output path is not a PDF file: {output_path_obj}")
+def _ensure_output_path(
+    output_path_obj: Path, output_format: OutputFormat
+) -> None:
+    expected_suffix = f".{output_format.value}"
+    if output_path_obj.suffix.lower() != expected_suffix:
+        raise ValueError(
+            f"Output path is not a {output_format.value.upper()} file: {output_path_obj}"
+        )
 
 
 def _ensure_directory_exists(path: Path) -> None:

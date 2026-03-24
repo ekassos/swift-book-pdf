@@ -1,0 +1,180 @@
+/*
+ * Copyright 2026 Evangelos Kassos
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+* {
+  hyphens: none;
+  -webkit-hyphens: none;
+}
+
+.highlight {
+  background: #fff;
+}
+
+.highlight .err {
+  color: #a61717;
+} /* Error */
+
+.highlight .cp, /* Comment.Preproc */
+.highlight .k,  /* Keyword */
+.highlight .kc, /* Keyword.Constant */
+.highlight .kd, /* Keyword.Declaration */
+.highlight .kp, /* Keyword.Pseudo */
+.highlight .kr {
+  /* Keyword.Reserved */
+  color: #aa0d91;
+}
+
+.highlight .kt, /* Keyword.Type */
+.highlight .n,  /* Name */
+.highlight .nf, /* Name.Function */
+.highlight .nv, /* Name.Variable */
+.highlight .bp, /* Name.Builtin.Pseudo */
+.highlight .vc, /* Name.Variable.Class */
+.highlight .vg, /* Name.Variable.Global */
+.highlight .vi, /* Name.Variable.Instance */
+.highlight .vm {
+  /* Name.Variable.Magic */
+  color: #3f6e74;
+}
+
+.highlight .na, /* Name.Attribute */
+.highlight .no {
+  /* Name.Constant */
+  color: teal;
+}
+
+.highlight .nb, /* Name.Builtin */
+.highlight .nc, /* Name.Class */
+.highlight .ne {
+  /* Name.Exception */
+  color: #5c2699;
+}
+
+.highlight .ni {
+  /* Name.Entity */
+  color: purple;
+}
+
+.highlight .nn, /* Name.Namespace */
+.highlight .gp {
+  /* Generic.Prompt */
+  color: #555;
+}
+
+.highlight .nt {
+  /* Name.Tag */
+  color: navy;
+}
+
+.highlight .m,  /* Literal.Number */
+.highlight .mb, /* Literal.Number.Bin */
+.highlight .mf, /* Literal.Number.Float */
+.highlight .mh, /* Literal.Number.Hex */
+.highlight .mi, /* Literal.Number.Integer */
+.highlight .mo, /* Literal.Number.Oct */
+.highlight .il {
+  /* Literal.Number.Integer.Long */
+  color: #1c00cf;
+}
+
+.highlight .s,  /* Literal.String */
+.highlight .sa, /* Literal.String.Affix */
+.highlight .sb, /* Literal.String.Backtick */
+.highlight .sc, /* Literal.String.Char */
+.highlight .dl, /* Literal.String.Delimiter */
+.highlight .sd, /* Literal.String.Doc */
+.highlight .s1, /* Literal.String.Single */
+.highlight .s2, /* Literal.String.Double */
+.highlight .se, /* Literal.String.Escape */
+.highlight .sh, /* Literal.String.Heredoc */
+.highlight .si, /* Literal.String.Interpol */
+.highlight .sr, /* Literal.String.Regex */
+.highlight .ss, /* Literal.String.Symbol */
+.highlight .sx {
+  /* Literal.String.Other */
+  color: #c41a16;
+}
+
+.highlight .c,  /* Comment */
+.highlight .cm, /* Comment.Multiline */
+.highlight .c1, /* Comment.Single */
+.highlight .cs {
+  /* Comment.Special */
+  color: #007400;
+}
+
+.highlight .gd {
+  /* Generic.Deleted */
+  color: #000;
+  background-color: #fdd;
+}
+
+.highlight .gd .x {
+  /* Generic.Deleted.Specific */
+  color: #000;
+  background-color: #faa;
+}
+
+.highlight .ge {
+  /* Generic.Emph */
+  font-style: italic;
+}
+
+.highlight .gr, /* Generic.Error */
+.highlight .gt {
+  /* Generic.Traceback */
+  color: #a00;
+}
+
+.highlight .gh {
+  /* Generic.Heading */
+  color: #999;
+}
+
+.highlight .gi .x {
+  /* Generic.Inserted.Specific */
+  color: #000;
+  background-color: #afa;
+}
+
+.highlight .go {
+  /* Generic.Output */
+  color: #888;
+}
+
+.highlight .gs {
+  /* Generic.Strong */
+  font-weight: bold;
+}
+
+.highlight .gu {
+  /* Generic.Subheading */
+  color: #aaa;
+}
+
+.highlight .o,  /* Operator */
+.highlight .ow, /* Operator.Word */
+.highlight .p {
+  /* Punctuation */
+  color: #000;
+  font-weight: normal;
+}
+
+.highlight .w {
+  /* Text.Whitespace */
+  color: inherit;
+}

@@ -22,7 +22,7 @@ import tempfile
 from importlib import metadata
 from pathlib import Path
 
-from swift_book_pdf.config import Config
+from swift_book_pdf.config import PDFConfig
 from swift_book_pdf.fonts import check_for_missing_font_logs
 from swift_book_pdf.log import run_process_with_logs
 
@@ -205,7 +205,7 @@ def check_for_missing_dependency_logs(log_line: str) -> None:
 
 
 class PDFConverter:
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: PDFConfig) -> None:
         lualatex_executable = shutil.which("lualatex")
         if lualatex_executable is None:
             raise RuntimeError("lualatex is not installed or not in PATH.")

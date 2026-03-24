@@ -15,7 +15,7 @@
 import logging
 from string import Template
 
-from swift_book_pdf.config import Config
+from swift_book_pdf.config import PDFConfig
 from swift_book_pdf.typography import compute_font_sizes, compute_spacing
 
 from .colors import get_document_colors
@@ -104,7 +104,7 @@ def get_keep_whole_box_patch() -> str:
 """
 
 
-def generate_preamble(config: Config) -> str:
+def generate_preamble(config: PDFConfig) -> str:
     unicode_fallback = "\n".join(
         [
             f'      "{font}:mode=node;",'

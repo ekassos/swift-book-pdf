@@ -1,0 +1,357 @@
+/*
+ * Copyright 2026 Evangelos Kassos
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+body {
+  font-family: "iBooks_Iowan_Old_Style", serif;
+  font-size: 0.7em;
+  line-height: 1.6em;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+img.align-center {
+  display: block;
+  height: auto;
+  margin: 1.5em auto;
+  max-width: 100%;
+}
+
+.theme-image .image-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-image .image-light {
+    display: none;
+  }
+
+  .theme-image .image-dark {
+    display: block;
+  }
+}
+
+body.coverpage {
+  margin: 0;
+  background: #fff;
+  text-align: center;
+  break-after: always;
+  page-break-after: always;
+  height: 100vh;
+  overflow: hidden;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+.cover-shell {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 820px;
+  padding: 64px 40px 48px;
+  box-sizing: border-box;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+
+.cover-logo-wrap {
+  margin: 0 0 40px;
+}
+
+.cover-logo {
+  display: block;
+  width: 116px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.titleContainer {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.coverpage h1,
+.coverpage h2 {
+  margin: 0;
+  color: #2b2b2b;
+  font-family: "SF Compact Display", "SF Pro Display", "SF Compact", "SF Pro",
+    "Helvetica Neue", "Helvetica", "Arial", "Segoe UI", "Liberation Sans",
+    "DejaVu Sans", sans-serif;
+  font-style: normal;
+  text-align: center;
+  hyphens: none;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.coverpage h1 {
+  font-size: 52px;
+  font-weight: 400;
+  line-height: 0.96;
+  margin-bottom: 2px;
+}
+
+.coverpage h2 {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+#title3 {
+  margin-top: 64px;
+}
+
+.section h1 {
+  font-size: 1.5em;
+  margin: 1em 0;
+}
+
+.section h2 {
+  font-size: 1.3em;
+  margin: 3.5em 0 0;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.section h3 {
+  font-size: 1.1em;
+  line-height: 1.5em;
+  margin: 3em 0 0;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.section-title {
+  break-after: avoid;
+  page-break-after: avoid;
+  -webkit-margin-after: 0;
+}
+
+a {
+  color: rgb(0 136 204 / 100%);
+}
+
+.part-page {
+  break-after: always;
+  page-break-after: always;
+}
+
+.part-page h1 {
+  font-size: 2.5em;
+  margin-top: 55%;
+  text-align: center;
+}
+
+code {
+  font-family: Menlo, monospace;
+  font-size: 0.85em;
+}
+
+.code-block__shell {
+  display: block;
+  font-family: Menlo, monospace;
+  font-size: 0.85em;
+  margin-left: 21px;
+}
+
+.code-block__lines {
+  counter-reset: li;
+  margin: 0;
+  padding: 0;
+  line-height: 2em;
+  list-style: none;
+}
+
+.code-block__shell .code-block__lines {
+  margin-left: 0;
+}
+
+.code-block__shell .code-block__lines li {
+  margin: 0;
+  margin-left: 60px;
+  padding-right: 10px;
+  padding-left: 0;
+  list-style-type: none;
+  text-indent: -52px;
+  white-space: pre-wrap;
+}
+
+.code-block__lines li::before {
+  content: counter(li);
+  counter-increment: li;
+  margin-right: 16px;
+  color: rgb(128 128 128 / 100%);
+  font-family: Menlo, monospace;
+  user-select: none;
+}
+
+.code-block__shell .code-block__lines li::before {
+  margin-left: -35px;
+  margin-right: 25px;
+}
+
+.code-block--outline .code-block__lines {
+  line-height: 1.9em;
+}
+
+.code-block--outline .code-block__lines li::before {
+  content: " ";
+}
+
+.code-block__shell .code-block__lines li:nth-child(n + 10)::before {
+  margin-left: -43px;
+  margin-right: 25px;
+}
+
+.code-block__shell .code-block__lines li:only-of-type::before {
+  content: " ";
+  color: rgb(255 255 255 / 100%);
+}
+
+div.code-block__frame {
+  margin: 1.5em 0;
+  padding: 1px 0 1px 10px;
+  border-left: 4px solid rgb(205 233 244 / 100%);
+  line-height: 22px;
+}
+
+.code-block--outline div.code-block__frame {
+  border-color: transparent;
+}
+
+.code-block__shell div.code-block__frame {
+  line-height: 1.3em;
+  margin-left: 10px;
+  overflow: visible;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  width: 93%;
+}
+
+.highlight .gi {
+  padding: 2px 6px;
+  border: 1px solid rgb(196 212 241 / 100%);
+  border-radius: 10px;
+  background-color: rgb(233 239 250 / 100%);
+  color: rgb(0 0 0 / 100%) !important;
+  font-style: inherit;
+  white-space: nowrap;
+}
+
+.code-block--outline .highlight .gi-wrap {
+  overflow-wrap: anywhere;
+  white-space: normal;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+p > code.inline-code,
+li > code.inline-code {
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  color: #808080;
+  font-size: 0.85em;
+}
+
+.aside {
+  margin-bottom: 1.5em;
+  margin-left: 5px;
+  padding: 7px 15px;
+  border-left: solid 4px #ccc;
+  background-color: #f5f5f5;
+  font-size: 0.9em;
+  line-height: 1.4em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.aside .aside-title {
+  margin-bottom: 0.7em;
+  color: #777;
+  font-size: 0.7em;
+  font-weight: normal;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.aside p {
+  margin: 0.5em 0;
+}
+
+.section h3 + p {
+  margin-top: 0;
+}
+
+.aside.grammar {
+  width: inherit;
+  margin: 20px 0;
+  padding-left: 15px;
+  border-left: 5px solid rgb(233 233 233 / 100%);
+  background: transparent;
+  font-family: Helvetica, sans-serif;
+}
+
+.aside.grammar p.aside-title {
+  margin-bottom: 8px;
+}
+
+.aside.grammar p {
+  margin: 0;
+}
+
+.aside.grammar p.grammar-rule {
+  margin-left: 25px;
+  text-indent: -25px;
+}
+
+.aside.grammar .grammar-term {
+  color: rgb(128 128 128 / 100%);
+  font-style: italic;
+}
+
+.aside.grammar .arrow {
+  padding: 0 6px;
+}
+
+.aside.grammar code {
+  padding: 0 3px;
+  border: 0;
+  background: transparent;
+  font-weight: bold;
+}
+
+.aside.grammar .grammar-ref a {
+  padding: 0 3px;
+  font-style: italic;
+}
+
+.aside.grammar .grammar-optional {
+  color: rgb(128 128 128 / 100%);
+  font-style: italic;
+}

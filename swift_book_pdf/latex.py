@@ -15,7 +15,7 @@
 from pathlib import Path
 
 from swift_book_pdf.blocks import parse_blocks
-from swift_book_pdf.config import Config
+from swift_book_pdf.config import PDFConfig
 from swift_book_pdf.files import get_file_name
 from swift_book_pdf.latex_helpers import (
     convert_blocks_to_latex,
@@ -28,7 +28,7 @@ from swift_book_pdf.markdown_helpers import (
 
 
 class LaTeXConverter:
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: PDFConfig) -> None:
         self.config = config
 
     def generate_latex(self, file_path: str) -> str:

@@ -13,17 +13,45 @@
 # limitations under the License.
 
 import logging
+from collections.abc import Callable
 from tempfile import TemporaryDirectory
 
 import click
 
 from swift_book_pdf.book import Book
-from swift_book_pdf.config import Config
+from swift_book_pdf.config import Config, EPUBConfig, PDFConfig
 from swift_book_pdf.doc import DocConfig
 from swift_book_pdf.files import validate_output_path
 from swift_book_pdf.fonts import FontConfig
 from swift_book_pdf.log import configure_logging
-from swift_book_pdf.schema import PaperSize, RenderingMode
+from swift_book_pdf.schema import (
+    OutputFormat,
+    PaperSize,
+    RenderingMode,
+    RunOptions,
+)
+
+DEFAULT_TYPESETS = 4
+
+
+EPUB_UNSUPPORTED_OPTION_CHECKS: tuple[
+    tuple[str, Callable[[RunOptions], bool]], ...
+] = (
+    ("--mode", lambda options: options.mode != RenderingMode.DIGITAL.value),
+    ("--paper", lambda options: options.paper != PaperSize.LETTER.value),
+    ("--typesets", lambda options: options.typesets != DEFAULT_TYPESETS),
+    ("--main", lambda options: options.main is not None),
+    ("--mono", lambda options: options.mono is not None),
+    ("--unicode", lambda options: bool(options.unicode)),
+    ("--emoji", lambda options: options.emoji is not None),
+    (
+        "--header-footer",
+        lambda options: options.header_footer is not None,
+    ),
+    ("--font-size", lambda options: options.font_size is not None),
+    ("--dark", lambda options: options.dark),
+    ("--gutter/--no-gutter", lambda options: options.gutter is not None),
+)
 
 
 @click.group()
@@ -35,8 +63,19 @@ def cli() -> None:
 @click.argument(
     "output_path",
     type=click.Path(resolve_path=True),
-    default="./swift-book.pdf",
+    default=".",
     required=False,
+)
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(
+        [output_format.value for output_format in OutputFormat],
+        case_sensitive=False,
+    ),
+    default=OutputFormat.PDF.value,
+    help="Output format",
+    show_default="pdf",
 )
 @click.option(
     "--mode",
@@ -60,9 +99,9 @@ def cli() -> None:
 @click.option(
     "--typesets",
     type=int,
-    default=4,
+    default=DEFAULT_TYPESETS,
     help="Number of typeset passes to use",
-    show_default="4",
+    show_default=str(DEFAULT_TYPESETS),
 )
 @click.option(
     "--main",
@@ -125,6 +164,7 @@ def cli() -> None:
 )
 def run(  # noqa: PLR0913
     output_path: str,
+    output_format: str,
     mode: str,
     verbose: bool,
     typesets: int,
@@ -141,36 +181,105 @@ def run(  # noqa: PLR0913
 ) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
+    options = RunOptions(
+        mode=mode,
+        paper=paper,
+        typesets=typesets,
+        main=main,
+        mono=mono,
+        unicode=tuple(unicode),
+        emoji=emoji,
+        header_footer=header_footer,
+        font_size=font_size,
+        dark=dark,
+        gutter=gutter,
+    )
 
     try:
-        output_path = validate_output_path(output_path)
-        font_config = FontConfig(
-            main_font_custom=main,
-            mono_font_custom=mono,
-            unicode_fonts_custom_list=unicode,
-            emoji_font_custom=emoji,
-            header_footer_font_custom=header_footer,
-        )
-        doc_config = DocConfig(
-            RenderingMode(mode),
-            PaperSize(paper),
-            typesets,
-            dark,
-            gutter,
-            font_size,
-        )
+        selected_output_format = OutputFormat(output_format)
+        output_path = validate_output_path(output_path, selected_output_format)
     except ValueError as e:
         logger.error(str(e))
         return
 
     with TemporaryDirectory() as temp:
-        config = Config(temp, output_path, font_config, doc_config, input_path)
+        config: Config | None = None
         try:
-            Book(config).process()
-        except Exception as e:
-            logger.error(
-                f"Couldn't build The Swift Programming Language book: {e}\n{font_config}",
+            config = _build_config(
+                temp,
+                output_path,
+                selected_output_format,
+                options,
+                input_path,
             )
+            Book(config).process()
+        except ValueError as e:
+            logger.error(str(e))
+        except Exception as e:
+            details = _format_build_details(config)
+            logger.error(
+                f"Couldn't build The Swift Programming Language book: {e}{details}",
+            )
+
+
+def _build_config(
+    temp_dir: str,
+    output_path: str,
+    output_format: OutputFormat,
+    options: RunOptions,
+    input_path: str | None,
+) -> Config:
+    if output_format == OutputFormat.PDF:
+        return PDFConfig(
+            temp_dir,
+            output_path,
+            _build_font_config(options),
+            _build_doc_config(options),
+            input_path,
+        )
+
+    unsupported_options = _find_unsupported_epub_options(options)
+    if unsupported_options:
+        raise ValueError(
+            "The following options are only supported for PDF output: "
+            + ", ".join(unsupported_options)
+        )
+    return EPUBConfig(temp_dir, output_path, input_path)
+
+
+def _build_font_config(options: RunOptions) -> FontConfig:
+    return FontConfig(
+        main_font_custom=options.main,
+        mono_font_custom=options.mono,
+        unicode_fonts_custom_list=list(options.unicode),
+        emoji_font_custom=options.emoji,
+        header_footer_font_custom=options.header_footer,
+    )
+
+
+def _build_doc_config(options: RunOptions) -> DocConfig:
+    return DocConfig(
+        RenderingMode(options.mode),
+        PaperSize(options.paper),
+        options.typesets,
+        options.dark,
+        options.gutter,
+        options.font_size,
+    )
+
+
+def _find_unsupported_epub_options(options: RunOptions) -> list[str]:
+    return [
+        option_name
+        for option_name, check in EPUB_UNSUPPORTED_OPTION_CHECKS
+        if check(options)
+    ]
+
+
+def _format_build_details(config: Config | None) -> str:
+    if isinstance(config, PDFConfig):
+        return f"\n{config.font_config}"
+    return ""
 
 
 if __name__ == "__main__":

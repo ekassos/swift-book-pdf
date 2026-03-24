@@ -13,14 +13,20 @@
 # limitations under the License.
 
 from enum import StrEnum
+from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RenderingMode(StrEnum):
     DIGITAL = "digital"
     PRINT = "print"
+
+
+class OutputFormat(StrEnum):
+    PDF = "pdf"
+    EPUB = "epub"
 
 
 class Appearance(StrEnum):
@@ -40,6 +46,50 @@ class SwiftBookRepoFilePaths(BaseModel):
     assets_dir: str
 
 
+class RunOptions(BaseModel):
+    mode: str
+    paper: str
+    typesets: int
+    main: str | None
+    mono: str | None
+    unicode: tuple[str, ...]
+    emoji: str | None
+    header_footer: str | None
+    font_size: float | None
+    dark: bool
+    gutter: bool | None
+
+
+class ImageAsset(BaseModel):
+    source_path: Path
+    href: str
+    media_type: str
+
+
+class DocumentEntry(BaseModel):
+    key: str
+    title: str
+    subtitle: str | None
+    href: str
+    directory: str | None
+    source_path: Path | None = None
+    heading_map: dict[str, str] = Field(default_factory=dict)
+
+
+class PartEntry(BaseModel):
+    title: str
+    href: str
+    directory: str
+    children: list[DocumentEntry]
+
+
+class ManifestItem(BaseModel):
+    item_id: str
+    href: str
+    media_type: str
+    properties: str | None = None
+
+
 class ChapterMetadata(BaseModel):
     file_path: str | None = None
     header_line: str | None = None
@@ -55,7 +105,7 @@ class GeneratedSummary(BaseModel):
 class PublishBookSummaryConfig(BaseModel):
     title: str | None = None
     subtitle: str | None = None
-    source_paths: list[str] = []
+    source_paths: list[str] = Field(default_factory=list)
 
 
 class TableBlock(BaseModel):
@@ -133,6 +183,12 @@ Block = (
     | TermListBlock
     | UnorderedListBlock
 )
+
+
+class SourceDocument(BaseModel):
+    entry: DocumentEntry
+    lines: list[str]
+    blocks: list[Block]
 
 
 class DocumentColors(BaseModel):

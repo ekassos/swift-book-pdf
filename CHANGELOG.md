@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Convert the DocC source for _The Swift Programming Language_ book into an EPUB file.
+- The generated EPUB file follows the rendering style used by Apple Books for [TSPL publications up to Swift 5.7](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
+
+### Internal
+- Add `pillow` dependency for image processing during EPUB generation.
 
 ## [2.1.0] - 2026-03-23
 ### Added

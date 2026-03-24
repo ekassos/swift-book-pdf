@@ -18,17 +18,18 @@ import shutil
 from swift_book_pdf.doc import DocConfig
 from swift_book_pdf.files import find_or_clone_swift_book_repo
 from swift_book_pdf.fonts import FontConfig
+from swift_book_pdf.schema import OutputFormat
 
 logger = logging.getLogger(__name__)
 
 
 class Config:
+    output_format: OutputFormat
+
     def __init__(
         self,
         temp_dir_path: str,
         output_path: str,
-        font_config: FontConfig,
-        doc_config: DocConfig,
         input_path: str | None = None,
     ) -> None:
         if not shutil.which("git"):
@@ -42,12 +43,40 @@ class Config:
         self.toc_file_path = file_paths.toc_file_path
         self.assets_dir = file_paths.assets_dir
         self.output_path = output_path
-        self.font_config = font_config
-        self.doc_config = doc_config
         logger.debug(f"Swift book repository directory: {self.root_dir}")
         logger.debug(f"Assets directory: {self.assets_dir}")
         logger.debug(f"Output path: {self.output_path}")
-        logger.debug(f"Font configuration: {self.font_config}")
-        logger.debug(f"Document configuration: {self.doc_config}")
         logger.debug(f"Temporary directory: {self.temp_dir}")
         logger.debug(f"Table of contents file path: {self.toc_file_path}")
+
+
+class PDFConfig(Config):
+    output_format = OutputFormat.PDF
+
+    def __init__(
+        self,
+        temp_dir_path: str,
+        output_path: str,
+        font_config: FontConfig,
+        doc_config: DocConfig,
+        input_path: str | None = None,
+    ) -> None:
+        super().__init__(temp_dir_path, output_path, input_path)
+        self.font_config = font_config
+        self.doc_config = doc_config
+        logger.debug(f"Output format: {self.output_format}")
+        logger.debug(f"Font configuration: {self.font_config}")
+        logger.debug(f"Document configuration: {self.doc_config}")
+
+
+class EPUBConfig(Config):
+    output_format = OutputFormat.EPUB
+
+    def __init__(
+        self,
+        temp_dir_path: str,
+        output_path: str,
+        input_path: str | None = None,
+    ) -> None:
+        super().__init__(temp_dir_path, output_path, input_path)
+        logger.debug(f"Output format: {self.output_format}")

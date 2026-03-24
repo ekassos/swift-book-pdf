@@ -172,25 +172,29 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     text = re.sub(
         r"<doc:([^>#]+)#([^>]+)>",
         lambda m: (
-            "\\fallbackrefbook{"
-            if mode == RenderingMode.PRINT
-            else "\\fallbackrefdigital{"
-        )
-        + m.group(1).lower()
-        + "_"
-        + m.group(2).lower()
-        + "}",
+            (
+                "\\fallbackrefbook{"
+                if mode == RenderingMode.PRINT
+                else "\\fallbackrefdigital{"
+            )
+            + m.group(1).lower()
+            + "_"
+            + m.group(2).lower()
+            + "}"
+        ),
         text,
     )
     text = re.sub(
         r"<doc:([^>#]+)>",
         lambda m: (
-            "\\fallbackrefbook{"
-            if mode == RenderingMode.PRINT
-            else "\\fallbackrefdigital{"
-        )
-        + m.group(1).lower()
-        + "}",
+            (
+                "\\fallbackrefbook{"
+                if mode == RenderingMode.PRINT
+                else "\\fallbackrefdigital{"
+            )
+            + m.group(1).lower()
+            + "}"
+        ),
         text,
     )
     text = re.sub(r"(?<!\\)#", r"\#", text)

@@ -60,6 +60,7 @@ class RunOptions(BaseModel):
     gutter: bool | None
     export_cover_image: bool = False
     cover_footer_line: str | None = None
+    override_version: str | None = None
 
 
 class ImageAsset(BaseModel):

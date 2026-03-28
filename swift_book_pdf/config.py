@@ -81,12 +81,14 @@ class EPUBConfig(Config):
         cover_footer_line: str | None = None,
         override_version: str | None = None,
         publisher: str | None = None,
+        contributor: str | None = None,
     ) -> None:
         super().__init__(temp_dir_path, output_path, input_path)
         self.export_cover_image = export_cover_image
         self.cover_footer_line = cover_footer_line
         self.override_version = override_version
         self.publisher = publisher
+        self.contributor = contributor
         logger.debug(f"Output format: {self.output_format}")
         logger.debug(
             f"Save generated cover image as separate file: {export_cover_image}"
@@ -94,3 +96,4 @@ class EPUBConfig(Config):
         logger.debug(f"Cover footer line: {cover_footer_line}")
         logger.debug(f"Version override: {override_version}")
         logger.debug(f"Publisher: {publisher}")
+        logger.debug(f"Contributor: {contributor}")

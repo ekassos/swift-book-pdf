@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new `--cover-footer-line` option to include a custom line of text in the cover image footer when generating an EPUB file.
 - Add new `--override-version` option to override the version number when generating an EPUB file. Include "beta" for beta versions. If not provided, the version will be determined by parsing the table of contents.
 - Add new `--publisher` option to include publisher metadata in the generated EPUB file.
+- Add new `--contributor` option to include contributor metadata in the generated EPUB file.
 
 ### Changed
 - Update ordering of CLI options in help message for better discoverability.

@@ -431,6 +431,9 @@ class EPUBPackageWriter:
         publisher_xml = ""
         if self.config.publisher is not None:
             publisher_xml = f"<dc:publisher>{html.escape(self.config.publisher)}</dc:publisher>\n    "
+        contributor_xml = ""
+        if self.config.contributor is not None:
+            contributor_xml = f"<dc:contributor>{html.escape(self.config.contributor)}</dc:contributor>\n    "
         content_opf = f"""<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" xml:lang="en"
  prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/"
@@ -442,7 +445,7 @@ class EPUBPackageWriter:
     <dc:language>en</dc:language>
     <dc:title>{html.escape(book_title)}</dc:title>
     <dc:creator>The Swift project authors</dc:creator>
-    {publisher_xml}<dc:identifier id="{EPUB_IDENTIFIER_ID}">{html.escape(publication_identifier)}</dc:identifier>
+    {publisher_xml}{contributor_xml}<dc:identifier id="{EPUB_IDENTIFIER_ID}">{html.escape(publication_identifier)}</dc:identifier>
     <meta property="dcterms:modified">{modified}</meta>
     <meta property="ibooks:specified-fonts">true</meta>
     {cover_meta}</metadata>

@@ -66,6 +66,7 @@ PDF_UNSUPPORTED_OPTION_CHECKS: tuple[
         lambda options: options.override_version is not None,
     ),
     ("--publisher", lambda options: options.publisher is not None),
+    ("--contributor", lambda options: options.contributor is not None),
 )
 
 
@@ -195,6 +196,12 @@ def cli() -> None:
     default=None,
     help="When generating an EPUB, set the publisher metadata field to the specified value. If not provided, the publisher will not be set.",
 )
+@click.option(
+    "--contributor",
+    type=str,
+    default=None,
+    help="When generating an EPUB, include a contributor in the metadata with the specified value. If not provided, this field will not be included.",
+)
 @click.option("--verbose", is_flag=True, help="Enable verbose logging.")
 @click.version_option(
     prog_name="Swift-Book-PDF",
@@ -220,6 +227,7 @@ def run(  # noqa: PLR0913
     cover_footer_line: str | None,
     override_version: str | None,
     publisher: str | None,
+    contributor: str | None,
 ) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
@@ -239,6 +247,7 @@ def run(  # noqa: PLR0913
         cover_footer_line=cover_footer_line,
         override_version=override_version,
         publisher=publisher,
+        contributor=contributor,
     )
 
     try:
@@ -304,6 +313,7 @@ def _build_config(
         cover_footer_line=options.cover_footer_line,
         override_version=options.override_version,
         publisher=options.publisher,
+        contributor=options.contributor,
     )
 
 

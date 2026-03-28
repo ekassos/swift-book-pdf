@@ -62,6 +62,7 @@ class RunOptions(BaseModel):
     cover_footer_line: str | None = None
     override_version: str | None = None
     publisher: str | None = None
+    contributor: str | None = None
 
 
 class ImageAsset(BaseModel):

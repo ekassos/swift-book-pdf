@@ -96,6 +96,10 @@ class EPUBBuilder:
         writer.write_container_file(workspace)
         writer.write_static_files(workspace)
         writer.write_cover_asset(workspace, version_info)
+        if self.config.output_cover_image:
+            cover_output_path = writer.export_cover_asset(workspace)
+            if cover_output_path is not None:
+                logger.info(f"Cover image saved to {cover_output_path}")
 
         cover_document = self._build_cover_document(writer, workspace)
         documents = self._flatten_documents(cover_document, parts, notices)

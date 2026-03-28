@@ -427,7 +427,10 @@ class EPUBPackageWriter:
         modified = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
         cover_meta = ""
         if self.has_cover_asset(workspace):
-            cover_meta = '    <meta name="cover" content="epub-cover"/>\n'
+            cover_meta = '<meta name="cover" content="epub-cover"/>\n    '
+        publisher_xml = ""
+        if self.config.publisher is not None:
+            publisher_xml = f"<dc:publisher>{html.escape(self.config.publisher)}</dc:publisher>\n    "
         content_opf = f"""<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" xml:lang="en"
  prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/"
@@ -438,12 +441,11 @@ class EPUBPackageWriter:
         xmlns:dc="http://purl.org/dc/elements/1.1/">
     <dc:language>en</dc:language>
     <dc:title>{html.escape(book_title)}</dc:title>
-    <dc:creator>Apple Inc. and the Swift project authors</dc:creator>
-    <dc:publisher>Swift.org</dc:publisher>
-    <dc:identifier id="{EPUB_IDENTIFIER_ID}">{html.escape(publication_identifier)}</dc:identifier>
+    <dc:creator>The Swift project authors</dc:creator>
+    {publisher_xml}<dc:identifier id="{EPUB_IDENTIFIER_ID}">{html.escape(publication_identifier)}</dc:identifier>
     <meta property="dcterms:modified">{modified}</meta>
     <meta property="ibooks:specified-fonts">true</meta>
-{cover_meta}  </metadata>
+    {cover_meta}</metadata>
   <manifest>
 {manifest_xml}
   </manifest>

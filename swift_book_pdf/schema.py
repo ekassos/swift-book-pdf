@@ -61,6 +61,7 @@ class RunOptions(BaseModel):
     export_cover_image: bool = False
     cover_footer_line: str | None = None
     override_version: str | None = None
+    publisher: str | None = None
 
 
 class ImageAsset(BaseModel):

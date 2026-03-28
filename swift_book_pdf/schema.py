@@ -59,6 +59,7 @@ class RunOptions(BaseModel):
     dark: bool
     gutter: bool | None
     output_cover_image: bool = False
+    cover_footer_line: str | None = None
 
 
 class ImageAsset(BaseModel):

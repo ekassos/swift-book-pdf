@@ -32,6 +32,9 @@ from swift_book_pdf.schema import (
 )
 
 from .constants import (
+    COVER_FOOTER_TEXT_FILL,
+    COVER_FOOTER_TEXT_SIZE,
+    COVER_FOOTER_TEXT_Y,
     COVER_TEXT_FILL,
     COVER_TEXT_SIZE,
     COVER_TEXT_TRACKING,
@@ -124,13 +127,21 @@ class EPUBPackageWriter:
         )
         cover_destination.parent.mkdir(parents=True, exist_ok=True)
         edition_text = cover_edition_text(version_info)
-        if edition_text is None:
+        if edition_text is None and not self.config.cover_footer_line:
             shutil.copy2(template_path, cover_destination)
             return
 
         cover_image = Image.open(template_path).convert("RGBA")
-        font = _load_cover_font(COVER_TEXT_SIZE)
-        _draw_cover_edition_text(cover_image, edition_text, font)
+        if edition_text is not None:
+            font = _load_cover_font(COVER_TEXT_SIZE)
+            _draw_cover_edition_text(cover_image, edition_text, font)
+        if self.config.cover_footer_line:
+            footer_line_font = _load_cover_font(COVER_FOOTER_TEXT_SIZE)
+            _draw_cover_footer_line(
+                cover_image,
+                self.config.cover_footer_line,
+                footer_line_font,
+            )
         cover_image.convert("RGB").save(cover_destination, format="PNG")
 
     def export_cover_asset(self, workspace: Path) -> Path | None:
@@ -588,16 +599,31 @@ def _draw_cover_edition_text(
     image.alpha_composite(overlay, (x, y))
 
 
+def _draw_cover_footer_line(
+    image: Image.Image,
+    text: str,
+    font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
+) -> None:
+    _draw_cover_centered_text(
+        image,
+        text,
+        font,
+        COVER_FOOTER_TEXT_Y,
+        COVER_FOOTER_TEXT_FILL,
+    )
+
+
 def _measure_tracked_text(
     text: str,
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
+    tracking: float = COVER_TEXT_TRACKING,
 ) -> tuple[float, int, int, int]:
     dummy = Image.new("RGBA", (1, 1), (255, 255, 255, 0))
     draw = ImageDraw.Draw(dummy)
     left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
     width = float(right - left)
     if len(text) > 1:
-        width += COVER_TEXT_TRACKING * (len(text) - 1)
+        width += tracking * (len(text) - 1)
     return width, bottom - top, left, top
 
 
@@ -614,6 +640,37 @@ def _draw_tracked_text(
         cursor_x += draw.textlength(character, font=font)
         if index < len(text) - 1:
             cursor_x += tracking
+
+
+def _draw_cover_centered_text(
+    image: Image.Image,
+    text: str,
+    font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
+    top_y: float,
+    fill: str,
+) -> None:
+    text_width, text_height, bbox_left, bbox_top = _measure_tracked_text(
+        text,
+        font,
+        tracking=0,
+    )
+    padding = 8
+    overlay_width = max(1, int(text_width + (padding * 2)))
+    overlay_height = max(1, int(text_height + (padding * 2)))
+    overlay = Image.new(
+        "RGBA", (overlay_width, overlay_height), (255, 255, 255, 0)
+    )
+    overlay_draw = ImageDraw.Draw(overlay)
+    overlay_draw.text(
+        (padding - bbox_left, padding - bbox_top),
+        text,
+        fill=fill,
+        font=font,
+    )
+
+    x = round((image.width - overlay.width) / 2)
+    y = round(top_y)
+    image.alpha_composite(overlay, (x, y))
 
 
 def _load_named_font(

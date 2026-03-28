@@ -55,7 +55,13 @@ EPUB_UNSUPPORTED_OPTION_CHECKS: tuple[
 
 PDF_UNSUPPORTED_OPTION_CHECKS: tuple[
     tuple[str, Callable[[RunOptions], bool]], ...
-] = (("--output-cover-image", lambda options: options.output_cover_image),)
+] = (
+    ("--output-cover-image", lambda options: options.output_cover_image),
+    (
+        "--cover-footer-line",
+        lambda options: options.cover_footer_line is not None,
+    ),
+)
 
 
 @click.group()
@@ -152,6 +158,12 @@ def cli() -> None:
     help="When generating an EPUB, also save the generated cover image as a separate file in the output directory",
 )
 @click.option(
+    "--cover-footer-line",
+    type=str,
+    default=None,
+    help="When generating an EPUB, include the specified text in the cover image footer. If not provided, no footer text will be included.",
+)
+@click.option(
     "--input-path",
     "-i",
     help="Path to the root of a local copy of the swift-book repo. If not provided,\
@@ -186,6 +198,7 @@ def run(  # noqa: PLR0913
     font_size: float | None,
     dark: bool,
     output_cover_image: bool,
+    cover_footer_line: str | None,
     gutter: bool | None = None,
     input_path: str | None = None,
 ) -> None:
@@ -204,6 +217,7 @@ def run(  # noqa: PLR0913
         dark=dark,
         gutter=gutter,
         output_cover_image=output_cover_image,
+        cover_footer_line=cover_footer_line,
     )
 
     try:
@@ -266,6 +280,7 @@ def _build_config(
         output_path,
         input_path,
         output_cover_image=options.output_cover_image,
+        cover_footer_line=options.cover_footer_line,
     )
 
 

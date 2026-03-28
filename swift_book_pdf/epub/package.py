@@ -133,6 +133,16 @@ class EPUBPackageWriter:
         _draw_cover_edition_text(cover_image, edition_text, font)
         cover_image.convert("RGB").save(cover_destination, format="PNG")
 
+    def export_cover_asset(self, workspace: Path) -> Path | None:
+        source = oebps_workspace_path(workspace, "_static/cover.png")
+        if not source.exists():
+            return None
+
+        output_path = Path(self.config.output_path)
+        destination = output_path.with_name(f"{output_path.stem}_cover.png")
+        shutil.copy2(source, destination)
+        return destination
+
     def has_cover_asset(self, workspace: Path) -> bool:
         return oebps_workspace_path(workspace, "_static/cover.png").exists()
 

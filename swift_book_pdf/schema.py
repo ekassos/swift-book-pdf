@@ -58,6 +58,7 @@ class RunOptions(BaseModel):
     font_size: float | None
     dark: bool
     gutter: bool | None
+    output_cover_image: bool = False
 
 
 class ImageAsset(BaseModel):

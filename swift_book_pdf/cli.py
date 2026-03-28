@@ -53,6 +53,10 @@ EPUB_UNSUPPORTED_OPTION_CHECKS: tuple[
     ("--gutter/--no-gutter", lambda options: options.gutter is not None),
 )
 
+PDF_UNSUPPORTED_OPTION_CHECKS: tuple[
+    tuple[str, Callable[[RunOptions], bool]], ...
+] = (("--output-cover-image", lambda options: options.output_cover_image),)
+
 
 @click.group()
 def cli() -> None:
@@ -143,6 +147,11 @@ def cli() -> None:
 )
 @click.option("--dark", is_flag=True, help="Render the book in dark mode")
 @click.option(
+    "--output-cover-image",
+    is_flag=True,
+    help="When generating an EPUB, also save the generated cover image as a separate file in the output directory",
+)
+@click.option(
     "--input-path",
     "-i",
     help="Path to the root of a local copy of the swift-book repo. If not provided,\
@@ -176,6 +185,7 @@ def run(  # noqa: PLR0913
     header_footer: str | None,
     font_size: float | None,
     dark: bool,
+    output_cover_image: bool,
     gutter: bool | None = None,
     input_path: str | None = None,
 ) -> None:
@@ -193,6 +203,7 @@ def run(  # noqa: PLR0913
         font_size=font_size,
         dark=dark,
         gutter=gutter,
+        output_cover_image=output_cover_image,
     )
 
     try:
@@ -230,6 +241,12 @@ def _build_config(
     input_path: str | None,
 ) -> Config:
     if output_format == OutputFormat.PDF:
+        unsupported_options = _find_unsupported_pdf_options(options)
+        if unsupported_options:
+            raise ValueError(
+                "The following options are only supported for EPUB output: "
+                + ", ".join(unsupported_options)
+            )
         return PDFConfig(
             temp_dir,
             output_path,
@@ -244,7 +261,12 @@ def _build_config(
             "The following options are only supported for PDF output: "
             + ", ".join(unsupported_options)
         )
-    return EPUBConfig(temp_dir, output_path, input_path)
+    return EPUBConfig(
+        temp_dir,
+        output_path,
+        input_path,
+        output_cover_image=options.output_cover_image,
+    )
 
 
 def _build_font_config(options: RunOptions) -> FontConfig:
@@ -272,6 +294,14 @@ def _find_unsupported_epub_options(options: RunOptions) -> list[str]:
     return [
         option_name
         for option_name, check in EPUB_UNSUPPORTED_OPTION_CHECKS
+        if check(options)
+    ]
+
+
+def _find_unsupported_pdf_options(options: RunOptions) -> list[str]:
+    return [
+        option_name
+        for option_name, check in PDF_UNSUPPORTED_OPTION_CHECKS
         if check(options)
     ]
 

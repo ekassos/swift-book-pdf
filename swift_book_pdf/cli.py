@@ -66,6 +66,7 @@ PDF_UNSUPPORTED_OPTION_CHECKS: tuple[
         lambda options: options.override_version is not None,
     ),
     ("--publisher", lambda options: options.publisher is not None),
+    ("--contributor", lambda options: options.contributor is not None),
 )
 
 

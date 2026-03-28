@@ -241,6 +241,12 @@ def _build_config(
     input_path: str | None,
 ) -> Config:
     if output_format == OutputFormat.PDF:
+        unsupported_options = _find_unsupported_pdf_options(options)
+        if unsupported_options:
+            raise ValueError(
+                "The following options are only supported for EPUB output: "
+                + ", ".join(unsupported_options)
+            )
         return PDFConfig(
             temp_dir,
             output_path,
@@ -288,6 +294,14 @@ def _find_unsupported_epub_options(options: RunOptions) -> list[str]:
     return [
         option_name
         for option_name, check in EPUB_UNSUPPORTED_OPTION_CHECKS
+        if check(options)
+    ]
+
+
+def _find_unsupported_pdf_options(options: RunOptions) -> list[str]:
+    return [
+        option_name
+        for option_name, check in PDF_UNSUPPORTED_OPTION_CHECKS
         if check(options)
     ]
 

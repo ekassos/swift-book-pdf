@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The generated EPUB file follows the rendering style used by Apple Books for [TSPL publications up to Swift 5.7](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 - Add new `--export-cover-image` / `-e` flag to save the generated cover image as a separate PNG file in the output directory when generating an EPUB file.
 - Add new `--cover-footer-line` option to include a custom line of text in the cover image footer when generating an EPUB file.
+- Add new `--override-version` option to override the version number when generating an EPUB file. Include "beta" for beta versions. If not provided, the version will be determined by parsing the table of contents.
 
 ### Changed
 - Update ordering of CLI options in help message for better discoverability.

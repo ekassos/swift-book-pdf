@@ -61,6 +61,10 @@ PDF_UNSUPPORTED_OPTION_CHECKS: tuple[
         "--cover-footer-line",
         lambda options: options.cover_footer_line is not None,
     ),
+    (
+        "--override-version",
+        lambda options: options.override_version is not None,
+    ),
 )
 
 
@@ -178,6 +182,12 @@ def cli() -> None:
     default=None,
     help="When generating an EPUB, include the specified text in the cover image footer. If not provided, no footer text will be included.",
 )
+@click.option(
+    "--override-version",
+    type=str,
+    default=None,
+    help='When generating an EPUB, override the version number. Include "beta" for beta versions. If not provided, the version will be determined by parsing the table of contents.',
+)
 @click.option("--verbose", is_flag=True, help="Enable verbose logging.")
 @click.version_option(
     prog_name="Swift-Book-PDF",
@@ -197,10 +207,11 @@ def run(  # noqa: PLR0913
     header_footer: str | None,
     font_size: float | None,
     dark: bool,
+    gutter: bool | None,
+    input_path: str | None,
     export_cover_image: bool,
     cover_footer_line: str | None,
-    gutter: bool | None = None,
-    input_path: str | None = None,
+    override_version: str | None,
 ) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
@@ -218,6 +229,7 @@ def run(  # noqa: PLR0913
         gutter=gutter,
         export_cover_image=export_cover_image,
         cover_footer_line=cover_footer_line,
+        override_version=override_version,
     )
 
     try:
@@ -281,6 +293,7 @@ def _build_config(
         input_path,
         export_cover_image=options.export_cover_image,
         cover_footer_line=options.cover_footer_line,
+        override_version=options.override_version,
     )
 
 

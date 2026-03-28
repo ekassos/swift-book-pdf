@@ -76,7 +76,7 @@ class EPUBBuilder:
         writer = EPUBPackageWriter(self.config)
         workspace = writer.prepare_workspace()
 
-        version_info = self._extract_version_info()
+        version_info = self._version_info()
         source_revision = get_swift_book_repository_revision(
             self.config.root_dir
         )
@@ -163,6 +163,9 @@ class EPUBBuilder:
     def _extract_version_info(self) -> str | None:
         _, version_info = replace_and_extract_version(self.toc.file_content)
         return version_info
+
+    def _version_info(self) -> str | None:
+        return self.config.override_version or self._extract_version_info()
 
     def _build_parts(self) -> list[PartEntry]:
         parts: list[PartEntry] = []

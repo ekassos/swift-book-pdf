@@ -77,14 +77,14 @@ class EPUBConfig(Config):
         temp_dir_path: str,
         output_path: str,
         input_path: str | None = None,
-        output_cover_image: bool = False,
+        export_cover_image: bool = False,
         cover_footer_line: str | None = None,
     ) -> None:
         super().__init__(temp_dir_path, output_path, input_path)
-        self.output_cover_image = output_cover_image
+        self.export_cover_image = export_cover_image
         self.cover_footer_line = cover_footer_line
         logger.debug(f"Output format: {self.output_format}")
         logger.debug(
-            f"Save generated cover image as separate file: {output_cover_image}"
+            f"Save generated cover image as separate file: {export_cover_image}"
         )
         logger.debug(f"Cover footer line: {cover_footer_line}")

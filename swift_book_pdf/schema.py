@@ -58,7 +58,7 @@ class RunOptions(BaseModel):
     font_size: float | None
     dark: bool
     gutter: bool | None
-    output_cover_image: bool = False
+    export_cover_image: bool = False
     cover_footer_line: str | None = None
 
 

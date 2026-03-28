@@ -56,7 +56,7 @@ EPUB_UNSUPPORTED_OPTION_CHECKS: tuple[
 PDF_UNSUPPORTED_OPTION_CHECKS: tuple[
     tuple[str, Callable[[RunOptions], bool]], ...
 ] = (
-    ("--output-cover-image", lambda options: options.output_cover_image),
+    ("--export-cover-image", lambda options: options.export_cover_image),
     (
         "--cover-footer-line",
         lambda options: options.cover_footer_line is not None,
@@ -153,7 +153,22 @@ def cli() -> None:
 )
 @click.option("--dark", is_flag=True, help="Render the book in dark mode")
 @click.option(
-    "--output-cover-image",
+    "--gutter/--no-gutter",
+    " /-G",
+    required=False,
+    default=None,
+    help="Enable or disable the book gutter",
+)
+@click.option(
+    "--input-path",
+    "-i",
+    help="Path to the root of a local copy of the swift-book repo. If not provided, the repository will be cloned from GitHub.",
+    type=click.Path(resolve_path=True),
+    required=False,
+)
+@click.option(
+    "--export-cover-image",
+    "-e",
     is_flag=True,
     help="When generating an EPUB, also save the generated cover image as a separate file in the output directory",
 )
@@ -163,22 +178,7 @@ def cli() -> None:
     default=None,
     help="When generating an EPUB, include the specified text in the cover image footer. If not provided, no footer text will be included.",
 )
-@click.option(
-    "--input-path",
-    "-i",
-    help="Path to the root of a local copy of the swift-book repo. If not provided,\
-        the repository will be cloned from GitHub.",
-    type=click.Path(resolve_path=True),
-    required=False,
-)
-@click.option(
-    "--gutter/--no-gutter",
-    " /-G",
-    required=False,
-    default=None,
-    help="Enable or disable the book gutter",
-)
-@click.option("--verbose", is_flag=True)
+@click.option("--verbose", is_flag=True, help="Enable verbose logging.")
 @click.version_option(
     prog_name="Swift-Book-PDF",
     message="\033[1m%(prog)s\033[0m (version \033[36m%(version)s\033[0m)",
@@ -197,7 +197,7 @@ def run(  # noqa: PLR0913
     header_footer: str | None,
     font_size: float | None,
     dark: bool,
-    output_cover_image: bool,
+    export_cover_image: bool,
     cover_footer_line: str | None,
     gutter: bool | None = None,
     input_path: str | None = None,
@@ -216,7 +216,7 @@ def run(  # noqa: PLR0913
         font_size=font_size,
         dark=dark,
         gutter=gutter,
-        output_cover_image=output_cover_image,
+        export_cover_image=export_cover_image,
         cover_footer_line=cover_footer_line,
     )
 
@@ -279,7 +279,7 @@ def _build_config(
         temp_dir,
         output_path,
         input_path,
-        output_cover_image=options.output_cover_image,
+        export_cover_image=options.export_cover_image,
         cover_footer_line=options.cover_footer_line,
     )
 

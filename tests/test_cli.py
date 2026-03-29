@@ -55,6 +55,16 @@ def assert_success(result: Result) -> None:
     assert result.exit_code == 0, result.output
 
 
+def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
+    font_config = Mock()
+    monkeypatch.setattr(
+        cli_pdf,
+        "_build_font_config",
+        Mock(return_value=font_config),
+    )
+    return font_config
+
+
 @pytest.mark.parametrize(
     ("command", "present_options", "absent_options"),
     [
@@ -101,6 +111,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     tmp_path: Path,
 ) -> None:
     fake_config = object()
+    font_config = stub_pdf_font_config(monkeypatch)
     pdf_config = Mock(return_value=fake_config)
     build_pdf = Mock()
     monkeypatch.setattr(cli_pdf, "PDFConfig", pdf_config)
@@ -145,7 +156,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     args = pdf_config.call_args.args
     kwargs = pdf_config.call_args.kwargs
     assert args[1] == str(output_dir / "swift_book.pdf")
-    assert args[2] is not None
+    assert args[2] is font_config
     assert args[3].mode.value == "print"
     assert args[3].paper_size.value == "a4"
     assert args[3].typesets == PDF_TYPESSETS
@@ -243,6 +254,8 @@ def test_directory_output_defaults_to_format_extension(
 ) -> None:
     fake_config = object()
     config_mock = Mock(return_value=fake_config)
+    if scenario.module is cli_pdf:
+        stub_pdf_font_config(monkeypatch)
     monkeypatch.setattr(scenario.module, scenario.config_name, config_mock)
     monkeypatch.setattr(scenario.module, scenario.builder_name, Mock())
 
@@ -277,11 +290,14 @@ def test_directory_output_defaults_to_format_extension(
 )
 def test_input_path_rejects_revision_selection(
     runner: CliRunner,
+    monkeypatch: pytest.MonkeyPatch,
     command: click.Command,
     output_name: str,
     revision_option: str,
     revision_value: str,
 ) -> None:
+    if command is cli_pdf.pdf:
+        stub_pdf_font_config(monkeypatch)
     result = runner.invoke(
         command,
         [

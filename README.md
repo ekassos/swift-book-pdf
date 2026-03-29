@@ -1,6 +1,6 @@
-# PDF Generator for _The Swift Programming Language_
+# PDF and EPUB Generator for _The Swift Programming Language_
 
-Convert the DocC source for _The Swift Programming Language_ book into a print-ready PDF document. The final document follows the DocC rendering style and retains all internal references and external links.
+Convert the DocC source for _The Swift Programming Language_ book into PDF and EPUB documents. The generated books follow the DocC rendering style and retain all internal references and external links.
 
 <table>
   <tr>
@@ -26,11 +26,17 @@ Convert the DocC source for _The Swift Programming Language_ book into a print-r
 ![The image showcases three pages of a PDF version of "The Swift Programming Language" book. The first page displays a table of contents, listing chapters like "Welcome to Swift" and "Language Guide" with page numbers. The second page contains Swift code examples and explanations about loops, including how to use a for-in loop. The third page continues discussing while loops with a visual example of a snakes and ladders game board. The pages maintain DocC styling with black headers and highlighted code sections.](https://github.com/user-attachments/assets/466408bd-ff63-470e-a1fb-e84cb0b9412f)
 
 ## Features
+
+### PDF Generation
 - Generate a PDF version of the _The Swift Programming Language_ book, perfect for offline browsing or printing.
 - Choose from one of two [rendering modes](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--):
    - Digital mode with hyperlinks for cross-references between chapters and external links.
    - Print mode with page numbers accompanying cross-references between chapters and full URLs shown in footnotes for external links.
 - Both versions follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
+
+### EPUB Generation
+- Generate an EPUB version of the _The Swift Programming Language_ book, ideal for e-readers and mobile devices.
+- The generated EPUB file follows the rendering style used by TSPL publications up to Swift 5.7 [published on Apple Books](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 
 ## Requirements
 - Python 3.10+

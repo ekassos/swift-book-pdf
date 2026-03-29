@@ -1,47 +1,75 @@
 # PDF and EPUB Generator for _The Swift Programming Language_
 
-Convert the DocC source for _The Swift Programming Language_ book into PDF and EPUB documents. The generated books follow the DocC rendering style and retain all internal references and external links.
+Convert the DocC source for _The Swift Programming Language_ book into polished PDF and EPUB editions. The generated books follow the DocC rendering style and retain all internal references and external links.
 
-## Preview Books
+<p align="center"><strong>Read the book immediately in Apple Books or PDF, or generate your own edition locally.</strong></p>
 
-Read the EPUB editions on [Apple Books: Swift Programming Series](https://books.apple.com/us/book-series/swift-programming-series/id1887443754).
+<p align="center">
+  <a href="#apple-books"><img src="https://img.shields.io/badge/Apple%20Books-Read%20EPUB-1d1d1f?style=for-the-badge&logo=apple&logoColor=white" alt="Go to Apple Books section"></a>
+  <a href="#pdf-previews"><img src="https://img.shields.io/badge/PDF%20Previews-Open%20Downloads-0b5cad?style=for-the-badge&logo=googledocs&logoColor=white" alt="Go to PDF previews section"></a>
+  <a href="#installation"><img src="https://img.shields.io/badge/Installation-pip%20install-2ea44f?style=for-the-badge&logo=pypi&logoColor=white" alt="Go to installation section"></a>
+</p>
 
-<a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books" style="height: 50px; vertical-align: middle; object-fit: contain;" /></a>
+<p align="center">
+  <a href="#apple-books"><strong>Apple Books</strong></a> ·
+  <a href="#pdf-previews"><strong>PDF Previews</strong></a> ·
+  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#usage"><strong>Usage</strong></a>
+</p>
+
+## Choose Your Format
+
+EPUB is best for Apple Books and mobile reading. PDF is best for desktop reading, offline reference, and printing.
 
 <table>
   <tr>
-    <td colspan="3"><b>Preview Books</b> (see <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a> for versioned archives)</td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>Digital Mode<br><i>Clickable links, best for on-screen reading</i></td>
-    <td>Print Mode<br><i>Page numbers & full URLs, best for printing</i></td>
-  </tr>
-  <tr>
-    <td>Light Mode</td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
-  </tr>
-    <tr>
-    <td>Dark Mode</td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode,_dark)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode,_dark)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
+    <td valign="top" width="50%">
+      <a id="apple-books"></a>
+      <h3>EPUB on Apple Books</h3>
+      <p><strong>Best for:</strong> Apple Books, iPhone, iPad, and e-reader-style reading.</p>
+      <p>Read the EPUB editions in the <em>Swift Programming Series</em> on Apple Books.</p>
+      <p>
+        <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books" /></a>
+      </p>
+      <p><a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><strong>Read on Apple Books</strong></a></p>
+      <p>The Apple Books listing is the EPUB edition of the series, optimized for on-device reading.</p>
+    </td>
+    <td valign="top" width="50%">
+      <a id="pdf-previews"></a>
+      <h3>PDF Previews</h3>
+      <p><strong>Best for:</strong> desktop reading, offline reference, and printing.</p>
+      <p>Choose between Digital and Print renderings in Light or Dark mode.</p>
+      <p><strong>Digital</strong>: clickable links and cross-references<br><strong>Print</strong>: page references and full URLs</p>
+      <table>
+        <tr>
+          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Light-Open%20PDF-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Light PDF"></a></td>
+          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Light-Open%20PDF-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Light PDF"></a></td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Dark-Open%20PDF-0d3b66?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Dark PDF"></a></td>
+          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Dark-Open%20PDF-6d1f1f?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Dark PDF"></a></td>
+        </tr>
+      </table>
+      <p>Need older versions? Browse <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a>.</p>
+    </td>
   </tr>
 </table>
+
+<p><strong>Preview of the generated PDF</strong></p>
 
 ![The image showcases three pages of a PDF version of "The Swift Programming Language" book. The first page displays a table of contents, listing chapters like "Welcome to Swift" and "Language Guide" with page numbers. The second page contains Swift code examples and explanations about loops, including how to use a for-in loop. The third page continues discussing while loops with a visual example of a snakes and ladders game board. The pages maintain DocC styling with black headers and highlighted code sections.](https://github.com/user-attachments/assets/466408bd-ff63-470e-a1fb-e84cb0b9412f)
 
 ## Features
 
-### PDF generation (`swift-book-pdf`)
-- Generate a PDF version of the _The Swift Programming Language_ book, perfect for offline browsing or printing.
+### PDF Generation (`swift-book-pdf`)
+- Generate a PDF edition of _The Swift Programming Language_, optimized for offline reading or printing.
 - Choose from one of two [rendering modes](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--):
    - Digital mode with hyperlinks for cross-references between chapters and external links.
    - Print mode with page numbers accompanying cross-references between chapters and full URLs shown in footnotes for external links.
 - Both versions follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
-### EPUB generation (`swift-book-epub`)
-- Generate an EPUB version of the _The Swift Programming Language_ book, ideal for e-readers and mobile devices.
+### EPUB Generation (`swift-book-epub`)
+- Generate an EPUB edition of _The Swift Programming Language_, ideal for e-readers and mobile devices.
 - The generated EPUB file follows the rendering style used by TSPL publications up to Swift 5.7 [published on Apple Books](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 
 ## Requirements

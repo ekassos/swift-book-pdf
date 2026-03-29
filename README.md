@@ -27,14 +27,14 @@ Convert the DocC source for _The Swift Programming Language_ book into PDF and E
 
 ## Features
 
-### PDF Generation (`swift-book-pdf`)
+### PDF generation (`swift-book-pdf`)
 - Generate a PDF version of the _The Swift Programming Language_ book, perfect for offline browsing or printing.
 - Choose from one of two [rendering modes](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--):
    - Digital mode with hyperlinks for cross-references between chapters and external links.
    - Print mode with page numbers accompanying cross-references between chapters and full URLs shown in footnotes for external links.
 - Both versions follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
-### EPUB Generation (`swift-book-epub`)
+### EPUB generation (`swift-book-epub`)
 - Generate an EPUB version of the _The Swift Programming Language_ book, ideal for e-readers and mobile devices.
 - The generated EPUB file follows the rendering style used by TSPL publications up to Swift 5.7 [published on Apple Books](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 
@@ -52,7 +52,7 @@ pip install swift-book-pdf
 
 ## Usage
 ### Basic usage
-#### PDF Generation
+#### PDF generation
 Call `swift-book-pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--) in Letter [paper size](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#paper-sizes--).
 ```
 $ swift-book-pdf
@@ -67,7 +67,7 @@ When invoked, `swift-book-pdf` will:
 2. Convert all Markdown source files into a single LaTeX document
 3. Render the LaTeX document into the final PDF document
 
-#### EPUB Generation
+#### EPUB generation
 Call `swift-book-epub` without any arguments to save the resulting EPUB as `swift_book.epub` in the current directory.
 ```
 $ swift-book-epub

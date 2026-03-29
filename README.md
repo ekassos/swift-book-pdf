@@ -52,6 +52,7 @@ pip install swift-book-pdf
 
 ## Usage
 ### Basic usage
+#### PDF Generation
 Call `swift-book-pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--) in Letter [paper size](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#paper-sizes--).
 ```
 $ swift-book-pdf
@@ -61,10 +62,19 @@ $ swift-book-pdf
 [INFO]: PDF saved to ./swift-book.pdf
 ```
 
-When invoked, `swift-book-pdf` will:
+#### EPUB Generation
+Call `swift-book-epub` without any arguments to save the resulting EPUB as `swift_book.epub` in the current directory.
+```
+$ swift-book-epub
+[INFO]: Downloading TSPL files...
+[INFO]: Creating EPUB...
+[INFO]: EPUB saved to ./swift_book.epub
+```
+
+<!-- When invoked, `swift-book-pdf` will:
 1. Clone the `swift-book` [repository](https://github.com/swiftlang/swift-book)
 2. Convert all Markdown source files into a single LaTeX document
-3. Render the LaTeX document into the final PDF document
+3. Render the LaTeX document into the final PDF document -->
 
 > [!NOTE]
 > Starting with version 2.1.0, you can use either `swift-book-pdf` or `swift_book_pdf` to run the tool. If you're using an earlier version, use `swift_book_pdf`.

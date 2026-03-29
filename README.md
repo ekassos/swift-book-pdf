@@ -10,6 +10,8 @@ Read the EPUB editions on [Apple Books: Swift Programming Series](https://books.
 <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books" style="height: 50px; vertical-align: middle; object-fit: contain;" />
 </a>
 
+<br>
+
 <table>
   <tr>
     <td colspan="3"><b>Preview Books</b> (see <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a> for versioned archives)</td>

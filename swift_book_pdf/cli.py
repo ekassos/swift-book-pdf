@@ -202,6 +202,18 @@ def cli() -> None:
     default=None,
     help="When generating an EPUB, include a contributor in the metadata with the specified value. If not provided, this field will not be included.",
 )
+@click.option(
+    "--source-ref",
+    type=str,
+    default=None,
+    help="Git tag, branch, or ref from the swift-book repository to build from",
+)
+@click.option(
+    "--source-sha",
+    type=str,
+    default=None,
+    help="Git commit SHA from the swift-book repository to build from",
+)
 @click.option("--verbose", is_flag=True, help="Enable verbose logging.")
 @click.version_option(
     prog_name="Swift-Book-PDF",
@@ -228,6 +240,8 @@ def run(  # noqa: PLR0913
     override_version: str | None,
     publisher: str | None,
     contributor: str | None,
+    source_ref: str | None,
+    source_sha: str | None,
 ) -> None:
     configure_logging(verbose)
     logger = logging.getLogger(__name__)
@@ -266,6 +280,8 @@ def run(  # noqa: PLR0913
                 selected_output_format,
                 options,
                 input_path,
+                source_ref,
+                source_sha,
             )
             Book(config).process()
         except ValueError as e:
@@ -277,12 +293,14 @@ def run(  # noqa: PLR0913
             )
 
 
-def _build_config(
+def _build_config(  # noqa: PLR0913
     temp_dir: str,
     output_path: str,
     output_format: OutputFormat,
     options: RunOptions,
     input_path: str | None,
+    source_ref: str | None,
+    source_sha: str | None,
 ) -> Config:
     if output_format == OutputFormat.PDF:
         unsupported_options = _find_unsupported_pdf_options(options)
@@ -296,7 +314,9 @@ def _build_config(
             output_path,
             _build_font_config(options),
             _build_doc_config(options),
-            input_path,
+            source_ref=source_ref,
+            source_sha=source_sha,
+            input_path=input_path,
         )
 
     unsupported_options = _find_unsupported_epub_options(options)
@@ -308,12 +328,14 @@ def _build_config(
     return EPUBConfig(
         temp_dir,
         output_path,
-        input_path,
         export_cover_image=options.export_cover_image,
         cover_footer_line=options.cover_footer_line,
         override_version=options.override_version,
         publisher=options.publisher,
         contributor=options.contributor,
+        source_ref=source_ref,
+        source_sha=source_sha,
+        input_path=input_path,
     )
 
 

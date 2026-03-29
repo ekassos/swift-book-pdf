@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new `--override-version` option to override the version number when generating an EPUB file. Include "beta" for beta versions. If not provided, the version will be determined by parsing the table of contents.
 - Add new `--publisher` option to include publisher metadata in the generated EPUB file.
 - Add new `--contributor` option to include contributor metadata in the generated EPUB file.
+- Add `--source-ref` and `--source-sha` options to build from a specific `swift-book` tag, branch, ref, or commit without manually preparing a local checkout.
 
 ### Changed
 - Update ordering of CLI options in help message for better discoverability.

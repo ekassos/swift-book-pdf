@@ -55,6 +55,8 @@ def get_swift_book_repository_revision(root_dir: str | Path) -> str | None:
 def find_or_clone_swift_book_repo(
     temp: str,
     input_path: str | None = None,
+    source_ref: str | None = None,
+    source_sha: str | None = None,
 ) -> SwiftBookRepoFilePaths:
     """
     Clone the Swift book repository.
@@ -62,8 +64,15 @@ def find_or_clone_swift_book_repo(
     Args:
         temp: The temporary directory to clone the repository
         input_path: The path to the local copy of the swift-book repo, if available
+        source_ref: Git tag or ref to check out after cloning
+        source_sha: Git commit SHA to check out after cloning
     """
     if input_path:
+        if source_ref is not None or source_sha is not None:
+            raise ValueError(
+                "--source-ref and --source-sha can't be used with --input-path. "
+                "Check out the desired revision in a separate local clone and pass that path with --input-path.",
+            )
         root_dir = Path(input_path) / "TSPL.docc"
         toc_file_path = root_dir / "The-Swift-Programming-Language.md"
         assets_dir = root_dir / "Assets"
@@ -102,6 +111,14 @@ def find_or_clone_swift_book_repo(
         stderr=None if is_debug else subprocess.DEVNULL,
     )
 
+    _checkout_swift_book_source(
+        git_executable,
+        clone_dir,
+        source_ref=source_ref,
+        source_sha=source_sha,
+        is_debug=is_debug,
+    )
+
     root_dir = clone_dir / "TSPL.docc"
     toc_file_path = root_dir / "The-Swift-Programming-Language.md"
     if not toc_file_path.exists():
@@ -118,6 +135,35 @@ def find_or_clone_swift_book_repo(
         toc_file_path=str(toc_file_path),
         root_dir=str(root_dir),
         assets_dir=str(assets_dir),
+    )
+
+
+def _checkout_swift_book_source(
+    git_executable: str,
+    clone_dir: Path,
+    source_ref: str | None,
+    source_sha: str | None,
+    is_debug: bool,
+) -> None:
+    target = source_sha or source_ref
+    if target is None:
+        return
+
+    if source_sha and source_ref:
+        logger.warning(
+            "Both source SHA and source ref are provided. Ignoring source ref %s and checking out source SHA %s.",
+            source_ref,
+            source_sha,
+        )
+
+    label = "commit SHA" if source_sha is not None else "source ref"
+    logger.info("Checking out swift-book %s %s...", label, target)
+    subprocess.run(  # noqa: S603
+        [git_executable, "checkout", "--detach", target],
+        cwd=clone_dir,
+        check=True,
+        stdout=None if is_debug else subprocess.DEVNULL,
+        stderr=None if is_debug else subprocess.DEVNULL,
     )
 
 

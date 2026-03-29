@@ -14,12 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new `--publisher` option to include publisher metadata in the generated EPUB file.
 - Add new `--contributor` option to include contributor metadata in the generated EPUB file.
 - Add `--source-ref` and `--source-sha` options to build from a specific `swift-book` tag, branch, ref, or commit without manually preparing a local checkout.
-- Add tests for the new CLI commands and options.
 
 ### Changed
 - Update ordering of CLI options in help message for better discoverability.
+
 ### Internal
 - Add `pillow` dependency for image processing during EPUB generation.
+- Add `pytest` development dependency and add initial tests for CLI commands and options.
+- Add testing step in `python.yml` to run the CLI tests.
 
 ## [2.1.0] - 2026-03-23
 ### Added

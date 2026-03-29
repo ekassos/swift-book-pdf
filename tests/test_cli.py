@@ -39,6 +39,15 @@ class DirectoryOutputScenario:
     expected_file: str
 
 
+@dataclass(frozen=True)
+class InputPathValidationScenario:
+    command: click.Command
+    output_name: str
+    revision_option: str
+    revision_value: str
+    requires_pdf_font_stub: bool = False
+
+
 @pytest.fixture
 def runner(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -270,20 +279,25 @@ def test_directory_output_defaults_to_format_extension(
 
 
 @pytest.mark.parametrize(
-    ("command", "output_name", "revision_option", "revision_value"),
+    "scenario",
     [
         pytest.param(
-            cli_pdf.pdf,
-            "book.pdf",
-            "--source-ref",
-            "main",
+            InputPathValidationScenario(
+                command=cli_pdf.pdf,
+                output_name="book.pdf",
+                revision_option="--source-ref",
+                revision_value="main",
+                requires_pdf_font_stub=True,
+            ),
             id="pdf-source-ref-with-input-path",
         ),
         pytest.param(
-            cli_epub.epub,
-            "book.epub",
-            "--source-sha",
-            "abc123",
+            InputPathValidationScenario(
+                command=cli_epub.epub,
+                output_name="book.epub",
+                revision_option="--source-sha",
+                revision_value="abc123",
+            ),
             id="epub-source-sha-with-input-path",
         ),
     ],
@@ -291,21 +305,18 @@ def test_directory_output_defaults_to_format_extension(
 def test_input_path_rejects_revision_selection(
     runner: CliRunner,
     monkeypatch: pytest.MonkeyPatch,
-    command: click.Command,
-    output_name: str,
-    revision_option: str,
-    revision_value: str,
+    scenario: InputPathValidationScenario,
 ) -> None:
-    if command is cli_pdf.pdf:
+    if scenario.requires_pdf_font_stub:
         stub_pdf_font_config(monkeypatch)
     result = runner.invoke(
-        command,
+        scenario.command,
         [
-            output_name,
+            scenario.output_name,
             "--input-path",
             "./swift-book",
-            revision_option,
-            revision_value,
+            scenario.revision_option,
+            scenario.revision_value,
         ],
     )
 

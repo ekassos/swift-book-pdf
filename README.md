@@ -2,26 +2,18 @@
 
 Convert the DocC source for _The Swift Programming Language_ book into PDF and EPUB documents. The generated books follow the DocC rendering style and retain all internal references and external links.
 
-<table>
-  <tr>
-    <td colspan="3"><b>Preview Books</b> (see <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a> for versioned archives)</td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>Digital Mode<br><i>Clickable links, best for on-screen reading</i></td>
-    <td>Print Mode<br><i>Page numbers & full URLs, best for printing</i></td>
-  </tr>
-  <tr>
-    <td>Light Mode</td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
-  </tr>
-    <tr>
-    <td>Dark Mode</td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(digital_mode,_dark)-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in digital mode"></a></td>
-    <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/download_book_(print_mode,_dark)-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Download book in print mode"></a></td>
-  </tr>
-</table>
+## Preview Books
+
+Read the EPUB editions on [Apple Books: Swift Programming Series](https://books.apple.com/us/book-series/swift-programming-series/id1887443754).
+
+Download the latest PDF previews:
+
+| Theme | Digital Mode<br><sub>Clickable links, best for on-screen reading</sub> | Print Mode<br><sub>Page numbers and full URLs, best for printing</sub> |
+| --- | --- | --- |
+| Light | [Open PDF](https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital.pdf) | [Open PDF](https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print.pdf) |
+| Dark | [Open PDF](https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital_dark.pdf) | [Open PDF](https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print_dark.pdf) |
+
+Looking for older releases? See [swift-book-archive](https://github.com/ekassos/swift-book-archive) for versioned archives.
 
 ![The image showcases three pages of a PDF version of "The Swift Programming Language" book. The first page displays a table of contents, listing chapters like "Welcome to Swift" and "Language Guide" with page numbers. The second page contains Swift code examples and explanations about loops, including how to use a for-in loop. The third page continues discussing while loops with a visual example of a snakes and ladders game board. The pages maintain DocC styling with black headers and highlighted code sections.](https://github.com/user-attachments/assets/466408bd-ff63-470e-a1fb-e84cb0b9412f)
 

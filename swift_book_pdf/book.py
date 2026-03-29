@@ -19,6 +19,7 @@ from pathlib import Path
 from tqdm import trange
 
 from swift_book_pdf.config import Config, EPUBConfig, PDFConfig
+from swift_book_pdf.epub import EPUBBuilder
 from swift_book_pdf.latex import LaTeXConverter
 from swift_book_pdf.pdf import PDFConverter
 from swift_book_pdf.preamble import generate_preamble
@@ -27,22 +28,17 @@ from swift_book_pdf.toc import TableOfContents
 logger = logging.getLogger(__name__)
 
 
-class Book:
-    def __init__(self, config: Config) -> None:
+class PDFBookBuilder:
+    def __init__(self, config: PDFConfig) -> None:
         self.config = config
-        self.toc = TableOfContents(
-            config.root_dir,
-            config.toc_file_path,
-            config.temp_dir,
-        )
+        self.toc = _build_table_of_contents(config)
 
     def process_files_in_order(
         self,
         converter: LaTeXConverter,
-        config: PDFConfig,
         latex_file_path: str,
     ) -> None:
-        latex = generate_preamble(config)
+        latex = generate_preamble(self.config)
         # TODO: Use the version to generate a cover page
         toc_latex, _ = self.toc.generate_toc_latex(converter=converter)
         latex += toc_latex + "\n"
@@ -62,35 +58,43 @@ class Book:
         with Path(latex_file_path).open("w", encoding="utf-8") as f:
             f.write(latex)
 
-    def process(self) -> None:
-        if isinstance(self.config, EPUBConfig):
-            from swift_book_pdf.epub import EPUBBuilder
-
-            EPUBBuilder(self.config, self.toc).build()
-            return
-
-        if not isinstance(self.config, PDFConfig):
-            raise TypeError("Book requires a PDFConfig or EPUBConfig.")
-        self._process_pdf(self.config)
-
-    def _process_pdf(self, config: PDFConfig) -> None:
-        converter = LaTeXConverter(config)
-        latex_file_path = Path(config.temp_dir) / "inner_content.tex"
-        self.process_files_in_order(converter, config, str(latex_file_path))
+    def build(self) -> None:
+        converter = LaTeXConverter(self.config)
+        latex_file_path = Path(self.config.temp_dir) / "inner_content.tex"
+        self.process_files_in_order(converter, str(latex_file_path))
         logger.info(
-            f"Creating PDF in {config.doc_config.mode.value} ({config.doc_config.appearance}) mode...",
+            f"Creating PDF in {self.config.doc_config.mode.value} ({self.config.doc_config.appearance}) mode...",
         )
-        pdf_converter = PDFConverter(config)
-        for _ in trange(config.doc_config.typesets, leave=False):
+        pdf_converter = PDFConverter(self.config)
+        for _ in trange(self.config.doc_config.typesets, leave=False):
             pdf_converter.convert_to_pdf(str(latex_file_path))
 
-        temp_pdf_path = Path(config.temp_dir) / "inner_content.pdf"
+        temp_pdf_path = Path(self.config.temp_dir) / "inner_content.pdf"
         if not temp_pdf_path.exists():
             logger.error(f"PDF file not found: {temp_pdf_path}")
             return
 
         try:
-            shutil.move(str(temp_pdf_path), config.output_path)
-            logger.info(f"PDF saved to {config.output_path}")
+            shutil.move(str(temp_pdf_path), self.config.output_path)
+            logger.info(f"PDF saved to {self.config.output_path}")
         except (OSError, shutil.Error) as e:
-            logger.error(f"Failed to save PDF to {config.output_path}: {e}")
+            logger.error(
+                f"Failed to save PDF to {self.config.output_path}: {e}"
+            )
+
+
+def build_pdf(config: PDFConfig) -> None:
+    PDFBookBuilder(config).build()
+
+
+def build_epub(config: EPUBConfig) -> None:
+    toc = _build_table_of_contents(config)
+    EPUBBuilder(config, toc).build()
+
+
+def _build_table_of_contents(config: Config) -> TableOfContents:
+    return TableOfContents(
+        config.root_dir,
+        config.toc_file_path,
+        config.temp_dir,
+    )

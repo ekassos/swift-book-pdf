@@ -25,8 +25,10 @@ documentation = "https://github.com/ekassos/swift-book-pdf/wiki"
 releasenotes = "https://github.com/ekassos/swift-book-pdf/releases"
 
 [project.scripts]
-swift_book_pdf = "swift_book_pdf.cli:run"
-swift-book-pdf = "swift_book_pdf.cli:run"
+swift_book_pdf = "swift_book_pdf.cli_pdf:pdf"
+swift-book-pdf = "swift_book_pdf.cli_pdf:pdf"
+swift-book-epub = "swift_book_pdf.cli_epub:epub"
+swift_book_epub = "swift_book_pdf.cli_epub:epub"
 
 [project.entry-points."pygments.styles"]
 swift_book_style = "swift_book_pdf.styles:CustomSwiftBookStyle"
@@ -35,6 +37,7 @@ swift_book_dark_style = "swift_book_pdf.styles:CustomSwiftBookDarkStyle"
 [dependency-groups]
 dev = [
     "filelock>=3.25.2,<4.0.0",
+    "pytest>=9.0.2,<10.0.0",
     "pre-commit>=4.5.1,<5.0.0",
 ]
 
@@ -78,3 +81,12 @@ select = [
     "RUF",      # ruff
 ]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["S101", "PLR2004"]
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+strict_config = true
+strict_markers = true
+testpaths = ["tests"]

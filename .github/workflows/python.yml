@@ -3,10 +3,10 @@ name: Python
 on:
   push:
     branches: [main]
-    paths: [swift_book_pdf/**, uv.lock, pyproject.toml, .github/workflows/**]
+    paths: [swift_book_pdf/**, tests/**, uv.lock, pyproject.toml, .github/workflows/**]
   pull_request:
     branches: [main]
-    paths: [swift_book_pdf/**, uv.lock, pyproject.toml, .github/workflows/**]
+    paths: [swift_book_pdf/**, tests/**, uv.lock, pyproject.toml, .github/workflows/**]
 
 jobs:
   build:
@@ -41,3 +41,7 @@ jobs:
       - name: Linting, formatting, and type checking
         working-directory: ${{env.wd}}
         run: uv run pre-commit run --show-diff-on-failure --all-files
+
+      - name: Run tests
+        working-directory: ${{env.wd}}
+        run: uv run pytest

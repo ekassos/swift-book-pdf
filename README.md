@@ -4,9 +4,9 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 
 <img width="3840" height="1920" alt="The image shows The Swift Programming Language book displayed across three devices: a 14-inch MacBook Pro (M4) in Silver, an 11-inch iPad Pro (M4) in Space Gray, and an iPhone 17 Pro in Deep Blue. Each screen shows pages from the book titled Collection Types, featuring diagrams, code snippets, and explanations about arrays, sets, and dictionaries in Swift. Below the devices, centered text reads 'Swift Book PDF' followed by a large bold headline, 'Learn Swift anywhere.' The background is clean and light gray, emphasizing the devices and text." src="https://github.com/user-attachments/assets/87ccccc0-0d41-4768-be03-bb91a083207d" />
 
-## Preview Books
+## Get the book
 
-<img alt="epub_apple_books_series_promo" src="https://github.com/user-attachments/assets/136ea883-121c-4a9b-9bee-afbca5137e1d" />
+<a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img alt="Read the latest edition. Get it on Apple Books." src="https://github.com/user-attachments/assets/136ea883-121c-4a9b-9bee-afbca5137e1d" /></a>
 
 <table>
   <tr>
@@ -29,12 +29,12 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
       <p><strong>Digital</strong>: clickable links and cross-references<br><strong>Print</strong>: page references and full URLs</p>
       <table>
         <tr>
-          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Light-Open%20PDF-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Light PDF"></a></td>
-          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Light-Open%20PDF-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Light PDF"></a></td>
+          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital.pdf " target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Light-Open%20PDF-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Light PDF"></a></td>
+          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Light-Open%20PDF-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Light PDF"></a></td>
         </tr>
         <tr>
-          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Dark-Open%20PDF-0d3b66?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Dark PDF"></a></td>
-          <td><a href="https://github.com/ekassos/swift-book-pdf-archive/raw/main/swift-book/latest/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Dark-Open%20PDF-6d1f1f?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Dark PDF"></a></td>
+          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Dark-Open%20PDF-0d3b66?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Dark PDF"></a></td>
+          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Dark-Open%20PDF-6d1f1f?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Dark PDF"></a></td>
         </tr>
       </table>
       <p>Need older versions? Browse <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a>.</p>

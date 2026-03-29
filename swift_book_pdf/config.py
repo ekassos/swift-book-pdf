@@ -30,6 +30,8 @@ class Config:
         self,
         temp_dir_path: str,
         output_path: str,
+        source_ref: str | None = None,
+        source_sha: str | None = None,
         input_path: str | None = None,
     ) -> None:
         if not shutil.which("git"):
@@ -37,7 +39,12 @@ class Config:
 
         self.temp_dir = temp_dir_path
 
-        file_paths = find_or_clone_swift_book_repo(temp_dir_path, input_path)
+        file_paths = find_or_clone_swift_book_repo(
+            temp_dir_path,
+            input_path,
+            source_ref=source_ref,
+            source_sha=source_sha,
+        )
 
         self.root_dir = file_paths.root_dir
         self.toc_file_path = file_paths.toc_file_path
@@ -53,15 +60,23 @@ class Config:
 class PDFConfig(Config):
     output_format = OutputFormat.PDF
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         temp_dir_path: str,
         output_path: str,
         font_config: FontConfig,
         doc_config: DocConfig,
+        source_ref: str | None = None,
+        source_sha: str | None = None,
         input_path: str | None = None,
     ) -> None:
-        super().__init__(temp_dir_path, output_path, input_path)
+        super().__init__(
+            temp_dir_path,
+            output_path,
+            source_ref=source_ref,
+            source_sha=source_sha,
+            input_path=input_path,
+        )
         self.font_config = font_config
         self.doc_config = doc_config
         logger.debug(f"Output format: {self.output_format}")
@@ -82,8 +97,16 @@ class EPUBConfig(Config):
         override_version: str | None = None,
         publisher: str | None = None,
         contributor: str | None = None,
+        source_ref: str | None = None,
+        source_sha: str | None = None,
     ) -> None:
-        super().__init__(temp_dir_path, output_path, input_path)
+        super().__init__(
+            temp_dir_path,
+            output_path,
+            source_ref=source_ref,
+            source_sha=source_sha,
+            input_path=input_path,
+        )
         self.export_cover_image = export_cover_image
         self.cover_footer_line = cover_footer_line
         self.override_version = override_version

@@ -6,6 +6,10 @@ Convert the DocC source for _The Swift Programming Language_ book into PDF and E
 
 Read the EPUB editions on [Apple Books: Swift Programming Series](https://books.apple.com/us/book-series/swift-programming-series/id1887443754).
 
+<a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754" style="display: inline-block;">
+<img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books" style="height: 50px; vertical-align: middle; object-fit: contain;" />
+</a>
+
 Download the latest PDF previews:
 
 | Theme | Digital Mode<br><sub>Clickable links, best for on-screen reading</sub> | Print Mode<br><sub>Page numbers and full URLs, best for printing</sub> |

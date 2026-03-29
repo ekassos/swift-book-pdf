@@ -6,7 +6,18 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 
 ## Get the book
 
-<a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img alt="Read the latest edition. Get it on Apple Books." src="https://github.com/user-attachments/assets/136ea883-121c-4a9b-9bee-afbca5137e1d" /></a>
+<table>
+  <tr>
+    <td valign="middle" width="70%">
+    <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img alt="Read the latest edition. Click this image to get it on Apple Books." src="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e"/></a>
+    </td>
+    <td valign="middle" width="30%">
+      <p><i>The Swift Programming Language</i>, optimized for Apple Books.</p>
+      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Open in Apple Books &#8599;</a></p>
+      <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books"/></a>    
+    </td>
+  </tr>
+</table>
 
 <table>
   <tr>

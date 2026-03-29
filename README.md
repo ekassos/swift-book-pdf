@@ -6,6 +6,8 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 
 ## Preview Books
 
+<img alt="epub_apple_books_series_promo" src="https://github.com/user-attachments/assets/136ea883-121c-4a9b-9bee-afbca5137e1d" />
+
 <table>
   <tr>
     <td valign="top" width="50%">

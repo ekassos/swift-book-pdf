@@ -103,8 +103,8 @@ class _BlockParser:
         if not (line.strip().startswith("![") and "](" in line):
             return False
 
-        alt_text = line.split("![")[1].split("]")[0]
-        url = line.split("](")[1].split(")")[0]
+        alt_text = line.split("![", maxsplit=1)[1].split("]", maxsplit=1)[0]
+        url = line.split("](", maxsplit=1)[1].split(")", maxsplit=1)[0]
         self.blocks.append(ImageBlock(alt=alt_text, imgname=url))
         self.idx += 1
         return True

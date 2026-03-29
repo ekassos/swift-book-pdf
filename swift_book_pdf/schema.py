@@ -46,25 +46,6 @@ class SwiftBookRepoFilePaths(BaseModel):
     assets_dir: str
 
 
-class RunOptions(BaseModel):
-    mode: str
-    paper: str
-    typesets: int
-    main: str | None
-    mono: str | None
-    unicode: tuple[str, ...]
-    emoji: str | None
-    header_footer: str | None
-    font_size: float | None
-    dark: bool
-    gutter: bool | None
-    export_cover_image: bool = False
-    cover_footer_line: str | None = None
-    override_version: str | None = None
-    publisher: str | None = None
-    contributor: str | None = None
-
-
 class ImageAsset(BaseModel):
     source_path: Path
     href: str

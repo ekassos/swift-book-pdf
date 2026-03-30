@@ -70,13 +70,13 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
       <a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print_dark.pdf">
     <picture>
   <!-- User prefers light mode: -->
-  <source srcset="https://github.com/user-attachments/assets/265067dc-a4ba-4542-88f7-4be05225231d" media="(prefers-color-scheme: light)"/>
+  <source srcset="https://github.com/user-attachments/assets/3baa6961-ad5d-4848-b333-2858b6a29347" media="(prefers-color-scheme: light)"/>
 
   <!-- User prefers dark mode: -->
-  <source srcset="https://github.com/user-attachments/assets/3baa6961-ad5d-4848-b333-2858b6a29347" media="(prefers-color-scheme: dark)"/>
+  <source srcset="https://github.com/user-attachments/assets/c2f0997c-d2dd-4a63-93ef-4705136fb5c2" media="(prefers-color-scheme: dark)"/>
 
   <!-- User has no color preference: -->
-  <img src="https://github.com/user-attachments/assets/265067dc-a4ba-4542-88f7-4be05225231d"/>
+  <img src="https://github.com/user-attachments/assets/3baa6961-ad5d-4848-b333-2858b6a29347"/>
 </picture>
 </a>
       <p><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print_dark.pdf">Download PDF &#8599;</a></p>

@@ -73,7 +73,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
   <source srcset="https://github.com/user-attachments/assets/265067dc-a4ba-4542-88f7-4be05225231d" media="(prefers-color-scheme: light)"/>
 
   <!-- User prefers dark mode: -->
-  <source srcset="https://github.com/user-attachments/assets/c4b3f873-a3a6-491f-81aa-d8079eea1afe" media="(prefers-color-scheme: dark)"/>
+  <source srcset="https://github.com/user-attachments/assets/3baa6961-ad5d-4848-b333-2858b6a29347" media="(prefers-color-scheme: dark)"/>
 
   <!-- User has no color preference: -->
   <img src="https://github.com/user-attachments/assets/265067dc-a4ba-4542-88f7-4be05225231d"/>

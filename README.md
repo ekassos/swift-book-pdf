@@ -42,8 +42,19 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 <table>
   <tr>
     <td valign="middle" align="center" width="50%">
-      <img alt="swift_book_digital" src="https://github.com/user-attachments/assets/8b51a077-382f-4e5a-b5da-654afa3cfc12" />
-      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
+      <a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital.pdf">
+    <picture>
+  <!-- User prefers light mode: -->
+  <source srcset="https://github.com/user-attachments/assets/f9383740-d4d3-4edf-afda-4c293e26a509" media="(prefers-color-scheme: light)"/>
+
+  <!-- User prefers dark mode: -->
+  <source srcset="https://github.com/user-attachments/assets/41564d42-b09f-4250-983a-20c8edcf68d6" media="(prefers-color-scheme: dark)"/>
+
+  <!-- User has no color preference: -->
+  <img src="https://github.com/user-attachments/assets/f9383740-d4d3-4edf-afda-4c293e26a509"/>
+</picture>
+</a>
+      <p><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital.pdf">Download PDF &#8599;</a></p>
     </td>
     <td valign="middle" align="center" width="50%">
       <img alt="swift_book_print" src="https://github.com/user-attachments/assets/8b8ea8ed-82ff-4dea-8e3d-325082a8139b" />
@@ -56,8 +67,19 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
       <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
     </td>
     <td valign="middle" align="center" width="50%">
-      <img alt="swift_book_print_dark" src="https://github.com/user-attachments/assets/a7c4644f-4fc0-40f4-a84f-d56acd7dc74f" />
-      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
+      <a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print_dark.pdf">
+    <picture>
+  <!-- User prefers light mode: -->
+  <source srcset="https://github.com/user-attachments/assets/265067dc-a4ba-4542-88f7-4be05225231d" media="(prefers-color-scheme: light)"/>
+
+  <!-- User prefers dark mode: -->
+  <source srcset="https://github.com/user-attachments/assets/c4b3f873-a3a6-491f-81aa-d8079eea1afe" media="(prefers-color-scheme: dark)"/>
+
+  <!-- User has no color preference: -->
+  <img src="https://github.com/user-attachments/assets/265067dc-a4ba-4542-88f7-4be05225231d"/>
+</picture>
+</a>
+      <p><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print_dark.pdf">Download PDF &#8599;</a></p>
     </td>
   </tr>
 </table>

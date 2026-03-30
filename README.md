@@ -106,40 +106,6 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
   </tr>
 </table>
 
-<table>
-  <tr>
-    <td valign="top" width="50%">
-      <a id="apple-books"></a>
-      <h3>EPUB on Apple Books</h3>
-      <p><strong>Best for:</strong> Apple Books, iPhone, iPad, and e-reader-style reading.</p>
-      <p>Read the EPUB editions in the <em>Swift Programming Series</em> on Apple Books.</p>
-      <p>
-        <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books" /></a>
-      </p>
-      <p><a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><strong>Read on Apple Books</strong></a></p>
-      <p>The Apple Books listing is the EPUB edition of the series, optimized for on-device reading.</p>
-    </td>
-    <td valign="top" width="50%">
-      <a id="pdf-previews"></a>
-      <h3>PDF Previews</h3>
-      <p><strong>Best for:</strong> desktop reading, offline reference, and printing.</p>
-      <p>Choose between Digital and Print renderings in Light or Dark mode.</p>
-      <p><strong>Digital</strong>: clickable links and cross-references<br><strong>Print</strong>: page references and full URLs</p>
-      <table>
-        <tr>
-          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Light-Open%20PDF-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Light PDF"></a></td>
-          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Light-Open%20PDF-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Light PDF"></a></td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Dark-Open%20PDF-0d3b66?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Dark PDF"></a></td>
-          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print_dark.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Dark-Open%20PDF-6d1f1f?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Dark PDF"></a></td>
-        </tr>
-      </table>
-      <p>Need older versions? Browse <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a>.</p>
-    </td>
-  </tr>
-</table>
-
 ## Features
 
 ### PDF Generation (`swift-book-pdf`)

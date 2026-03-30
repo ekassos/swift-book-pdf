@@ -13,8 +13,15 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
   <img width="100%" alt="The image shows The Swift Programming Language book displayed across three devices: a 14-inch MacBook Pro (M4) in Silver, an 11-inch iPad Pro (M4) in Space Gray, and an iPhone 17 Pro in Deep Blue. Each screen shows pages from the book titled Collection Types, featuring diagrams, code snippets, and explanations about arrays, sets, and dictionaries in Swift. Below the devices, centered text reads 'Swift Book PDF' followed by a large bold headline, 'Learn Swift anywhere.' The background is clean and light gray, emphasizing the devices and text." src="https://github.com/user-attachments/assets/87ccccc0-0d41-4768-be03-bb91a083207d" />
 </picture>
 
-## Get the book
+<p align="center"> Jump to: 
+  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#usage"><strong>Usage</strong></a> ·
+  <a href="https://github.com/ekassos/swift-book-pdf/wiki"><strong>Wiki</strong></a>
+</p>
 
+## Grab the ready-to-read book
+
+### EPUB edition
 <table>
   <tr>
     <td valign="middle" width="70%">
@@ -39,6 +46,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
   </tr>
 </table>
 
+### PDF editions
 <table>
   <tr>
     <td valign="middle" align="center" width="70%">
@@ -126,8 +134,9 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 ## Requirements
 - Python 3.10+
 - Git
-- LuaTeX. If you don't have an existing LaTeX installation, see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org).
-- Fonts for typesetting. Learn [which fonts are required to typeset the TSPL book](https://github.com/ekassos/swift-book-pdf/wiki/Fonts).
+- Specifically for generating PDF editions with `swift-book-pdf`:
+    - LuaTeX. If you don't have an existing LaTeX installation, see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org).
+    - Fonts for typesetting. Learn [which fonts are required to typeset the TSPL book](https://github.com/ekassos/swift-book-pdf/wiki/Fonts).
 
 ## Installation
 ### Latest PyPI stable release
@@ -162,12 +171,12 @@ $ swift-book-epub
 ```
 
 > [!NOTE]
-> Starting with version 2.1.0, you can use either `swift-book-pdf` or `swift_book_pdf` to run the tool. If you're using an earlier version, use `swift_book_pdf`.
+> Starting with version 2.1, you can use either `swift-book-pdf` or `swift_book_pdf` to run the tool. If you're using an earlier version, use `swift_book_pdf`.
 >
 > swift-book-pdf will create a temporary directory to store the swift-book repository, LaTeX file and intermediate files produced during typesetting. This temporary directory is removed after the PDF is generated.
 
 ### Customization
-swift-book-pdf offers a range of options to customize your rendering of _The Swift Programming Language_ book. Learn how to [make the TSPL book your own](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options).
+`swift-book-pdf` and `swift-book-epub` offer a range of options to customize your rendering of _The Swift Programming Language_ book. Learn how to [make the TSPL book your own](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options).
 
 ## Acknowledgments
 

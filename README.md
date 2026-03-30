@@ -2,19 +2,62 @@
 
 Convert the DocC source for _The Swift Programming Language_ book into polished PDF and EPUB editions.
 
-<img width="3840" height="1920" alt="The image shows The Swift Programming Language book displayed across three devices: a 14-inch MacBook Pro (M4) in Silver, an 11-inch iPad Pro (M4) in Space Gray, and an iPhone 17 Pro in Deep Blue. Each screen shows pages from the book titled Collection Types, featuring diagrams, code snippets, and explanations about arrays, sets, and dictionaries in Swift. Below the devices, centered text reads 'Swift Book PDF' followed by a large bold headline, 'Learn Swift anywhere.' The background is clean and light gray, emphasizing the devices and text." src="https://github.com/user-attachments/assets/87ccccc0-0d41-4768-be03-bb91a083207d" />
+<picture>
+  <!-- User prefers light mode: -->
+  <source srcset="https://github.com/user-attachments/assets/87ccccc0-0d41-4768-be03-bb91a083207d" media="(prefers-color-scheme: light)"/>
+
+  <!-- User prefers dark mode: -->
+  <source srcset="https://github.com/user-attachments/assets/c648898e-c27c-4819-a418-7ea2e08c83ba" media="(prefers-color-scheme: dark)" alt="The image shows The Swift Programming Language book displayed across three devices: a 14-inch MacBook Pro (M4) in Silver, an 11-inch iPad Pro (M4) in Space Gray, and an iPhone 17 Pro in Deep Blue. Each screen shows pages from the book titled Collection Types, featuring diagrams, code snippets, and explanations about arrays, sets, and dictionaries in Swift. Below the devices, centered text reads 'Swift Book PDF' followed by a large bold headline, 'Learn Swift anywhere.' The background is black, emphasizing the devices and text."/>
+
+  <!-- User has no color preference: -->
+  <img width="100%" alt="The image shows The Swift Programming Language book displayed across three devices: a 14-inch MacBook Pro (M4) in Silver, an 11-inch iPad Pro (M4) in Space Gray, and an iPhone 17 Pro in Deep Blue. Each screen shows pages from the book titled Collection Types, featuring diagrams, code snippets, and explanations about arrays, sets, and dictionaries in Swift. Below the devices, centered text reads 'Swift Book PDF' followed by a large bold headline, 'Learn Swift anywhere.' The background is clean and light gray, emphasizing the devices and text." src="https://github.com/user-attachments/assets/87ccccc0-0d41-4768-be03-bb91a083207d" />
+</picture>
 
 ## Get the book
 
 <table>
   <tr>
     <td valign="middle" width="70%">
-    <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img alt="Read the latest edition. Click this image to get it on Apple Books." src="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e"/></a>
+  <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754">
+    <picture>
+  <!-- User prefers light mode: -->
+  <source srcset="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e" media="(prefers-color-scheme: light)"/>
+
+  <!-- User prefers dark mode: -->
+  <source srcset="https://github.com/user-attachments/assets/dc82db2f-2816-4246-9492-04559032ecca" media="(prefers-color-scheme: dark)"/>
+
+  <!-- User has no color preference: -->
+  <img alt="Read the latest edition. Click this image to get it on Apple Books." src="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e"/>
+</picture>
+</a>
     </td>
     <td valign="middle" width="30%">
       <p><i>The Swift Programming Language</i>, optimized for Apple Books.</p>
-      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Open in Apple Books &#8599;</a></p>
+      <p><a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Open in Apple Books &#8599;</a></p>
       <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books"/></a>    
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td valign="middle" align="center" width="50%">
+      <img alt="swift_book_digital" src="https://github.com/user-attachments/assets/8b51a077-382f-4e5a-b5da-654afa3cfc12" />
+      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
+    </td>
+    <td valign="middle" align="center" width="50%">
+      <img alt="swift_book_print" src="https://github.com/user-attachments/assets/8b8ea8ed-82ff-4dea-8e3d-325082a8139b" />
+      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td valign="middle" align="center" width="50%">
+      <img alt="swift_book_digital_dark" src="https://github.com/user-attachments/assets/25c1e65d-cb46-4163-8c7a-0e2f5dfc4c04" />
+      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
+    </td>
+    <td valign="middle" align="center" width="50%">
+      <img alt="swift_book_print_dark" src="https://github.com/user-attachments/assets/a7c4644f-4fc0-40f4-a84f-d56acd7dc74f" />
+      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
     </td>
   </tr>
 </table>
@@ -40,7 +83,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
       <p><strong>Digital</strong>: clickable links and cross-references<br><strong>Print</strong>: page references and full URLs</p>
       <table>
         <tr>
-          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital.pdf " target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Light-Open%20PDF-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Light PDF"></a></td>
+          <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital.pdf" target="_blank"><img src="https://img.shields.io/badge/Digital%20%C2%B7%20Light-Open%20PDF-064789?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Digital Light PDF"></a></td>
           <td><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print.pdf" target="_blank"><img src="https://img.shields.io/badge/Print%20%C2%B7%20Light-Open%20PDF-941b0c?style=for-the-badge&logo=googledocs&logoColor=white" alt="Open Print Light PDF"></a></td>
         </tr>
         <tr>

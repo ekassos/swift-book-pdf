@@ -57,8 +57,19 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
       <p><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_digital.pdf">Download PDF &#8599;</a></p>
     </td>
     <td valign="middle" align="center" width="50%">
-      <img alt="swift_book_print" src="https://github.com/user-attachments/assets/8b8ea8ed-82ff-4dea-8e3d-325082a8139b" />
-      <p><a href=https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Download PDF &#8599;</a></p>
+      <a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print.pdf">
+    <picture>
+  <!-- User prefers light mode: -->
+  <source srcset="https://github.com/user-attachments/assets/8c6e5e18-54a6-4f4c-880a-f07964adf37c" media="(prefers-color-scheme: light)"/>
+
+  <!-- User prefers dark mode: -->
+  <source srcset="https://github.com/user-attachments/assets/57d361c7-6a91-4505-b459-2d3e1042c573" media="(prefers-color-scheme: dark)"/>
+
+  <!-- User has no color preference: -->
+  <img src="https://github.com/user-attachments/assets/8c6e5e18-54a6-4f4c-880a-f07964adf37c"/>
+</picture>
+</a>
+      <p><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print.pdf">Download PDF &#8599;</a></p>
     </td>
   </tr>
   <tr>

@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `pytest` development dependency.
 - Add initial tests for CLI commands and options.
 - Add testing step in `python.yml` to run the CLI tests.
+- Update `pygments` (`2.19.2` -> `2.20.0`) to resolve [Pygments has Regular Expression Denial of Service (ReDoS) due to Inefficient Regex for GUID Matching](https://github.com/ekassos/swift-book-pdf/security/dependabot/5).
+- Update `uv` (`0.10.12` -> `0.11.2`).
 
 ## [2.1.0] - 2026-03-23
 ### Added

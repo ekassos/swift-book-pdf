@@ -9,7 +9,7 @@ keywords = ["swift", "book", "pdf", "epub"]
 requires-python = ">=3.10"
 dependencies = [
     "pillow>=12.1.1,<13.0.0",
-    "pygments>=2.19.2,<3.0.0",
+    "pygments>=2.20.0,<3.0.0",
     "tqdm>=4.67.3,<5.0.0",
     "pydantic>=2.12.5,<3.0.0",
     "click>=8.3.1,<9.0.0",
@@ -45,7 +45,7 @@ dev = [
 module-root = ""
 
 [build-system]
-requires = ["uv_build>=0.10.12,<0.11.0"]
+requires = ["uv_build>=0.11.2,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.ruff]

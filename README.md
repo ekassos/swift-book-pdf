@@ -1,4 +1,4 @@
-# PDF and EPUB Generator for _The Swift Programming Language_
+# PDF and EPUB Generator for <i>The&nbsp;Swift&nbsp;Programming&nbsp;Language</i>
 
 Convert the DocC source for _The Swift Programming Language_ book into polished PDF and EPUB editions.
 

@@ -132,7 +132,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 
 ### EPUB Generation (`swift-book-epub`)
 - Generate an EPUB edition of _The Swift Programming Language_, ideal for e-readers and mobile devices.
-- The generated EPUB file follows the rendering style used by TSPL publications up to Swift 5.7 [published on Apple Books](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
+- The generated EPUB file follows the rendering style used by TSPL editions up to Swift 5.7 [published on Apple Books](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 
 ## Requirements
 - Python 3.10+

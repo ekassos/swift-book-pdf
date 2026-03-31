@@ -21,7 +21,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
   <a href="https://github.com/ekassos/swift-book-pdf/wiki"><strong>Wiki</strong></a>
 </p>
 
-## Grab the ready-to-read book
+## Get the book
 
 ### EPUB edition
 <table>
@@ -113,6 +113,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 </a>
       <p><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book_print_dark.pdf"><img height="35px" alt="Download Print Dark edition PDF" src="https://github.com/user-attachments/assets/3fb49e16-17c8-4696-85e5-486c2b759048" /></a></p>
     </td>
+    </tr>
 </table>
 
 ## Features
@@ -142,8 +143,7 @@ pip install swift-book-pdf
 ```
 
 ## Usage
-### Basic usage
-#### PDF generation
+### PDF generation
 Call `swift-book-pdf` without any arguments to save the resulting PDF as `swift_book.pdf` in the current directory. The package defaults to the digital [rendering mode](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#rendering-modes--) in Letter [paper size](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#paper-sizes--).
 ```
 $ swift-book-pdf
@@ -158,7 +158,7 @@ When invoked, `swift-book-pdf` will:
 2. Convert all Markdown source files into a single LaTeX document
 3. Render the LaTeX document into the final PDF document
 
-#### EPUB generation
+### EPUB generation
 Call `swift-book-epub` without any arguments to save the resulting EPUB as `swift_book.epub` in the current directory.
 ```
 $ swift-book-epub
@@ -167,12 +167,7 @@ $ swift-book-epub
 [INFO]: EPUB saved to ./swift_book.epub
 ```
 
-> [!NOTE]
-> Starting with version 2.1, you can use either `swift-book-pdf` or `swift_book_pdf` to run the tool. If you're using an earlier version, use `swift_book_pdf`.
->
-> swift-book-pdf will create a temporary directory to store the swift-book repository, LaTeX file and intermediate files produced during typesetting. This temporary directory is removed after the PDF is generated.
-
-### Customization
+## Customization
 `swift-book-pdf` and `swift-book-epub` offer a range of options to customize your rendering of _The Swift Programming Language_ book. Learn how to [make the TSPL book your own](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options).
 
 ## Acknowledgments

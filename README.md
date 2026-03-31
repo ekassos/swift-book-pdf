@@ -177,7 +177,7 @@ $ swift-book-epub
 
 ## Acknowledgments
 
-At runtime, the swift-book [repository](https://github.com/swiftlang/swift-book) is temporarily cloned for processing, but no part of the repository is directly redistributed here.
+When you don't [provide an input path](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options#input-path--), swift-book-pdf temporarily clones the swift-book [repository](https://github.com/swiftlang/swift-book) for processing at runtime, but no part of the repository is directly redistributed here.
 
 `chapter-icon.png` and `chapter-icon~dark.png` are derived from the [`ArticleIcon.vue`](https://github.com/swiftlang/swift-docc-render/blob/1fe0a7a032b11272d0407317995169f79bba0d84/src/components/Icons/ArticleIcon.vue) component in the swift-docc-render [repository](https://github.com/swiftlang/swift-docc-render/).
 

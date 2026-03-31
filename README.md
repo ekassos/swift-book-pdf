@@ -1,4 +1,4 @@
-# PDF and EPUB Generator for _The Swift Programming Language_
+# PDF & EPUB Renderer for _The Swift Programming Language_
 
 Convert the DocC source for _The Swift Programming Language_ book into polished PDF and EPUB editions.
 
@@ -15,7 +15,9 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 
 <p align="center"> Jump to: 
   <a href="#features"><strong>Features</strong></a> ·
+  <a href="#installation"><strong>Installation</strong></a> ·
   <a href="#usage"><strong>Usage</strong></a> ·
+  <a href="#customization"><strong>Customization</strong></a> ·
   <a href="https://github.com/ekassos/swift-book-pdf/wiki"><strong>Wiki</strong></a>
 </p>
 

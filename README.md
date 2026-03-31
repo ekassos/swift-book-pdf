@@ -116,6 +116,11 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
     </tr>
 </table>
 
+<p align="center">
+  For versioned archives of the PDF editions, see
+  <a href="https://github.com/ekassos/swift-book-archive" target="_blank">swift-book-archive</a>.
+</p>
+
 ## Features
 
 ### PDF Generation (`swift-book-pdf`)

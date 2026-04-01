@@ -46,6 +46,12 @@ from swift_book_pdf.schema import OutputFormat
     help='Override the version number. Include "beta" for beta versions.',
 )
 @click.option(
+    "--ibooks-version",
+    type=str,
+    default=None,
+    help="Set the ibooks:version metadata value in the generated EPUB",
+)
+@click.option(
     "--publisher",
     type=str,
     default=None,
@@ -64,6 +70,7 @@ def epub(  # noqa: PLR0913
     export_cover_image: bool,
     cover_footer_line: str | None,
     override_version: str | None,
+    ibooks_version: str | None,
     publisher: str | None,
     contributor: str | None,
     input_path: str | None,
@@ -82,6 +89,7 @@ def epub(  # noqa: PLR0913
             export_cover_image=export_cover_image,
             cover_footer_line=cover_footer_line,
             override_version=override_version,
+            ibooks_version=ibooks_version,
             publisher=publisher,
             contributor=contributor,
             source_ref=source_ref,

@@ -89,6 +89,7 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
                 "--export-cover-image",
                 "--cover-footer-line",
                 "--override-version",
+                "--ibooks-version",
                 "--publisher",
             ),
             ("--mode", "--paper", "--typesets"),
@@ -200,6 +201,8 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
             "Beta",
             "--override-version",
             "6.2 beta",
+            "--ibooks-version",
+            "1.1",
             "--publisher",
             "Swift.org",
             "--contributor",
@@ -221,6 +224,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     assert kwargs["export_cover_image"] is True
     assert kwargs["cover_footer_line"] == "Beta"
     assert kwargs["override_version"] == "6.2 beta"
+    assert kwargs["ibooks_version"] == "1.1"
     assert kwargs["publisher"] == "Swift.org"
     assert kwargs["contributor"] == "Open Source Contributors"
     assert kwargs["source_ref"] == "swift-6.2-branch"

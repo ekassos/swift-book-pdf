@@ -95,6 +95,7 @@ class EPUBConfig(Config):
         export_cover_image: bool = False,
         cover_footer_line: str | None = None,
         override_version: str | None = None,
+        ibooks_version: str | None = None,
         publisher: str | None = None,
         contributor: str | None = None,
         source_ref: str | None = None,
@@ -110,6 +111,7 @@ class EPUBConfig(Config):
         self.export_cover_image = export_cover_image
         self.cover_footer_line = cover_footer_line
         self.override_version = override_version
+        self.ibooks_version = ibooks_version
         self.publisher = publisher
         self.contributor = contributor
         logger.debug(f"Output format: {self.output_format}")
@@ -118,5 +120,6 @@ class EPUBConfig(Config):
         )
         logger.debug(f"Cover footer line: {cover_footer_line}")
         logger.debug(f"Version override: {override_version}")
+        logger.debug(f"Apple Books version metadata: {ibooks_version}")
         logger.debug(f"Publisher: {publisher}")
         logger.debug(f"Contributor: {contributor}")

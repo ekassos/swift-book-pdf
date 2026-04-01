@@ -13,7 +13,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
   <img width="100%" alt="The image shows The Swift Programming Language book displayed across three devices: a 14-inch MacBook Pro (M4) in Silver, an 11-inch iPad Pro (M4) in Space Gray, and an iPhone 17 Pro in Deep Blue. Each screen shows pages from the book titled Collection Types, featuring diagrams, code snippets, and explanations about arrays, sets, and dictionaries in Swift. Below the devices, centered text reads 'Swift Book PDF' followed by a large bold headline, 'Learn Swift anywhere.' The background is clean and light gray, emphasizing the devices and text." src="https://github.com/user-attachments/assets/87ccccc0-0d41-4768-be03-bb91a083207d" />
 </picture>
 
-<p align="center"> Jump to: 
+<p align="center"> Jump to:
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#installation"><strong>Installation</strong></a> ·
   <a href="#usage"><strong>Usage</strong></a> ·
@@ -43,7 +43,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
     <td valign="middle" width="30%">
       <p><i>The Swift Programming Language</i>, optimized for Apple Books.</p>
       <p><a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Open in Apple Books &#8599;</a></p>
-      <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books"/></a>    
+      <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books"/></a>
     </td>
   </tr>
 </table>

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.3.0] - 2026-04-01
 ### Added
 - Add new `--ibooks-version` option to `swift-book-epub` to write Apple Books version metadata as `<meta property="ibooks:version">…</meta>` in the generated OPF package document.
 - Include the full text of the Apache License 2.0 (with Runtime Library Exception) in the EPUB notices page.
@@ -18,7 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix an issue where line numbers in code blocks were not scaling properly at larger font sizes in the generated EPUB file.
 
-## [2.2.0] - 2026-06-30
+### Internal
+- Update 2.2.0 release date to 2026-03-31 in CHANGELOG.md.
+
+## [2.2.0] - 2026-03-31
 ### Added
 - Add new `swift-book-epub` CLI command to convert the DocC source for _The Swift Programming Language_ book into an EPUB file. The generated EPUB file follows the rendering style used by Apple Books for [TSPL publications up to Swift 5.7](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 - Add new `--export-cover-image` / `-e` flag to save the generated cover image as a separate PNG file in the output directory when generating an EPUB file.
@@ -191,12 +196,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.2.0...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.1...v2.0.0
-[1.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.1
+[1.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.1.0...v1.2.0

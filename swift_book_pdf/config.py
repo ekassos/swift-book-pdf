@@ -16,7 +16,10 @@ import logging
 import shutil
 
 from swift_book_pdf.doc import DocConfig
-from swift_book_pdf.files import find_or_clone_swift_book_repo
+from swift_book_pdf.files import (
+    find_or_clone_swift_book_repo,
+    find_swift_book_copyright_year_range,
+)
 from swift_book_pdf.fonts import FontConfig
 from swift_book_pdf.schema import OutputFormat
 
@@ -50,11 +53,18 @@ class Config:
         self.toc_file_path = file_paths.toc_file_path
         self.assets_dir = file_paths.assets_dir
         self.output_path = output_path
+        self.original_work_copyright_year_range = (
+            find_swift_book_copyright_year_range(self.root_dir)
+        )
         logger.debug(f"Swift book repository directory: {self.root_dir}")
         logger.debug(f"Assets directory: {self.assets_dir}")
         logger.debug(f"Output path: {self.output_path}")
         logger.debug(f"Temporary directory: {self.temp_dir}")
         logger.debug(f"Table of contents file path: {self.toc_file_path}")
+        logger.debug(
+            "Swift book copyright year range: %s",
+            self.original_work_copyright_year_range,
+        )
 
 
 class PDFConfig(Config):

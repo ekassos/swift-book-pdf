@@ -14,6 +14,7 @@
 
 import logging
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -21,6 +22,10 @@ from pathlib import Path
 from .schema import OutputFormat, SwiftBookRepoFilePaths
 
 logger = logging.getLogger(__name__)
+
+SWIFT_BOOK_COPYRIGHT_PATTERN = re.compile(
+    r"Copyright\s+(?:\(c\)|©)\s*(\d{4})(?:\s*[-\u2013]\s*(\d{4}))?\s+Apple Inc\. and the Swift project authors",
+)
 
 
 def get_file_name(file_path: str) -> str:
@@ -50,6 +55,35 @@ def get_swift_book_repository_revision(root_dir: str | Path) -> str | None:
 
     revision = result.stdout.strip()
     return revision or None
+
+
+def find_swift_book_copyright_year_range(
+    root_dir: str | Path,
+) -> tuple[int, int] | None:
+    repo_dir = Path(root_dir).parent
+    start_year: int | None = None
+    end_year: int | None = None
+
+    for path in repo_dir.rglob("*"):
+        if path.is_dir() or ".git" in path.parts:
+            continue
+        try:
+            content = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+
+        for match in SWIFT_BOOK_COPYRIGHT_PATTERN.finditer(content):
+            match_start_year = int(match.group(1))
+            match_end_year = int(match.group(2) or match.group(1))
+            if start_year is None or match_start_year < start_year:
+                start_year = match_start_year
+            if end_year is None or match_end_year > end_year:
+                end_year = match_end_year
+
+    if start_year is None or end_year is None:
+        return None
+
+    return start_year, end_year
 
 
 def find_or_clone_swift_book_repo(

@@ -106,6 +106,7 @@ class EPUBBuilder:
         renderer = EPUBRenderer(
             self.asset_path,
             self._build_grammar_target_map(parts),
+            self.config.original_work_copyright_year_range,
         )
         link_resolver = LinkResolver(documents)
         image_assets: dict[str, ImageAsset] = {}

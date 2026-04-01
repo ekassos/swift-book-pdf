@@ -45,6 +45,7 @@ from swift_book_pdf.schema import (
 )
 
 from .constants import (
+    APACHE_LICENSE_V2_TEXT,
     CODE_PLACEHOLDER_PATTERN,
     DOC_LINK_PATTERN,
     EMPHASIS_PATTERN,
@@ -135,10 +136,14 @@ class EPUBRenderer:
         self,
         asset_path: Path,
         grammar_targets: dict[str, str],
+        original_work_copyright_year_range: tuple[int, int] | None = None,
     ) -> None:
         self.asset_catalog = AssetCatalog(asset_path)
         self.grammar_targets = grammar_targets
         self._grammar_anchor_counts: dict[str, int] = {}
+        self.original_work_copyright_year_range = (
+            original_work_copyright_year_range
+        )
 
     def render_part_page(self, part: PartEntry) -> str:
         section_id = part_section_id(part.title)
@@ -220,19 +225,32 @@ class EPUBRenderer:
         )
 
     def render_notices_page(self, document: DocumentEntry) -> str:
+        original_work_copyright = (
+            "The original work is Copyright &#169; "
+            + _format_year_range(self.original_work_copyright_year_range)
+            + " Apple Inc. and the Swift project authors. "
+            if self.original_work_copyright_year_range is not None
+            else "The original work is Copyright &#169; Apple Inc. and the Swift project authors. "
+        )
         body = (
             '  <div class="section" id="copyright-and-notices">\n'
             f"<h1>{html.escape(document.title)}</h1>\n"
-            "<p>This edition was generated using swift-book-pdf. "
-            f'<a href="{html.escape(SWIFT_BOOK_PDF_REPO_URL)}">swift-book-pdf</a> '
-            "is licensed under the Apache License v2.0.</p>\n"
-            "<p>At runtime, swift-book-pdf temporarily clones the swift-book "
+            "<p>This edition of <em>The Swift Programming Language</em> was generated using "
+            f'<a href="{html.escape(SWIFT_BOOK_PDF_REPO_URL)}"><em>swift-book-pdf</em></a>. '
+            "This publication includes styling and supporting assets derived from <em>swift-book-pdf</em>. "
+            "These materials are Copyright &#169; 2026 Evangelos Kassos and are licensed under the Apache License, Version 2.0.</p>"
+            "<p>This edition is derived from the <em>swift-book</em> source and is a modified version "
+            "of the original work, converted and formatted for distribution.</p>\n"
+            "<p>The <em>swift-book</em> "
             f'<a href="{html.escape(SWIFT_BOOK_REPO_URL)}">repository</a> '
-            "for processing. The swift-book repository is part of the Swift.org open source project, which is licensed under the Apache License v2.0 with Runtime Library Exception. "
+            "is part of the Swift.org open source project. The <em>swift-book</em> source is licensed under the Apache License, Version 2.0 with Runtime Library Exception. "
             f'See <a href="{html.escape(SWIFT_LICENSE_URL)}">{html.escape(SWIFT_LICENSE_URL)}</a> for details. '
-            "The Swift project authors are credited at "
+            f"{original_work_copyright}The Swift project authors are credited at "
             f'<a href="{html.escape(SWIFT_CONTRIBUTORS_URL)}">{html.escape(SWIFT_CONTRIBUTORS_URL)}</a>.</p>\n'
-            "<p>The Swift logo is a trademark of Apple Inc.</p>\n"
+            "<p>The Swift logo is a trademark of Apple Inc. "
+            "This edition is not published by, endorsed by, or affiliated with Apple Inc. or the Swift.org open source project.</p>\n"
+            "<h2>Apache License 2.0</h2>\n"
+            f"<pre>{html.escape(APACHE_LICENSE_V2_TEXT)}</pre>\n"
             "</div>\n"
         )
         return self._wrap_xhtml_document(document.title, document.href, body)
@@ -538,6 +556,15 @@ def _heading_level(block: Block) -> int | None:
     if isinstance(block, Header4Block):
         return 4
     return None
+
+
+def _format_year_range(year_range: tuple[int, int] | None) -> str:
+    if year_range is None:
+        return ""
+    start_year, end_year = year_range
+    if start_year == end_year:
+        return str(start_year)
+    return f"{start_year}-{end_year}"
 
 
 def _heading_text(block: Header2Block | Header3Block | Header4Block) -> str:

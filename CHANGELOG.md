@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Expand the generated EPUB notices page to clarify derivative-work attribution for editions produced with _swift-book-pdf_, including original-work credit to Apple Inc. and the Swift project authors.
 
+### Fixed
+- Fix an issue where line numbers in code blocks were not scaling properly at larger font sizes in the generated EPUB file.
+
 ## [2.2.0] - 2026-06-30
 ### Added
 - Add new `swift-book-epub` CLI command to convert the DocC source for _The Swift Programming Language_ book into an EPUB file. The generated EPUB file follows the rendering style used by Apple Books for [TSPL publications up to Swift 5.7](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.

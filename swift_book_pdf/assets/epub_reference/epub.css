@@ -176,7 +176,7 @@ code {
   display: block;
   font-family: Menlo, monospace;
   font-size: 0.85em;
-  margin-left: 21px;
+  margin-left: 1.5em;
 }
 
 .code-block__lines {
@@ -193,26 +193,26 @@ code {
 
 .code-block__shell .code-block__lines li {
   margin: 0;
-  margin-left: 60px;
-  padding-right: 10px;
+  margin-left: 4.4em;
+  padding-right: 0.75em;
   padding-left: 0;
   list-style-type: none;
-  text-indent: -52px;
+  text-indent: -3.8em;
   white-space: pre-wrap;
 }
 
 .code-block__lines li::before {
   content: counter(li);
   counter-increment: li;
-  margin-right: 16px;
+  margin-right: 1.2em;
   color: rgb(128 128 128 / 100%);
   font-family: Menlo, monospace;
   user-select: none;
 }
 
 .code-block__shell .code-block__lines li::before {
-  margin-left: -35px;
-  margin-right: 25px;
+  margin-left: -2.6em;
+  margin-right: 1.8em;
 }
 
 .code-block--outline .code-block__lines {
@@ -224,8 +224,8 @@ code {
 }
 
 .code-block__shell .code-block__lines li:nth-child(n + 10)::before {
-  margin-left: -43px;
-  margin-right: 25px;
+  margin-left: -3.2em;
+  margin-right: 1.8em;
 }
 
 .code-block__shell .code-block__lines li:only-of-type::before {
@@ -235,9 +235,9 @@ code {
 
 div.code-block__frame {
   margin: 1.5em 0;
-  padding: 1px 0 1px 10px;
+  padding: 0.1em 0 0.1em 0.75em;
   border-left: 4px solid rgb(205 233 244 / 100%);
-  line-height: 22px;
+  line-height: 1.6em;
 }
 
 .code-block--outline div.code-block__frame {
@@ -246,7 +246,7 @@ div.code-block__frame {
 
 .code-block__shell div.code-block__frame {
   line-height: 1.3em;
-  margin-left: 10px;
+  margin-left: 0.75em;
   overflow: visible;
   break-inside: avoid;
   page-break-inside: avoid;

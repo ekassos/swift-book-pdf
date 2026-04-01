@@ -1,11 +1,11 @@
 [project]
 name = "swift-book-pdf"
-version = "2.1.0"
-description = "A tool to generate a PDF version of The Swift Programming Language book."
+version = "2.2.0"
+description = "A tool to generate PDF and EPUB versions of The Swift Programming Language book."
 license = "Apache-2.0"
 readme = "README.md"
 authors = [{ name = "Evangelos Kassos", email = "github@evangeloskassos.com" }]
-keywords = ["swift", "book", "pdf"]
+keywords = ["swift", "book", "pdf", "epub"]
 requires-python = ">=3.10"
 dependencies = [
     "pillow>=12.1.1,<13.0.0",

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.2.0] - 2026-06-30
 ### Added
 - Add new `swift-book-epub` CLI command to convert the DocC source for _The Swift Programming Language_ book into an EPUB file. The generated EPUB file follows the rendering style used by Apple Books for [TSPL publications up to Swift 5.7](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 - Add new `--export-cover-image` / `-e` flag to save the generated cover image as a separate PNG file in the output directory when generating an EPUB file.
@@ -20,7 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 - Add `pillow` dependency for image processing during EPUB generation.
-- Add `pytest` development dependency and add initial tests for CLI commands and options.
+- Add `pytest` development dependency.
+- Add initial tests for CLI commands and options.
 - Add testing step in `python.yml` to run the CLI tests.
 - Update `pygments` (`2.19.2` -> `2.20.0`) to resolve [Pygments has Regular Expression Denial of Service (ReDoS) due to Inefficient Regex for GUID Matching](https://github.com/ekassos/swift-book-pdf/security/dependabot/5).
 - Update `uv` (`0.10.12` -> `0.11.2`).
@@ -177,7 +180,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ekassos/swift-book-pdf/compare/v1.4.1...v2.0.0

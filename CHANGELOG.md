@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add new `--ibooks-version` option to `swift-book-epub` to write Apple Books version metadata as `<meta property="ibooks:version">…</meta>` in the generated OPF package document.
+- Include the full text of the Apache License 2.0 (with Runtime Library Exception) in the EPUB notices page.
+- Add automatic detection of the original `swift-book` copyright year range and include it in the generated EPUB notices page when available.
+- Add a non-affiliation disclaimer to the generated EPUB notices page stating that the edition is not published by, endorsed by, or affiliated with Apple Inc. or the Swift.org open source project.
+
+### Changed
+- Expand the generated EPUB notices page to clarify derivative-work attribution for editions produced with _swift-book-pdf_, including original-work credit to Apple Inc. and the Swift project authors.
 
 ## [2.2.0] - 2026-06-30
 ### Added

@@ -32,9 +32,10 @@ SUMMARY_DEFAULT_TITLE = "Summary of the Grammar"
 SUMMARY_DEFAULT_SUBTITLE = "Read the whole formal grammar."
 SUMMARY_HEADING_LINE_COUNT = 2
 SUMMARY_ECHO_PATTERN = re.compile(r'echo\s+"([^"]*)"')
+SUMMARY_SCRIPT_END_PATTERN = re.compile(r"}\s*>")
 SUMMARY_SOURCE_PATH_PATTERN = re.compile(
     r"awk -f bin/extract_grammar\.awk "
-    r"(TSPL\.docc/ReferenceManual/[A-Za-z0-9]+\.md)"
+    r"(?P<path>TSPL\.docc/ReferenceManual/[A-Za-z0-9._-]+\.md)"
 )
 SUMMARY_FALLBACK_SOURCE_PATHS = (
     "TSPL.docc/ReferenceManual/LexicalStructure.md",
@@ -87,10 +88,15 @@ def _generate_summary_file(
     temp_dir: Path,
 ) -> GeneratedSummary | None:
     publish_book_script = repo_root / "bin" / "publish-book"
-    publish_book_config = _parse_publish_book(publish_book_script)
+    generate_grammar_script = repo_root / "bin" / "generate-grammar"
+    publish_book_config = _parse_summary_config(
+        publish_book_script,
+        generate_grammar_script,
+    )
     source_paths = _resolve_summary_source_paths(
         repo_root,
         publish_book_script,
+        generate_grammar_script,
         [Path(path) for path in publish_book_config.source_paths],
     )
     if source_paths is None:
@@ -135,6 +141,45 @@ def _build_summary_text(
     )
 
 
+def _parse_summary_config(
+    publish_book_script: Path,
+    generate_grammar_script: Path,
+) -> PublishBookSummaryConfig:
+    generate_grammar_config = _parse_generate_grammar(generate_grammar_script)
+    if generate_grammar_config.source_paths:
+        return generate_grammar_config
+    return _parse_publish_book(publish_book_script)
+
+
+def _parse_generate_grammar(
+    generate_grammar_script: Path,
+) -> PublishBookSummaryConfig:
+    if not generate_grammar_script.exists():
+        return PublishBookSummaryConfig()
+
+    echo_values: list[str] = []
+    source_paths: list[Path] = []
+
+    with generate_grammar_script.open("r", encoding="utf-8") as script_file:
+        for raw_line in script_file:
+            line = raw_line.strip()
+
+            match = SUMMARY_ECHO_PATTERN.fullmatch(line)
+            if match and match.group(1):
+                echo_values.append(match.group(1))
+                if len(echo_values) > SUMMARY_HEADING_LINE_COUNT:
+                    echo_values = echo_values[:SUMMARY_HEADING_LINE_COUNT]
+
+            source_match = SUMMARY_SOURCE_PATH_PATTERN.fullmatch(line)
+            if source_match:
+                source_paths.append(
+                    generate_grammar_script.parent.parent
+                    / source_match.group("path")
+                )
+
+    return _build_summary_config(echo_values, source_paths)
+
+
 def _parse_publish_book(
     publish_book_script: Path,
 ) -> PublishBookSummaryConfig:
@@ -157,18 +202,29 @@ def _parse_publish_book(
                 in_summary_block = True
 
             if in_summary_block:
+                if SUMMARY_SCRIPT_END_PATTERN.match(line):
+                    break
+
                 match = SUMMARY_ECHO_PATTERN.fullmatch(line)
                 if match and match.group(1):
                     echo_values.append(match.group(1))
                     if len(echo_values) > SUMMARY_HEADING_LINE_COUNT:
                         echo_values = echo_values[:SUMMARY_HEADING_LINE_COUNT]
 
-            source_match = SUMMARY_SOURCE_PATH_PATTERN.search(line)
-            if source_match:
-                source_paths.append(
-                    publish_book_script.parent.parent / source_match.group(1)
-                )
+                source_match = SUMMARY_SOURCE_PATH_PATTERN.fullmatch(line)
+                if source_match:
+                    source_paths.append(
+                        publish_book_script.parent.parent
+                        / source_match.group("path")
+                    )
 
+    return _build_summary_config(echo_values, source_paths)
+
+
+def _build_summary_config(
+    echo_values: list[str],
+    source_paths: list[Path],
+) -> PublishBookSummaryConfig:
     if len(echo_values) < SUMMARY_HEADING_LINE_COUNT or not echo_values[
         0
     ].startswith("# "):
@@ -185,18 +241,23 @@ def _parse_publish_book(
 def _resolve_summary_source_paths(
     repo_root: Path,
     publish_book_script: Path,
+    generate_grammar_script: Path,
     publish_book_source_paths: list[Path],
 ) -> list[Path] | None:
     if publish_book_source_paths:
         return publish_book_source_paths
 
-    if publish_book_script.exists():
+    if generate_grammar_script.exists():
+        logger.warning(
+            "Couldn't parse Summary of the Grammar source chapters from swift-book/bin/generate-grammar; using fallback chapter list.",
+        )
+    elif publish_book_script.exists():
         logger.warning(
             "Couldn't parse Summary of the Grammar source chapters from swift-book/bin/publish-book; using fallback chapter list.",
         )
     else:
         logger.warning(
-            "swift-book/bin/publish-book is missing; using fallback chapter list for Summary of the Grammar.",
+            "swift-book/bin/generate-grammar and swift-book/bin/publish-book are missing; using fallback chapter list for Summary of the Grammar.",
         )
 
     fallback_paths = [

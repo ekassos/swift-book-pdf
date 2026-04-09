@@ -29,6 +29,11 @@ from swift_book_pdf.markdown_helpers import (
     convert_markdown_links,
     remove_multiline_comments,
 )
+from swift_book_pdf.notices import (
+    NOTICES_DOC_FILE_NAME,
+    NOTICES_DOC_KEY,
+    NOTICES_DOC_TITLE,
+)
 from swift_book_pdf.schema import (
     DocumentEntry,
     ImageAsset,
@@ -43,8 +48,6 @@ from .constants import (
     EPUB_COVER_DOC_FILE_NAME,
     EPUB_COVER_DOC_TITLE,
     HEADING_PATTERN,
-    NOTICES_DOC_FILE_NAME,
-    NOTICES_DOC_TITLE,
     PART_HEADING_PATTERN,
     SUMMARY_DOC_FILE_NAME,
     SUMMARY_DOC_KEY,
@@ -227,7 +230,7 @@ class EPUBBuilder:
 
     def _build_notices_document(self) -> DocumentEntry:
         return DocumentEntry(
-            key="copyright-and-notices",
+            key=NOTICES_DOC_KEY,
             title=NOTICES_DOC_TITLE,
             subtitle=None,
             href=NOTICES_DOC_FILE_NAME,

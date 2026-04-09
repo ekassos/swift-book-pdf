@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2025-2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ from tqdm import trange
 from swift_book_pdf.config import Config, EPUBConfig, PDFConfig
 from swift_book_pdf.epub import EPUBBuilder
 from swift_book_pdf.latex import LaTeXConverter
+from swift_book_pdf.notices import NOTICES_DOC_KEY, render_notices_latex
 from swift_book_pdf.pdf import PDFConverter
 from swift_book_pdf.preamble import generate_preamble
 from swift_book_pdf.toc import TableOfContents
@@ -42,7 +43,14 @@ class PDFBookBuilder:
         # TODO: Use the version to generate a cover page
         toc_latex, _ = self.toc.generate_toc_latex(converter=converter)
         latex += toc_latex + "\n"
-        for tag in self.toc.doc_tags:
+        for tag in self.toc.pdf_doc_tags:
+            if tag.lower() == NOTICES_DOC_KEY:
+                latex += render_notices_latex(
+                    self.config.doc_config.mode,
+                    self.config.original_work_copyright_year_range,
+                )
+                latex += "\n"
+                continue
             file_path = None
             chapter_metadata = self.toc.chapter_metadata.get(tag.lower())
             if chapter_metadata:

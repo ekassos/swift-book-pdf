@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2025-2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,13 +29,14 @@ logger = logging.getLogger(__name__)
 class Config:
     output_format: OutputFormat
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         temp_dir_path: str,
         output_path: str,
         source_ref: str | None = None,
         source_sha: str | None = None,
         input_path: str | None = None,
+        dangerously_skip_legal_notices: bool = False,
     ) -> None:
         if not shutil.which("git"):
             raise RuntimeError("Git is not installed or not in PATH.")
@@ -53,6 +54,7 @@ class Config:
         self.toc_file_path = file_paths.toc_file_path
         self.assets_dir = file_paths.assets_dir
         self.output_path = output_path
+        self.dangerously_skip_legal_notices = dangerously_skip_legal_notices
         self.original_work_copyright_year_range = (
             find_swift_book_copyright_year_range(self.root_dir)
         )
@@ -64,6 +66,10 @@ class Config:
         logger.debug(
             "Swift book copyright year range: %s",
             self.original_work_copyright_year_range,
+        )
+        logger.debug(
+            "Skip legal notices: %s",
+            self.dangerously_skip_legal_notices,
         )
 
 
@@ -79,6 +85,7 @@ class PDFConfig(Config):
         source_ref: str | None = None,
         source_sha: str | None = None,
         input_path: str | None = None,
+        dangerously_skip_legal_notices: bool = False,
     ) -> None:
         super().__init__(
             temp_dir_path,
@@ -86,6 +93,7 @@ class PDFConfig(Config):
             source_ref=source_ref,
             source_sha=source_sha,
             input_path=input_path,
+            dangerously_skip_legal_notices=dangerously_skip_legal_notices,
         )
         self.font_config = font_config
         self.doc_config = doc_config
@@ -110,6 +118,7 @@ class EPUBConfig(Config):
         contributor: str | None = None,
         source_ref: str | None = None,
         source_sha: str | None = None,
+        dangerously_skip_legal_notices: bool = False,
     ) -> None:
         super().__init__(
             temp_dir_path,
@@ -117,6 +126,7 @@ class EPUBConfig(Config):
             source_ref=source_ref,
             source_sha=source_sha,
             input_path=input_path,
+            dangerously_skip_legal_notices=dangerously_skip_legal_notices,
         )
         self.export_cover_image = export_cover_image
         self.cover_footer_line = cover_footer_line

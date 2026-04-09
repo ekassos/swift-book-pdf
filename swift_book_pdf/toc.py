@@ -38,6 +38,7 @@ class TableOfContents:
         root_dir: str,
         tspl_file_path: str,
         temp_dir: str,
+        include_notices: bool = True,
     ) -> None:
         self.tspl_file_path = tspl_file_path
         self.target_directories = [
@@ -51,7 +52,12 @@ class TableOfContents:
             self.file_content = file.readlines()
 
         self.doc_tags = extract_doc_tags(self.file_content)
-        self.pdf_doc_tags = [*self.doc_tags, NOTICES_DOC_TAG]
+        self.include_notices = include_notices
+        self.pdf_doc_tags = (
+            [*self.doc_tags, NOTICES_DOC_TAG]
+            if include_notices
+            else [*self.doc_tags]
+        )
         self.chapter_metadata = generate_chapter_metadata(
             root_dir,
             self.target_directories,
@@ -64,18 +70,21 @@ class TableOfContents:
                 self.chapter_metadata,
             ),
         )
-        self.chapter_metadata[NOTICES_DOC_TAG.lower()] = (
-            build_notices_chapter_metadata()
-        )
+        if include_notices:
+            self.chapter_metadata[NOTICES_DOC_TAG.lower()] = (
+                build_notices_chapter_metadata()
+            )
 
     def generate_toc_latex(
         self,
         converter: LaTeXConverter,
     ) -> tuple[str, str | None]:
-        processed_lines = remove_directives(
-            self.file_content
-            + build_notices_toc_lines(include_section_heading=True)
+        notices_lines = (
+            build_notices_toc_lines(include_section_heading=True)
+            if self.include_notices
+            else []
         )
+        processed_lines = remove_directives(self.file_content + notices_lines)
         processed_lines = replace_chapter_href_with_toc_item(
             processed_lines,
             self.chapter_metadata,

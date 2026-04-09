@@ -105,4 +105,5 @@ def _build_table_of_contents(config: Config) -> TableOfContents:
         config.root_dir,
         config.toc_file_path,
         config.temp_dir,
+        include_notices=not config.dangerously_skip_legal_notices,
     )

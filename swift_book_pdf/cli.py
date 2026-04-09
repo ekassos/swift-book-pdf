@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2025-2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +25,15 @@ from swift_book_pdf.log import configure_logging
 from swift_book_pdf.schema import OutputFormat
 
 ConfigT = TypeVar("ConfigT", bound=Config)
+LEGAL_NOTICES_WARNING = (
+    "Generated legal notices were omitted from this build because "
+    "--dangerously-skip-legal-notices was enabled. Omitting these notices "
+    "may result in missing attribution, licensing, trademark, and "
+    "non-affiliation disclosures that could be required for lawful "
+    "redistribution. Do not distribute or publish this output unless you "
+    "have independently verified that all applicable legal obligations "
+    "remain satisfied. Proceed at your own risk."
+)
 
 
 def output_path_argument(
@@ -104,6 +113,8 @@ def run_build(
         config: ConfigT | None = None
         try:
             config = config_builder(temp, validated_output_path)
+            if config.dangerously_skip_legal_notices:
+                logger.warning(LEGAL_NOTICES_WARNING)
             builder(config)
         except ValueError as e:
             logger.error(str(e))

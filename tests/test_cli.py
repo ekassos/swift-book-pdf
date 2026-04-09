@@ -16,6 +16,7 @@ import logging
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 from unittest.mock import Mock
 
@@ -23,7 +24,7 @@ import click
 import pytest
 from click.testing import CliRunner, Result
 
-from swift_book_pdf import cli_epub, cli_pdf
+from swift_book_pdf import cli, cli_epub, cli_pdf
 
 PDF_TYPESSETS = 2
 PDF_FONT_SIZE = 10.5
@@ -79,7 +80,13 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
     [
         pytest.param(
             cli_pdf.pdf,
-            ("--mode", "--paper", "--typesets", "--main"),
+            (
+                "--mode",
+                "--paper",
+                "--typesets",
+                "--main",
+                "--dangerously-skip-legal-notices",
+            ),
             ("--export-cover-image", "--cover-footer-line"),
             id="pdf-help",
         ),
@@ -91,6 +98,7 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
                 "--override-version",
                 "--ibooks-version",
                 "--publisher",
+                "--dangerously-skip-legal-notices",
             ),
             ("--mode", "--paper", "--typesets"),
             id="epub-help",
@@ -120,7 +128,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    fake_config = object()
+    fake_config = SimpleNamespace(dangerously_skip_legal_notices=True)
     font_config = stub_pdf_font_config(monkeypatch)
     pdf_config = Mock(return_value=fake_config)
     build_pdf = Mock()
@@ -152,6 +160,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
             "--font-size",
             str(PDF_FONT_SIZE),
             "--dark",
+            "--dangerously-skip-legal-notices",
             "--no-gutter",
             "--input-path",
             "./swift-book",
@@ -174,8 +183,10 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert args[3].gutter is False
     assert args[3].font_size == PDF_FONT_SIZE
     assert kwargs["input_path"] == str(tmp_path / "swift-book")
+    assert kwargs["dangerously_skip_legal_notices"] is True
     assert kwargs["source_ref"] == "swift-6.2-branch"
     assert kwargs["source_sha"] == "abc123"
+    assert cli.LEGAL_NOTICES_WARNING in result.output
     build_pdf.assert_called_once_with(fake_config)
 
 
@@ -184,7 +195,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    fake_config = object()
+    fake_config = SimpleNamespace(dangerously_skip_legal_notices=True)
     epub_config = Mock(return_value=fake_config)
     build_epub = Mock()
     monkeypatch.setattr(cli_epub, "EPUBConfig", epub_config)
@@ -207,6 +218,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
             "Swift.org",
             "--contributor",
             "Open Source Contributors",
+            "--dangerously-skip-legal-notices",
             "--input-path",
             "./swift-book",
             "--source-ref",
@@ -227,8 +239,10 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     assert kwargs["ibooks_version"] == "1.1"
     assert kwargs["publisher"] == "Swift.org"
     assert kwargs["contributor"] == "Open Source Contributors"
+    assert kwargs["dangerously_skip_legal_notices"] is True
     assert kwargs["source_ref"] == "swift-6.2-branch"
     assert kwargs["source_sha"] == "abc123"
+    assert cli.LEGAL_NOTICES_WARNING in result.output
     build_epub.assert_called_once_with(fake_config)
 
 
@@ -265,7 +279,7 @@ def test_directory_output_defaults_to_format_extension(
     tmp_path: Path,
     scenario: DirectoryOutputScenario,
 ) -> None:
-    fake_config = object()
+    fake_config = SimpleNamespace(dangerously_skip_legal_notices=False)
     config_mock = Mock(return_value=fake_config)
     if scenario.module is cli_pdf:
         stub_pdf_font_config(monkeypatch)

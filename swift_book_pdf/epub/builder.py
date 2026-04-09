@@ -94,7 +94,11 @@ class EPUBBuilder:
             else DEFAULT_BOOK_TITLE
         )
         parts = self._build_parts()
-        notices = self._build_notices_document()
+        notices = (
+            None
+            if self.config.dangerously_skip_legal_notices
+            else self._build_notices_document()
+        )
 
         writer.write_container_file(workspace)
         writer.write_static_files(workspace)
@@ -140,11 +144,12 @@ class EPUBBuilder:
                     ),
                 )
 
-        writer.write_text(
-            workspace,
-            notices.href,
-            renderer.render_notices_page(notices),
-        )
+        if notices is not None:
+            writer.write_text(
+                workspace,
+                notices.href,
+                renderer.render_notices_page(notices),
+            )
         writer.copy_image_assets(workspace, image_assets)
         writer.write_nav_file(workspace, cover_document, parts, notices)
         writer.write_toc_ncx_file(
@@ -257,7 +262,7 @@ class EPUBBuilder:
         self,
         cover: DocumentEntry | None,
         parts: list[PartEntry],
-        notices: DocumentEntry,
+        notices: DocumentEntry | None,
     ) -> list[DocumentEntry]:
         documents: list[DocumentEntry] = []
         if cover is not None:
@@ -273,7 +278,8 @@ class EPUBBuilder:
                 )
             )
             documents.extend(part.children)
-        documents.append(notices)
+        if notices is not None:
+            documents.append(notices)
         return documents
 
     def _parse_toc_sections(self) -> list[tuple[str, list[str]]]:

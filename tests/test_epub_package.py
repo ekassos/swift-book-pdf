@@ -18,6 +18,7 @@ from typing import cast
 
 from swift_book_pdf.config import EPUBConfig
 from swift_book_pdf.epub.package import EPUBPackageWriter
+from swift_book_pdf.schema import DocumentEntry
 
 
 def test_content_opf_includes_ibooks_version_metadata_when_configured(
@@ -80,3 +81,43 @@ def test_content_opf_omits_ibooks_version_metadata_by_default(
     )
 
     assert 'property="ibooks:version"' not in content_opf
+
+
+def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
+    tmp_path: Path,
+) -> None:
+    config = cast(
+        EPUBConfig,
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+            publisher=None,
+            contributor=None,
+            ibooks_version=None,
+        ),
+    )
+    writer = EPUBPackageWriter(config)
+    workspace = writer.prepare_workspace()
+    cover = DocumentEntry(
+        key="cover",
+        title="Cover",
+        subtitle=None,
+        href="cover.xhtml",
+        directory=None,
+    )
+
+    writer.write_nav_file(workspace, cover, [], None)
+    writer.write_toc_ncx_file(
+        workspace,
+        cover,
+        [],
+        None,
+        "The Swift Programming Language",
+    )
+
+    nav = (workspace / "OEBPS" / "toc.xhtml").read_text(encoding="utf-8")
+    ncx = (workspace / "OEBPS" / "toc.ncx").read_text(encoding="utf-8")
+
+    assert "Acknowledgments" not in nav
+    assert 'epub:type="acknowledgements"' not in nav
+    assert "Acknowledgments" not in ncx

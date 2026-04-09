@@ -170,9 +170,17 @@ class EPUBPackageWriter:
         workspace: Path,
         cover: DocumentEntry | None,
         parts: list[PartEntry],
-        notices: DocumentEntry,
+        notices: DocumentEntry | None,
     ) -> None:
-        reader_start_href = parts[0].href if parts else notices.href
+        reader_start_href = (
+            parts[0].href
+            if parts
+            else notices.href
+            if notices is not None
+            else cover.href
+            if cover is not None
+            else NAV_DOC_FILE_NAME
+        )
         reader_start_relative_href = relative_href(
             NAV_DOC_FILE_NAME, reader_start_href
         )
@@ -181,7 +189,6 @@ class EPUBPackageWriter:
             if cover is not None
             else None
         )
-        notices_relative_href = relative_href(NAV_DOC_FILE_NAME, notices.href)
         items = []
         if cover is not None:
             items.append(
@@ -206,11 +213,12 @@ class EPUBPackageWriter:
                 "          </ol>\n"
                 "        </li>"
             )
-        items.append(
-            "        <li>\n"
-            f'          <a href="{html.escape(relative_href(NAV_DOC_FILE_NAME, notices.href))}">{html.escape(notices.title)}</a>\n'
-            "        </li>"
-        )
+        if notices is not None:
+            items.append(
+                "        <li>\n"
+                f'          <a href="{html.escape(relative_href(NAV_DOC_FILE_NAME, notices.href))}">{html.escape(notices.title)}</a>\n'
+                "        </li>"
+            )
         self.write_text(
             workspace,
             NAV_DOC_FILE_NAME,
@@ -263,11 +271,18 @@ class EPUBPackageWriter:
             + html.escape(parts[0].title if parts else DEFAULT_BOOK_TITLE)
             + """</a>
         </li>
-        <li>
+"""
+            + (
+                """        <li>
           <a epub:type="acknowledgements" href=\""""
-            + html.escape(notices_relative_href)
-            + """\">Acknowledgments</a>
+                + html.escape(relative_href(NAV_DOC_FILE_NAME, notices.href))
+                + """\">Acknowledgments</a>
         </li>
+"""
+                if notices is not None
+                else ""
+            )
+            + """
         </ol>
       </nav>
     </section>
@@ -281,7 +296,7 @@ class EPUBPackageWriter:
         workspace: Path,
         cover: DocumentEntry | None,
         parts: list[PartEntry],
-        notices: DocumentEntry,
+        notices: DocumentEntry | None,
         book_title: str,
     ) -> None:
         part_navpoints: list[str] = []
@@ -301,12 +316,13 @@ class EPUBPackageWriter:
                 [(child.title, child.href) for child in part.children],
             )
             part_navpoints.append(part_navpoint)
-        notices_navpoint, _ = _build_ncx_navpoint_tree(
-            navpoint_index,
-            notices.title,
-            notices.href,
-        )
-        part_navpoints.append(notices_navpoint)
+        if notices is not None:
+            notices_navpoint, _ = _build_ncx_navpoint_tree(
+                navpoint_index,
+                notices.title,
+                notices.href,
+            )
+            part_navpoints.append(notices_navpoint)
         self.write_text(
             workspace,
             NCX_FILE_NAME,

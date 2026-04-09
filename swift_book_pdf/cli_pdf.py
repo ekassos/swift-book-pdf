@@ -97,6 +97,15 @@ DEFAULT_TYPESETS = 4
 )
 @click.option("--dark", is_flag=True, help="Render the book in dark mode")
 @click.option(
+    "--dangerously-skip-legal-notices",
+    is_flag=True,
+    help=(
+        "Omit the generated legal notices chapter. This may remove "
+        "attribution, licensing, trademark, and non-affiliation "
+        "disclaimers that can be required for redistribution."
+    ),
+)
+@click.option(
     "--gutter/--no-gutter",
     " /-G",
     required=False,
@@ -117,6 +126,7 @@ def pdf(  # noqa: PLR0913
     header_footer: str | None,
     font_size: float | None,
     dark: bool,
+    dangerously_skip_legal_notices: bool,
     gutter: bool | None,
     input_path: str | None,
     source_ref: str | None,
@@ -151,6 +161,7 @@ def pdf(  # noqa: PLR0913
             source_ref=source_ref,
             source_sha=source_sha,
             input_path=input_path,
+            dangerously_skip_legal_notices=dangerously_skip_legal_notices,
         ),
         builder=build_pdf,
     )

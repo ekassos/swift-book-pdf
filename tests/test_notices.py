@@ -79,6 +79,22 @@ def test_pdf_notices_toc_lines_include_section_heading_only_when_requested() -> 
     ]
 
 
+def test_pdf_toc_can_skip_notices_chapter(
+    tmp_path: Path,
+) -> None:
+    toc_path = _create_minimal_swift_book_checkout(tmp_path)
+
+    toc = TableOfContents(
+        str(toc_path.parent),
+        str(toc_path),
+        str(tmp_path / "temp"),
+        include_notices=False,
+    )
+
+    assert NOTICES_DOC_TAG not in toc.pdf_doc_tags
+    assert NOTICES_DOC_KEY not in toc.chapter_metadata
+
+
 def test_render_notices_uses_detected_year_range_without_process_text() -> (
     None
 ):

@@ -63,6 +63,15 @@ from swift_book_pdf.schema import OutputFormat
     default=None,
     help="Include a contributor in the metadata with the specified value",
 )
+@click.option(
+    "--dangerously-skip-legal-notices",
+    is_flag=True,
+    help=(
+        "Omit the generated legal notices chapter. This may remove "
+        "attribution, licensing, trademark, and non-affiliation "
+        "disclaimers that can be required for redistribution."
+    ),
+)
 @common_options
 @version_option("Swift-Book-EPUB")
 def epub(  # noqa: PLR0913
@@ -73,6 +82,7 @@ def epub(  # noqa: PLR0913
     ibooks_version: str | None,
     publisher: str | None,
     contributor: str | None,
+    dangerously_skip_legal_notices: bool,
     input_path: str | None,
     source_ref: str | None,
     source_sha: str | None,
@@ -94,6 +104,7 @@ def epub(  # noqa: PLR0913
             contributor=contributor,
             source_ref=source_ref,
             source_sha=source_sha,
+            dangerously_skip_legal_notices=dangerously_skip_legal_notices,
         ),
         builder=build_epub,
     )

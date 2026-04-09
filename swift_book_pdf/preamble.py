@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2025-2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -682,6 +682,32 @@ $keep_whole_box_patch
   before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
   after skip=0in,
   before lower=\color{text},
+  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
+}
+
+\newtcblisting{plainlistingbox}{
+  listing engine=listings,
+  listing only,
+  breakable,
+  whole on next page if possible,
+  listing options={
+    basicstyle=\monoFontWithFallback{$mono_font}\fontsize{${font_size_minted}pt}{${font_size_minted_leading}pt}\selectfont,
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+  },
+  colback=code_background,
+  colframe=code_border,
+  boxrule=0.5pt,
+  arc=4pt,
+  top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
+  left=${spacing_code_box_lr}, right=${spacing_code_box_lr},
+  boxsep=0pt,
+  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
+  after skip=0in,
+  before upper=\color{text},
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
 }
 

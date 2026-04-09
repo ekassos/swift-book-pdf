@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2025-2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,11 @@ from swift_book_pdf.doc_tags import extract_doc_tags
 from swift_book_pdf.files import get_file_name
 from swift_book_pdf.grammar_summary import generate_missing_chapter_metadata
 from swift_book_pdf.latex import LaTeXConverter
+from swift_book_pdf.notices import (
+    NOTICES_DOC_TAG,
+    build_notices_chapter_metadata,
+    build_notices_toc_lines,
+)
 from swift_book_pdf.schema import Appearance, RenderingMode
 
 
@@ -46,6 +51,7 @@ class TableOfContents:
             self.file_content = file.readlines()
 
         self.doc_tags = extract_doc_tags(self.file_content)
+        self.pdf_doc_tags = [*self.doc_tags, NOTICES_DOC_TAG]
         self.chapter_metadata = generate_chapter_metadata(
             root_dir,
             self.target_directories,
@@ -58,12 +64,18 @@ class TableOfContents:
                 self.chapter_metadata,
             ),
         )
+        self.chapter_metadata[NOTICES_DOC_TAG.lower()] = (
+            build_notices_chapter_metadata()
+        )
 
     def generate_toc_latex(
         self,
         converter: LaTeXConverter,
     ) -> tuple[str, str | None]:
-        processed_lines = remove_directives(self.file_content)
+        processed_lines = remove_directives(
+            self.file_content
+            + build_notices_toc_lines(include_section_heading=True)
+        )
         processed_lines = replace_chapter_href_with_toc_item(
             processed_lines,
             self.chapter_metadata,

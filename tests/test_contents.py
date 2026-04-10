@@ -29,9 +29,7 @@ def test_toc_chapter_icon_uses_em_based_width_in_digital_mode() -> None:
         Appearance.LIGHT,
     )
 
-    assert (
-        r"\includegraphics[width=0.8em]{chapter-icon.png}" in rendered[0]
-    )
+    assert r"\includegraphics[width=0.8em]{chapter-icon.png}" in rendered[0]
     assert "0.1in" not in rendered[0]
 
 
@@ -49,6 +47,5 @@ def test_toc_chapter_icon_uses_dark_asset_in_print_mode() -> None:
     )
 
     assert (
-        r"\includegraphics[width=0.8em]{chapter-icon~dark.png}"
-        in rendered[0]
+        r"\includegraphics[width=0.8em]{chapter-icon~dark.png}" in rendered[0]
     )

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add generated Acknowledgments chapter to PDF builds.
 - Add `--dangerously-skip-legal-notices` flag to skip the generating the legal notices chapter. Omitting these notices may result in missing attribution, licensing, trademark, and non-affiliation disclosures that could be required for lawful redistribution. Do not distribute or publish this output unless you have independently verified that all applicable legal obligations remain satisfied.
 
+### Changed
+- Make the chapter icon in the generated PDF table of contents scale with the configured font size.
+
 ## [2.3.1] - 2026-04-04
 ### Fixed
 - Fix an issue where `Summary of the Grammar` generation could fall out of sync with the latest upstream `swift-book` repo after the summary build logic moved from `bin/publish-book` to `bin/generate-grammar`.

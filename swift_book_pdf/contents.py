@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2025-2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 import re
 
 from swift_book_pdf.schema import Appearance, ChapterMetadata, RenderingMode
+
+CHAPTER_ICON_WIDTH_EM = 0.8
 
 
 def remove_directives(file_content: list[str]) -> list[str]:
@@ -84,6 +86,12 @@ def replace_chapter_href_with_toc_item(
     :return: A list of lines with the chapter references replaced
     """
     updated_lines: list[str] = []
+    icon_name = (
+        f"chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png"
+    )
+    icon_markup = (
+        rf"\includegraphics[width={CHAPTER_ICON_WIDTH_EM}em]{{{icon_name}}}"
+    )
 
     match mode:
         case RenderingMode.DIGITAL:
@@ -97,7 +105,7 @@ def replace_chapter_href_with_toc_item(
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line
                     or ""
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} \\ {subtitle}"
+                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] \nameref{{{key}}} \\ {subtitle}"
 
         case RenderingMode.PRINT:
             pattern = re.compile(
@@ -110,7 +118,7 @@ def replace_chapter_href_with_toc_item(
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line
                     or ""
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{\includegraphics[width=0.1in]{{chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png}}}}] \nameref{{{key}}} {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
+                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] \nameref{{{key}}} {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
 
         case _:
             raise ValueError("Invalid rendering mode specified.")

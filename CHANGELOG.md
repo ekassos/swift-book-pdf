@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.1] - 2026-04-10
 ### Fixed
 - Fix an issue where the generated Acknowledgments chapter may be missing the `swift-docc-render` NOTICE content.
 
@@ -219,8 +220,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.4...HEAD
-[2.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.1...v2.4
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.0...v2.4.1
+[2.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.1.0...v2.2.0

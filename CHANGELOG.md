@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.4] - 2026-04-10
 ### Added
 - Add generated Acknowledgments chapter to PDF builds.
 - Add `--dangerously-skip-legal-notices` flag to skip the generating the legal notices chapter. Omitting these notices may result in missing attribution, licensing, trademark, and non-affiliation disclosures that could be required for lawful redistribution. Do not distribute or publish this output unless you have independently verified that all applicable legal obligations remain satisfied.
@@ -214,7 +216,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.1...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.4...HEAD
+[2.4]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.1...v2.4
 [2.3.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.1.0...v2.2.0

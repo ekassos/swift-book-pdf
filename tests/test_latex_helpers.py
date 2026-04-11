@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.latex_helpers import apply_formatting, convert_inline_code
+from swift_book_pdf.latex_helpers import (
+    apply_formatting,
+    convert_inline_code,
+)
 from swift_book_pdf.schema import RenderingMode
 
 

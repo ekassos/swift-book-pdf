@@ -13,9 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Make the chapter icon in the generated PDF table of contents scale with the configured font size.
 - Improve line wrapping in generated PDF code blocks by adding more break opportunities and scaling continuation indentation with the configured code font size.
+- Reorganize the Acknowledgments chapter and expand its attribution details.
 
 ### Fixed
 - Fix an issue where `_?_` in grammar notes could be rendered incorrectly in generated PDF output.
+
+### Internal
+- Move the package source tree into `src/swift_book_pdf` and adopt the `src` layout for local development and packaging.
 
 ## [2.3.1] - 2026-04-04
 ### Fixed

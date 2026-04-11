@@ -13,7 +13,11 @@
 # limitations under the License.
 
 from swift_book_pdf.contents import replace_chapter_href_with_toc_item
-from swift_book_pdf.schema import Appearance, ChapterMetadata, RenderingMode
+from swift_book_pdf.schema import (
+    Appearance,
+    ChapterMetadata,
+    RenderingMode,
+)
 
 
 def test_toc_chapter_icon_uses_em_based_width_in_digital_mode() -> None:

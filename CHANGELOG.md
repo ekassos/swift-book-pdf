@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix an issue where the generated Acknowledgments chapter may be missing the `swift-docc-render` NOTICE content.
+
 ## [2.4.0] - 2026-04-10
 ### Added
 - Add generated Acknowledgments chapter to PDF builds.

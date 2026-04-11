@@ -37,7 +37,6 @@ SWIFT_CONTRIBUTORS_URL = "https://swift.org/CONTRIBUTORS.txt"
 SWIFT_BOOK_REPO_URL = "https://github.com/swiftlang/swift-book"
 SWIFT_DOCC_RENDER_REPO_URL = "https://github.com/swiftlang/swift-docc-render"
 SWIFT_BOOK_PDF_REPO_URL = "https://github.com/ekassos/swift-book-pdf"
-SWIFT_DOCC_RENDER_REPO_URL = "https://github.com/swiftlang/swift-docc-render"
 
 APACHE_LICENSE_V2_TEXT = """                                 Apache License
                            Version 2.0, January 2004
@@ -252,6 +251,90 @@ APACHE_LICENSE_V2_TEXT = """                                 Apache License
     otherwise be required by Sections 4(a), 4(b) and 4(d) of the License.
 """
 
+SWIFT_DOCC_RENDER_NOTICE_TEXT = """                        The Swift-DocC-Render Project
+                        =============================
+
+Please visit the Swift-DocC-Render web site for more information:
+
+  * https://github.com/swiftlang/swift-docc-render
+
+Copyright (c) 2021 Apple Inc. and the Swift project authors
+
+The Swift Project licenses this file to you under the Apache License, version
+2.0 (the "License"); you may not use this file except in compliance with the
+License. You may obtain a copy of the License at:
+
+  https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-------------------------------------------------------------------------------
+
+This product depends on Vue.js.
+
+  * LICENSE (MIT):
+    * https://github.com/vuejs/vue/blob/dev/LICENSE
+  * HOMEPAGE:
+    * https://github.com/vuejs/vue
+
+---
+
+This product depends on vue-router.
+
+  * LICENSE (MIT):
+    * https://github.com/vuejs/vue-router/blob/dev/LICENSE
+  * HOMEPAGE:
+    * https://github.com/vuejs/vue-router
+
+---
+
+This product depends on core-js.
+
+  * LICENSE (MIT):
+    * https://github.com/zloirock/core-js/blob/master/LICENSE
+  * HOMEPAGE:
+    * https://github.com/zloirock/core-js
+
+---
+
+This product depends on Highlight.js.
+
+  * LICENSE (BSD-3-Clause):
+    * https://github.com/highlightjs/highlight.js/blob/main/LICENSE
+  * HOMEPAGE:
+    * https://github.com/highlightjs/highlight.js
+
+---
+
+This product depends on the IntersectionObserver polyfill.
+
+  * LICENSE (W3C Software and Document):
+    * https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+  * HOMEPAGE:
+    * https://github.com/w3c/IntersectionObserver/tree/main/polyfill
+
+---
+
+This product depends on PortalVue.
+
+  * LICENSE (MIT):
+    * https://github.com/LinusBorg/portal-vue/blob/develop/LICENCE
+  * HOMEPAGE:
+    * https://github.com/LinusBorg/portal-vue
+
+---
+
+This product depends on highlightjs-pkl.
+
+  * LICENSE (Apache-2.0):
+    * https://github.com/apple/highlightjs-pkl/blob/main/LICENSE.txt
+  * HOMEPAGE:
+    * https://github.com/apple/highlightjs-pkl
+"""
+
 
 def build_notices_chapter_metadata() -> ChapterMetadata:
     return ChapterMetadata(
@@ -383,11 +466,13 @@ def render_notices_latex(
         for paragraph in paragraphs
     )
     latex_lines.append(
-        "\\SectionHeader{Apache License 2.0}"
-        f"{{{NOTICES_DOC_KEY}_apache-license-20}}\n"
+        "\\SectionHeader{Apache License 2.0 and Related Notices}"
+        f"{{{NOTICES_DOC_KEY}_apache-license-20_and_related_notices}}\n"
     )
     latex_lines.extend(
-        _render_latex_preformatted_block(APACHE_LICENSE_V2_TEXT)
+        _render_latex_preformatted_block(
+            APACHE_LICENSE_V2_TEXT + "\n\n\n" + SWIFT_DOCC_RENDER_NOTICE_TEXT
+        )
     )
     latex_lines.append("}\n\\newpage\n")
     return "\n".join(latex_lines)

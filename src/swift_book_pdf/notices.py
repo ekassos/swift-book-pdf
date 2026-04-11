@@ -37,7 +37,6 @@ SWIFT_CONTRIBUTORS_URL = "https://swift.org/CONTRIBUTORS.txt"
 SWIFT_BOOK_REPO_URL = "https://github.com/swiftlang/swift-book"
 SWIFT_DOCC_RENDER_REPO_URL = "https://github.com/swiftlang/swift-docc-render"
 SWIFT_BOOK_PDF_REPO_URL = "https://github.com/ekassos/swift-book-pdf"
-APACHE_LICENSE_V2_URL = "https://www.apache.org/licenses/LICENSE-2.0"
 
 APACHE_LICENSE_V2_TEXT = """                                 Apache License
                            Version 2.0, January 2004

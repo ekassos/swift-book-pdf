@@ -11,11 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `--dangerously-skip-legal-notices` flag to skip the generating the legal notices chapter. Omitting these notices may result in missing attribution, licensing, trademark, and non-affiliation disclosures that could be required for lawful redistribution. Do not distribute or publish this output unless you have independently verified that all applicable legal obligations remain satisfied.
 
 ### Changed
+- Reorganize the Acknowledgments chapter and expand its attribution details.
 - Make the chapter icon in the generated PDF table of contents scale with the configured font size.
 - Improve line wrapping in generated PDF code blocks by adding more break opportunities and scaling continuation indentation with the configured code font size.
 
 ### Fixed
 - Fix an issue where `_?_` in grammar notes could be rendered incorrectly in generated PDF output.
+
+### Internal
+- Move the package source tree into `src/swift_book_pdf` and adopt the `src` layout for local development and packaging.
 
 ## [2.3.1] - 2026-04-04
 ### Fixed

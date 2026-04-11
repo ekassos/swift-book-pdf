@@ -22,6 +22,7 @@ from swift_book_pdf.notices import (
     SWIFT_BOOK_PDF_REPO_URL,
     SWIFT_BOOK_REPO_URL,
     SWIFT_CONTRIBUTORS_URL,
+    SWIFT_DOCC_RENDER_NOTICE_TEXT,
     SWIFT_LICENSE_URL,
     build_notices_toc_lines,
     render_notices_latex,
@@ -117,6 +118,7 @@ def test_render_notices_uses_detected_year_range_without_process_text() -> (
         r"\textcopyright{} 2014-2026 Apple Inc. and the Swift project authors"
         in latex
     )
+    assert SWIFT_DOCC_RENDER_NOTICE_TEXT in latex
 
 
 def test_print_notices_does_not_footnote_named_url_strings() -> None:

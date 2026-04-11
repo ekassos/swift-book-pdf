@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2025-2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,6 +38,12 @@ from swift_book_pdf.typography import get_font_size, get_spacing
 
 logger = logging.getLogger(__name__)
 MAX_IMAGE_WIDTH_IN = 6.5
+UNDERSCORE_EMPHASIS_PATTERN = re.compile(
+    r"(?<!\\)(?<!\w)_(?![\s_])(.+?)(?<![\s_])_(?!\w)"
+)
+MARKDOWN_LINK_PATTERN = re.compile(
+    r"\[([^\]]+)\]\((https?:\/\/[^\s()]+(?:\([^()]*\)[^\s()]*)*)\)"
+)
 
 
 def generate_chapter_title(
@@ -145,7 +151,15 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
         inline_segments[token] = match.group(0)
         return token
 
+    markdown_links: dict[str, tuple[str, str]] = {}
+
+    def replace_markdown_link(match: re.Match[str]) -> str:
+        token = f"%%MARKDOWN-LINK-{len(markdown_links)}%%"
+        markdown_links[token] = (match.group(1), match.group(2))
+        return token
+
     text = re.sub(r"(\{\\CodeStyle\s+\\texttt\{.*?\}\})", replace_inline, text)
+    text = MARKDOWN_LINK_PATTERN.sub(replace_markdown_link, text)
 
     # Escape literal currency/math markers from source text before we inject
     # formatter-owned LaTeX snippets that intentionally use math mode.
@@ -155,16 +169,8 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     text = text.replace("→", r"\scalebox{1.2}{$\rightarrow$}")
     text = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", text)
     text = re.sub(r"\*(.+?)\*", r"\\emph{\1}", text)
+    text = UNDERSCORE_EMPHASIS_PATTERN.sub(r"\\emph{\1}", text)
     text = re.sub(r"\s\\\s", r" \\\\ ", text)
-    text = re.sub(
-        r"\[([^\]]+)\]\((https?:\/\/[^\s()]+(?:\([^()]*\)[^\s()]*)*)\)",
-        (
-            r"\\href{\2}{\1}\\footnote{\\url{\2}}"
-            if mode == RenderingMode.PRINT
-            else r"\\href{\2}{\1}"
-        ),
-        text,
-    )
     text = re.sub(r"(?<!\\)_", r"\_", text)
     text = re.sub(r"---", r"\\textemdash \\ ", text)
     text = re.sub(r"--", r"\\textendash", text)
@@ -199,11 +205,61 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     )
     text = re.sub(r"(?<!\\)#", r"\#", text)
 
+    for token, (label, url) in markdown_links.items():
+        formatted_label = _apply_non_link_formatting(label, mode)
+        replacement = (
+            f"\\href{{{url}}}{{{formatted_label}}}\\footnote{{\\url{{{url}}}}}"
+            if mode == RenderingMode.PRINT
+            else f"\\href{{{url}}}{{{formatted_label}}}"
+        )
+        text = text.replace(token, replacement)
+
     # Restore the inline code segments.
     for token, segment in inline_segments.items():
         text = text.replace(token, segment)
 
     return override_characters(text)
+
+
+def _apply_non_link_formatting(text: str, mode: RenderingMode) -> str:
+    text = text.replace("→", r"\scalebox{1.2}{$\rightarrow$}")
+    text = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", text)
+    text = re.sub(r"\*(.+?)\*", r"\\emph{\1}", text)
+    text = UNDERSCORE_EMPHASIS_PATTERN.sub(r"\\emph{\1}", text)
+    text = re.sub(r"\s\\\s", r" \\\\ ", text)
+    text = re.sub(r"(?<!\\)_", r"\_", text)
+    text = re.sub(r"---", r"\\textemdash \\ ", text)
+    text = re.sub(r"--", r"\\textendash", text)
+    text = re.sub(r"\(\\\`\)", r"(\;\`\; )", text)
+    text = re.sub(
+        r"<doc:([^>#]+)#([^>]+)>",
+        lambda m: (
+            (
+                "\\fallbackrefbook{"
+                if mode == RenderingMode.PRINT
+                else "\\fallbackrefdigital{"
+            )
+            + m.group(1).lower()
+            + "_"
+            + m.group(2).lower()
+            + "}"
+        ),
+        text,
+    )
+    text = re.sub(
+        r"<doc:([^>#]+)>",
+        lambda m: (
+            (
+                "\\fallbackrefbook{"
+                if mode == RenderingMode.PRINT
+                else "\\fallbackrefdigital{"
+            )
+            + m.group(1).lower()
+            + "}"
+        ),
+        text,
+    )
+    return re.sub(r"(?<!\\)#", r"\#", text)
 
 
 def convert_inline_code(text: str) -> str:

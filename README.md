@@ -175,7 +175,7 @@ $ swift-book-epub
 ## Customization
 `swift-book-pdf` and `swift-book-epub` offer a range of options to customize your rendering of _The Swift Programming Language_ book. Learn how to [make the TSPL book your own](https://github.com/ekassos/swift-book-pdf/wiki/Customization-Options).
 
-## Acknowledgments
+## License and Acknowledgments
 
 Copyright © 2025–2026 Evangelos Kassos. *swift-book-pdf* is distributed under the Apache License, Version 2.0.
 

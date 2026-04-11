@@ -117,6 +117,9 @@ def generate_preamble(config: PDFConfig) -> str:
     font_sizes = compute_font_sizes(config.doc_config.font_size)
     spacing = compute_spacing(config.doc_config.font_size)
     template_vars = {**font_sizes, **spacing}
+    template_vars["breakindent_minted"] = (
+        f"{3.8 * float(template_vars['font_size_minted']):.2f}pt"
+    )
     for key, value in sorted(font_sizes.items()):
         logger.debug(f"{key}: {value}pt")
     for key, value in sorted(spacing.items()):
@@ -665,8 +668,17 @@ $keep_whole_box_patch
     fontsize=\customsmall,
     style=$code_style,
     breaklines=true,
+    breakanywhere=true,
+    breakbefore={ABCDEFGHIJKLMNOPQRSTUVWXYZ},
+    breakafter={.,>)]:(\{},
+    breaksymbolleft={\raisebox{0.1ex}{\color{aside_border}\customsmall\ensuremath{\hookrightarrow}}},
+    breaksymbolsepleft=0.3em,
+    breakbeforesymbolpre={\,\customsmall\ensuremath{_\rfloor}},
+    breakaftersymbolpre={\,\customsmall\ensuremath{_\rfloor}},
+    breakanywheresymbolpre={\,\customsmall\ensuremath{_\rfloor}},
     autogobble=true,
-    breakautoindent=false,
+    breakautoindent=true,
+    breakindent=${breakindent_minted},
     tabsize=2,
     frame=none,
     framesep=0pt,

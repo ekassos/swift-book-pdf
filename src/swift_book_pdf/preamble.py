@@ -719,7 +719,7 @@ $keep_whole_box_patch
   boxsep=0pt,
   before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
   after skip=0in,
-  before upper=\color{text},
+  colupper=text,
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
 }
 

@@ -838,7 +838,8 @@ def _replace_markdown_links(
 
 
 def _normalize_prose_punctuation(text: str) -> str:
-    return re.sub(r"\s*---\s*", "—", text)
+    text = re.sub(r"\s*---\s*", "\u2014", text)
+    return re.sub(r"--", "\u2013", text)
 
 
 def _image_display_width(path: Path, file_name: str) -> float | None:

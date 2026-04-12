@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add new `--override-version` option to `swift-book-pdf`.
+- Require PDF and EPUB builds to resolve the Swift version either from the table of contents or from an explicit override.
+
 ### Fixed
 - Fix an issue where the generated Acknowledgments chapter may be missing the `swift-docc-render` copyright notice.
 

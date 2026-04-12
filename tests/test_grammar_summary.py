@@ -17,6 +17,7 @@ from pathlib import Path
 from swift_book_pdf.grammar_summary import (
     SUMMARY_FALLBACK_SOURCE_PATHS,
     _generate_summary_file,
+    _normalize_grammar_summary_text,
     _parse_generate_grammar,
     _parse_publish_book,
 )
@@ -145,3 +146,41 @@ bin/generate-grammar
     assert "Read the whole formal grammar.\n\n" in summary_text
     assert "## LexicalStructure\n\n" in summary_text
     assert "> Grammar of LexicalStructure\n" in summary_text
+
+
+def test_normalize_grammar_summary_text_converts_legacy_rule_paragraphs() -> (
+    None
+):
+    summary_text = (
+        "## Lexical Structure\n\n"
+        "> Grammar of whitespace:\n"
+        ">\n"
+        "> *whitespace* → *whitespace-item* *whitespace*_?_\n"
+        ">\n"
+        "> *whitespace-item* → *line-break*\n"
+        ">\n"
+        "> *whitespace-item* → *inline-space*\n"
+    )
+
+    normalized = _normalize_grammar_summary_text(summary_text)
+
+    assert (
+        "> *whitespace* → *whitespace-item* *whitespace*_?_ \\\n" in normalized
+    )
+    assert "> *whitespace-item* → *line-break* \\\n" in normalized
+    assert "> *whitespace-item* → *inline-space*\n" in normalized
+
+
+def test_normalize_grammar_summary_text_preserves_current_upstream_layout() -> (
+    None
+):
+    summary_text = (
+        "## Lexical Structure\n\n"
+        "> Grammar of whitespace:\n"
+        ">\n"
+        "> *whitespace* → *whitespace-item* *whitespace*_?_ \\\n"
+        "> *whitespace-item* → *line-break* \\\n"
+        "> *whitespace-item* → *inline-space*\n"
+    )
+
+    assert _normalize_grammar_summary_text(summary_text) == summary_text

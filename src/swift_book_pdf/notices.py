@@ -363,7 +363,7 @@ def format_year_range(year_range: tuple[int, int] | None) -> str:
     return f"{start_year}-{end_year}"
 
 
-def build_original_work_copyright_sentence(
+def build_original_work_copyright_sentence_epub(
     year_range: tuple[int, int] | None,
 ) -> str:
     year_text = format_year_range(year_range)
@@ -374,6 +374,25 @@ def build_original_work_copyright_sentence(
         )
     return (
         f"The original work is Copyright {COPYRIGHT_PLACEHOLDER} Apple Inc. "
+        "and the Swift project authors."
+    )
+
+
+def build_original_work_copyright_sentence_pdf(
+    year_range: tuple[int, int] | None,
+) -> str:
+    year_text = format_year_range(year_range)
+    if year_text:
+        return (
+            f"*swift-book* is Copyright {COPYRIGHT_PLACEHOLDER} "
+            f"{year_text} Apple Inc. and the Swift project authors "
+            f"and *swift-docc-render* is Copyright {COPYRIGHT_PLACEHOLDER} "
+            "2021-2025 Apple Inc. and the Swift project authors."
+        )
+    return (
+        f"*swift-book-pdf* is Copyright {COPYRIGHT_PLACEHOLDER} Apple Inc. "
+        "and the Swift project authors and *swift-docc-render* is "
+        f"Copyright {COPYRIGHT_PLACEHOLDER} 2021-2025 Apple Inc. "
         "and the Swift project authors."
     )
 
@@ -403,7 +422,7 @@ def render_notices_xhtml(
         f'<a href="{html.escape(SWIFT_BOOK_REPO_URL)}">repository</a> '
         "is part of the Swift.org open source project. The <em>swift-book</em> source is licensed under the Apache License, Version 2.0 with Runtime Library Exception. "
         f'See <a href="{html.escape(SWIFT_LICENSE_URL)}">{html.escape(SWIFT_LICENSE_URL)}</a> for details. '
-        f"{_render_copyright_for_xhtml(build_original_work_copyright_sentence(year_range))} The Swift project authors are credited at "
+        f"{_render_copyright_for_xhtml(build_original_work_copyright_sentence_epub(year_range))} The Swift project authors are credited at "
         f'<a href="{html.escape(SWIFT_CONTRIBUTORS_URL)}">{html.escape(SWIFT_CONTRIBUTORS_URL)}</a>.</p>\n'
         "<p>The Swift logo is a trademark of Apple Inc. "
         "This edition is not published by, endorsed by, or affiliated with Apple Inc. or the Swift.org open source project.</p>\n"
@@ -432,7 +451,7 @@ def render_notices_latex(
         else SWIFT_CONTRIBUTORS_URL
     )
     original_work_copyright = _render_copyright_for_latex(
-        build_original_work_copyright_sentence(year_range)
+        build_original_work_copyright_sentence_pdf(year_range)
     )
     paragraphs = [
         "This edition of *The Swift Programming Language* was generated "

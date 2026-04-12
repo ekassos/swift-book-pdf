@@ -19,6 +19,7 @@ from pathlib import Path
 from tqdm import trange
 
 from swift_book_pdf.config import Config, EPUBConfig, PDFConfig
+from swift_book_pdf.contents import resolve_version_info
 from swift_book_pdf.epub import EPUBBuilder
 from swift_book_pdf.latex import LaTeXConverter
 from swift_book_pdf.notices import NOTICES_DOC_KEY, render_notices_latex
@@ -40,6 +41,7 @@ class PDFBookBuilder:
         latex_file_path: str,
     ) -> None:
         latex = generate_preamble(self.config)
+        self._version_info()
         # TODO: Use the version to generate a cover page
         toc_latex, _ = self.toc.generate_toc_latex(converter=converter)
         latex += toc_latex + "\n"
@@ -89,6 +91,11 @@ class PDFBookBuilder:
             logger.error(
                 f"Failed to save PDF to {self.config.output_path}: {e}"
             )
+
+    def _version_info(self) -> str:
+        return resolve_version_info(
+            self.toc.file_content, self.config.override_version
+        )
 
 
 def build_pdf(config: PDFConfig) -> None:

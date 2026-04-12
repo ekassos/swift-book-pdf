@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Fix an issue where PDF editions could be missing the bundled Swift logo assets.
+- Fix an issue where the Apache License text in the generated Acknowledgments chapter could be rendered with the wrong text color in dark mode.
 
 ### [2.5.0] - 2026-04-11
 ### Added

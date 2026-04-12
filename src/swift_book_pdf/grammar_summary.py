@@ -134,10 +134,13 @@ def _build_summary_text(
     extract_grammar_script: Path,
     awk_executable: str | None,
 ) -> str:
+    summary_text = _extract_summary_text(
+        source_paths, extract_grammar_script, awk_executable
+    )
     return (
         f"# {title}\n\n"
         f"{subtitle}\n\n"
-        f"{_extract_summary_text(source_paths, extract_grammar_script, awk_executable)}"
+        f"{_normalize_grammar_summary_text(summary_text)}"
     )
 
 
@@ -354,3 +357,88 @@ def _extract_grammar_from_markdown(chapter_path: Path) -> str:
                 extracted_lines.append("\n")
 
     return "".join(extracted_lines)
+
+
+def _normalize_grammar_summary_text(summary_text: str) -> str:
+    lines = summary_text.splitlines()
+    normalized_lines: list[str] = []
+    index = 0
+
+    while index < len(lines):
+        line = lines[index]
+        if not line.startswith("> Grammar of "):
+            normalized_lines.append(line)
+            index += 1
+            continue
+
+        block_lines = [line]
+        index += 1
+        while index < len(lines) and (
+            lines[index].startswith(">") or not lines[index].strip()
+        ):
+            block_lines.append(lines[index])
+            index += 1
+        normalized_lines.extend(_normalize_grammar_block(block_lines))
+
+    return "\n".join(normalized_lines) + (
+        "\n" if summary_text.endswith("\n") else ""
+    )
+
+
+def _normalize_grammar_block(block_lines: list[str]) -> list[str]:
+    if len(block_lines) <= 1:
+        return block_lines
+    if any(_line_uses_explicit_grammar_break(line) for line in block_lines):
+        return block_lines
+
+    normalized_lines = [block_lines[0]]
+    current_group: list[str] = []
+    separator_count = 0
+    started_rules = False
+
+    for line in block_lines[1:]:
+        if line.strip() == ">":
+            separator_count += 1
+            continue
+
+        if not line.strip():
+            continue
+
+        if not started_rules and separator_count > 0:
+            normalized_lines.append(">")
+        elif separator_count > 1 and current_group:
+            normalized_lines.extend(
+                _normalize_grammar_rule_paragraph(current_group)
+            )
+            normalized_lines.append(">")
+            current_group = []
+
+        current_group.append(line)
+        started_rules = True
+        separator_count = 0
+
+    if current_group:
+        normalized_lines.extend(
+            _normalize_grammar_rule_paragraph(current_group)
+        )
+
+    return normalized_lines
+
+
+def _normalize_grammar_rule_paragraph(paragraph_rules: list[str]) -> list[str]:
+    if any(
+        _line_uses_explicit_grammar_break(line) for line in paragraph_rules
+    ):
+        return paragraph_rules
+
+    normalized_rules: list[str] = []
+    for index, line in enumerate(paragraph_rules):
+        if index < len(paragraph_rules) - 1:
+            normalized_rules.append(line.rstrip() + " \\")
+        else:
+            normalized_rules.append(line)
+    return normalized_rules
+
+
+def _line_uses_explicit_grammar_break(line: str) -> bool:
+    return line.rstrip().endswith("\\")

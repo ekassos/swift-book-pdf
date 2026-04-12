@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### [2.5.0] - 2026-04-11
 ### Added
 - Add new `--override-version` option to `swift-book-pdf`.
 - Require PDF and EPUB builds to resolve the Swift version either from the table of contents or from an explicit override.
@@ -232,7 +234,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.1...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.0...v2.3.1

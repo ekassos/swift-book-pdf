@@ -703,7 +703,7 @@ $keep_whole_box_patch
   breakable,
   whole on next page if possible,
   listing options={
-    basicstyle=\monoFontWithFallback{$mono_font}\fontsize{${font_size_minted}pt}{${font_size_minted_leading}pt}\selectfont,
+    basicstyle=\color{text}\monoFontWithFallback{$mono_font}\fontsize{${font_size_minted}pt}{${font_size_minted_leading}pt}\selectfont,
     breaklines=true,
     breakatwhitespace=false,
     columns=fullflexible,

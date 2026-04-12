@@ -58,6 +58,12 @@ DEFAULT_TYPESETS = 4
     show_default=str(DEFAULT_TYPESETS),
 )
 @click.option(
+    "--override-version",
+    type=str,
+    default=None,
+    help='Override the version number. Include "beta" for beta versions.',
+)
+@click.option(
     "--main",
     type=str,
     default=None,
@@ -119,6 +125,7 @@ def pdf(  # noqa: PLR0913
     mode: str,
     paper: str,
     typesets: int,
+    override_version: str | None,
     main: str | None,
     mono: str | None,
     unicode: list[str],
@@ -158,6 +165,7 @@ def pdf(  # noqa: PLR0913
             validated_output_path,
             font_config,
             doc_config,
+            override_version=override_version,
             source_ref=source_ref,
             source_sha=source_sha,
             input_path=input_path,

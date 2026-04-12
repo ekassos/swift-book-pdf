@@ -316,8 +316,7 @@ def convert_nested_block(block: Block, mode: RenderingMode) -> str:
             r"\begin{swiftstyledbox}" + "\n"
         )
         for line in block.lines:
-            line2 = line.replace("%", r"\%")
-            out += override_characters(line2) + "\n"
+            out += override_characters(line) + "\n"
         out += r"\end{swiftstyledbox}" + "\n"
         return out
     # fallback
@@ -432,10 +431,7 @@ def _convert_header_like_block(
 
 def _convert_code_block(block: CodeBlock) -> list[str]:
     output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
-    output.extend(
-        override_characters(line.replace("%", r"\%"), True)
-        for line in block.lines
-    )
+    output.extend(override_characters(line, True) for line in block.lines)
     output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
     return output
 

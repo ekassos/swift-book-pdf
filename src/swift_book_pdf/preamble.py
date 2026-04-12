@@ -698,17 +698,18 @@ $keep_whole_box_patch
 }
 
 \newtcblisting{plainlistingbox}{
-  listing engine=listings,
   listing only,
   breakable,
   whole on next page if possible,
-  listing options={
-    basicstyle=\color{text}\monoFontWithFallback{$mono_font}\fontsize{${font_size_minted}pt}{${font_size_minted_leading}pt}\selectfont,
+  minted language=text,
+  minted options={
+    fontsize=\customsmall,
     breaklines=true,
-    breakatwhitespace=false,
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
+    breakanywhere=true,
+    autogobble=true,
+    tabsize=2,
+    frame=none,
+    framesep=0pt,
   },
   colback=code_background,
   colframe=code_border,

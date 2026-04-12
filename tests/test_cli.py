@@ -84,6 +84,7 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
                 "--mode",
                 "--paper",
                 "--typesets",
+                "--override-version",
                 "--main",
                 "--dangerously-skip-legal-notices",
             ),
@@ -147,6 +148,8 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
             "a4",
             "--typesets",
             str(PDF_TYPESSETS),
+            "--override-version",
+            "6.2 beta",
             "--main",
             "New York",
             "--mono",
@@ -182,6 +185,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert args[3].appearance.value == "dark"
     assert args[3].gutter is False
     assert args[3].font_size == PDF_FONT_SIZE
+    assert kwargs["override_version"] == "6.2 beta"
     assert kwargs["input_path"] == str(tmp_path / "swift-book")
     assert kwargs["dangerously_skip_legal_notices"] is True
     assert kwargs["source_ref"] == "swift-6.2-branch"

@@ -71,6 +71,25 @@ def replace_and_extract_version(
     return updated_lines, version_info
 
 
+def resolve_version_info(
+    file_content: list[str],
+    override_version: str | None = None,
+) -> str:
+    if override_version is not None:
+        normalized_override_version = override_version.strip()
+        if normalized_override_version:
+            return normalized_override_version
+
+    _, version_info = replace_and_extract_version(file_content)
+    if version_info is not None:
+        return version_info
+
+    raise ValueError(
+        "Couldn't determine the Swift version by parsing the table of "
+        "contents. Please provide --override-version."
+    )
+
+
 def replace_chapter_href_with_toc_item(
     file_content: list[str],
     chapter_metadata: dict[str, ChapterMetadata],

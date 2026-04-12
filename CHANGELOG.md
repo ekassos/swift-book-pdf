@@ -6,12 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.5.1] - 2026-04-12
 ### Fixed
 - Fix an issue where PDF editions could be missing the bundled Swift logo assets.
 - Fix an issue where the Apache License text in the generated Acknowledgments chapter could be rendered with the wrong text color in dark mode.
 - Fix an issue where asterisks in the Apache License text were incorrectly rendered in math mode in the generated Acknowledgments chapter.
 
-### [2.5.0] - 2026-04-11
+## [2.5.0] - 2026-04-11
 ### Added
 - Add new `--override-version` option to `swift-book-pdf`.
 - Require PDF and EPUB builds to resolve the Swift version either from the table of contents or from an explicit override.
@@ -238,7 +240,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.0...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.1...HEAD
+[2.5.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.3.1...v2.4.0

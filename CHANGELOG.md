@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix an issue where the generated Acknowledgments chapter may be missing the `swift-docc-render` copyright notice.
 - Fix an issue where the Apache License text in the generated Acknowledgments chapter could be rendered with the wrong text color in dark mode.
 
+### Internal
+- Add `.git-blame-ignore-revs` file to hide the repository-wide Ruff linting commit from `git blame`.
+
 ## [2.4.1] - 2026-04-10
 ### Fixed
 - Fix an issue where the generated Acknowledgments chapter may be missing the `swift-docc-render` NOTICE content.

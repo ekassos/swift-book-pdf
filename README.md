@@ -49,7 +49,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 </table>
 
 <p align="center">
-  For versioned archives of the EPUB edition, see
+  <a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book.epub">Download EPUB &#8599;</a>&nbsp;&nbsp;·&nbsp;&nbsp;For versioned archives of the EPUB edition, see
   <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a>.
 </p>
 

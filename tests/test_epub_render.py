@@ -24,4 +24,6 @@ def test_normalize_prose_punctuation_converts_triple_hyphen_to_em_dash() -> (
 def test_normalize_prose_punctuation_converts_double_hyphen_to_en_dash() -> (
     None
 ):
-    assert _normalize_prose_punctuation("Swift 5.9--6.0") == "Swift 5.9–6.0"
+    assert (
+        _normalize_prose_punctuation("Swift 5.9--6.0") == "Swift 5.9\u20136.0"
+    )

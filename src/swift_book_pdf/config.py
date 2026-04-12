@@ -82,6 +82,7 @@ class PDFConfig(Config):
         output_path: str,
         font_config: FontConfig,
         doc_config: DocConfig,
+        override_version: str | None = None,
         source_ref: str | None = None,
         source_sha: str | None = None,
         input_path: str | None = None,
@@ -97,9 +98,11 @@ class PDFConfig(Config):
         )
         self.font_config = font_config
         self.doc_config = doc_config
+        self.override_version = override_version
         logger.debug(f"Output format: {self.output_format}")
         logger.debug(f"Font configuration: {self.font_config}")
         logger.debug(f"Document configuration: {self.doc_config}")
+        logger.debug(f"Version override: {override_version}")
 
 
 class EPUBConfig(Config):

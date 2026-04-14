@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix an issue where double hyphens in generated EPUB prose were not converted to en dashes.
 
+### Security
+- Update pillow (`12.1.1` to `12.2.0`) to resolve [FITS GZIP decompression bomb in Pillow](https://github.com/ekassos/swift-book-pdf/security/dependabot/6).
+
 ## [2.5.1] - 2026-04-12
 ### Fixed
 - Fix an issue where PDF editions could be missing the bundled Swift logo assets.

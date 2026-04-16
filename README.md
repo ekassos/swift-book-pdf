@@ -27,7 +27,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 <table>
   <tr>
     <td valign="middle" width="70%">
-  <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754">
+  <a href="https://books.apple.com/us/book/the-swift-programming-language/id6762236679">
     <picture>
   <!-- User prefers light mode: -->
   <source srcset="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e" media="(prefers-color-scheme: light)"/>
@@ -42,8 +42,8 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
     </td>
     <td valign="middle" width="30%">
       <p><i>The Swift Programming Language</i>, optimized for Apple Books.</p>
-      <p><a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754">Open in Apple Books &#8599;</a></p>
-      <a href="https://books.apple.com/us/book-series/swift-programming-series/id1887443754"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books"/></a>
+      <p><a href="https://books.apple.com/us/book/the-swift-programming-language/id6762236679">Open in Apple Books &#8599;</a></p>
+      <a href="https://books.apple.com/us/book/the-swift-programming-language/id6762236679"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books"/></a>
     </td>
   </tr>
 </table>

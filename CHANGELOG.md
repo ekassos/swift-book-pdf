@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix an issue where inline code spans that resemble Markdown links could be rendered as placeholder tokens in generated EPUB output.
 - Fix an issue where generated EPUB package metadata did not mark the SVG-based cover document with the required `svg` property.
+- Fix an issue where generated EPUB part title pages were positioned with a hardcoded top margin instead of being vertically centered within the page.
 
 ## [2.5.2] - 2026-04-13
 ### Fixed

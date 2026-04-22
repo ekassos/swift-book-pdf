@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 from pathlib import Path
 
 import click
@@ -25,6 +26,20 @@ from swift_book_pdf.cli import (
 )
 from swift_book_pdf.config import EPUBConfig
 from swift_book_pdf.schema import OutputFormat
+
+_HEX_COLOR_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}){1,2}$")
+
+
+def _validate_hex_color(
+    _ctx: click.Context, _param: click.Parameter, value: str | None
+) -> str | None:
+    if value is None:
+        return None
+    if not _HEX_COLOR_RE.match(value):
+        raise click.BadParameter(
+            f"{value!r} is not a valid hex color (expected #RGB or #RRGGBB)."
+        )
+    return value
 
 
 @click.command(name="swift-book-epub")
@@ -53,6 +68,25 @@ from swift_book_pdf.schema import OutputFormat
     type=str,
     default=None,
     help="Include the specified text in the cover image footer",
+)
+@click.option(
+    "--cover-banner-text",
+    type=str,
+    default=None,
+    help=(
+        "Add a banner at the top of the inner cover with the given text. "
+        'When the version is beta and this flag is omitted, "beta" is used.'
+    ),
+)
+@click.option(
+    "--cover-banner-color",
+    type=str,
+    default=None,
+    callback=_validate_hex_color,
+    help=(
+        "Background color of the inner-cover banner as a hex string "
+        "(e.g. #a5aeb0). Defaults to #a5aeb0."
+    ),
 )
 @click.option(
     "--override-version",
@@ -94,6 +128,8 @@ def epub(  # noqa: PLR0913
     export_cover_image: bool,
     base_cover_image: Path | None,
     cover_footer_line: str | None,
+    cover_banner_text: str | None,
+    cover_banner_color: str | None,
     override_version: str | None,
     ibooks_version: str | None,
     publisher: str | None,
@@ -115,6 +151,8 @@ def epub(  # noqa: PLR0913
             export_cover_image=export_cover_image,
             base_cover_image=base_cover_image,
             cover_footer_line=cover_footer_line,
+            cover_banner_text=cover_banner_text,
+            cover_banner_color=cover_banner_color,
             override_version=override_version,
             ibooks_version=ibooks_version,
             publisher=publisher,

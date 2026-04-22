@@ -122,6 +122,33 @@ def cover_template_path(
     return COVER_TEMPLATE_PATH
 
 
+BETA_BANNER_DEFAULT_COLOR = "#a5aeb0"
+
+
+def cover_uses_beta_style(
+    version_info: str | None,
+    base_cover_image: Path | None = None,
+) -> bool:
+    del base_cover_image
+    return version_info is not None and "beta" in version_info.lower()
+
+
+def resolve_cover_banner(
+    banner_text: str | None,
+    banner_color: str | None,
+    version_info: str | None,
+    base_cover_image: Path | None = None,
+) -> tuple[str, str] | None:
+    text = banner_text.strip() if banner_text else None
+    is_beta = cover_uses_beta_style(version_info, base_cover_image)
+    if text is None and is_beta:
+        text = "Beta"
+    if not text:
+        return None
+    color = banner_color or BETA_BANNER_DEFAULT_COLOR
+    return text, color
+
+
 def build_publication_identifier(
     version_info: str | None,
     source_revision: str | None,

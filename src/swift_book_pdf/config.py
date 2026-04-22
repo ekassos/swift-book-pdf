@@ -117,6 +117,8 @@ class EPUBConfig(Config):
         export_cover_image: bool = False,
         base_cover_image: Path | None = None,
         cover_footer_line: str | None = None,
+        cover_banner_text: str | None = None,
+        cover_banner_color: str | None = None,
         override_version: str | None = None,
         ibooks_version: str | None = None,
         publisher: str | None = None,
@@ -136,6 +138,8 @@ class EPUBConfig(Config):
         self.export_cover_image = export_cover_image
         self.base_cover_image = base_cover_image
         self.cover_footer_line = cover_footer_line
+        self.cover_banner_text = cover_banner_text
+        self.cover_banner_color = cover_banner_color
         self.override_version = override_version
         self.ibooks_version = ibooks_version
         self.publisher = publisher
@@ -146,6 +150,8 @@ class EPUBConfig(Config):
         )
         logger.debug(f"Base cover image: {base_cover_image}")
         logger.debug(f"Cover footer line: {cover_footer_line}")
+        logger.debug(f"Cover banner text: {cover_banner_text}")
+        logger.debug(f"Cover banner color: {cover_banner_color}")
         logger.debug(f"Version override: {override_version}")
         logger.debug(f"Apple Books version metadata: {ibooks_version}")
         logger.debug(f"Publisher: {publisher}")

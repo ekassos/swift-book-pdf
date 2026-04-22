@@ -56,6 +56,7 @@ from .helpers import (
     anchor_for_heading,
     build_publication_identifier,
     make_unique_anchor,
+    resolve_cover_banner,
 )
 from .package import EPUBPackageWriter
 from .render import EPUBRenderer, LinkResolver, extract_grammar_terms
@@ -119,11 +120,21 @@ class EPUBBuilder:
         image_assets: dict[str, ImageAsset] = {}
 
         if cover_document is not None:
+            cover_banner = resolve_cover_banner(
+                self.config.cover_banner_text,
+                self.config.cover_banner_color,
+                version_info,
+                self.config.base_cover_image,
+            )
             writer.write_text(
                 workspace,
                 cover_document.href,
                 renderer.render_cover_page(
-                    cover_document, book_title, version_info
+                    cover_document,
+                    book_title,
+                    version_info,
+                    cover_banner=cover_banner,
+                    cover_footer_line=self.config.cover_footer_line,
                 ),
             )
 

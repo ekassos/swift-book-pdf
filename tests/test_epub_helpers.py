@@ -14,7 +14,10 @@
 
 from pathlib import Path
 
-from swift_book_pdf.epub.helpers import cover_template_path
+from swift_book_pdf.epub.helpers import (
+    cover_template_path,
+    resolve_cover_banner,
+)
 
 
 def test_cover_template_path_prefers_explicit_base_cover_image(
@@ -23,4 +26,25 @@ def test_cover_template_path_prefers_explicit_base_cover_image(
     base_cover_image = tmp_path / "cover-custom.png"
     assert (
         cover_template_path("6.2 beta", base_cover_image) == base_cover_image
+    )
+
+
+def test_resolve_cover_banner_uses_explicit_beta_base_cover_image() -> None:
+    assert resolve_cover_banner(None, None, "6.2 beta", None) == (
+        "Beta",
+        "#a5aeb0",
+    )
+
+
+def test_resolve_cover_banner_keeps_version_based_beta_banner_for_explicit_cover_path(
+    tmp_path: Path,
+) -> None:
+    assert resolve_cover_banner(
+        None,
+        None,
+        "6.2 beta",
+        tmp_path / "cover-custom.png",
+    ) == (
+        "Beta",
+        "#a5aeb0",
     )

@@ -17,6 +17,7 @@ from __future__ import annotations
 import html
 import logging
 import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -148,13 +149,17 @@ class EPUBRenderer:
             f"<h1>{html.escape(part.title)}</h1>\n"
             "</div>\n"
         )
-        return self._wrap_xhtml_document(part.title, part.href, body)
+        return self._wrap_xhtml_document(
+            part.title, part.href, body, body_class="part-body"
+        )
 
     def render_cover_page(
         self,
         document: DocumentEntry,
         book_title: str,
         version_info: str | None,
+        cover_banner: tuple[str, str] | None = None,
+        cover_footer_line: str | None = None,
     ) -> str:
         edition_text = cover_edition_text(version_info)
         logo_light_href = html.escape(
@@ -163,31 +168,120 @@ class EPUBRenderer:
         logo_dark_href = html.escape(
             relative_href(document.href, EPUB_COVER_LOGO_DARK_FILE_NAME)
         )
-        subtitle_html = (
-            f'      <h2 id="title3">{html.escape(edition_text)}</h2>\n'
-            if edition_text
-            else ""
+        css_href = html.escape(
+            relative_href(document.href, "_static/epub.css")
         )
+        svg_font_family = (
+            "&apos;SF Compact Display&apos;, &apos;SF Pro Display&apos;, "
+            "&apos;SF Compact&apos;, &apos;SF Pro&apos;, "
+            "&apos;Helvetica Neue&apos;, Helvetica, Arial, "
+            "&apos;Segoe UI&apos;, &apos;Liberation Sans&apos;, "
+            "&apos;DejaVu Sans&apos;, sans-serif"
+        )
+
+        layers: list[str] = []
+
+        if cover_banner is not None:
+            banner_text, banner_color = cover_banner
+            layers.append(
+                f'        <rect x="0" y="0" width="1440" height="206" '
+                f'fill="{html.escape(banner_color)}"/>\n'
+                f'        <text x="720" y="155" text-anchor="middle" '
+                f'font-family="{svg_font_family}" font-weight="400" '
+                f'font-size="150" font-kerning="normal" fill="#ffffff">'
+                f"{html.escape(banner_text)}</text>\n"
+            )
+
+        layers.append(
+            f'        <image class="cover-svg-logo cover-svg-logo-light" '
+            f'x="453.5" y="321" width="533" height="533" '
+            f'xlink:href="{logo_light_href}" href="{logo_light_href}" '
+            f'preserveAspectRatio="xMidYMid meet"/>\n'
+            f'        <image class="cover-svg-logo cover-svg-logo-dark" '
+            f'x="453.5" y="321" width="533" height="533" '
+            f'xlink:href="{logo_dark_href}" href="{logo_dark_href}" '
+            f'preserveAspectRatio="xMidYMid meet"/>\n'
+        )
+
+        layers.append(
+            _render_cover_title_line(
+                "The Swift",
+                top_y=968.84,
+                horizontal_scale=1.06,
+                letter_spacing=-4.4,
+                style=CoverTitleStyle(
+                    font_family=svg_font_family,
+                    font_kerning="normal",
+                ),
+            )
+        )
+        layers.append(
+            _render_cover_title_line(
+                "Programming",
+                top_y=1138.84,
+                horizontal_scale=1.04,
+                letter_spacing=0.0,
+                style=CoverTitleStyle(
+                    font_family=svg_font_family,
+                    font_kerning="auto",
+                ),
+            )
+        )
+        layers.append(
+            _render_cover_title_line(
+                "Language",
+                top_y=1308.84,
+                horizontal_scale=1.04,
+                letter_spacing=-2.64,
+                style=CoverTitleStyle(
+                    font_family=svg_font_family,
+                    font_kerning="auto",
+                ),
+            )
+        )
+
+        if edition_text:
+            layers.append(
+                f'        <text class="cover-subtitle-text" '
+                f'transform="matrix(1,0,0,0.9,720,1604.99)" x="0" y="97" '
+                f'text-anchor="middle" font-family="{svg_font_family}" '
+                f'font-weight="400" font-size="125" letter-spacing="0.2" '
+                f'font-kerning="normal" fill="#2b2b2b">'
+                f"{html.escape(edition_text)}</text>\n"
+            )
+
+        if cover_footer_line:
+            layers.append(
+                f'        <text class="cover-footer-text" x="720" y="2023" '
+                f'text-anchor="middle" font-family="{svg_font_family}" '
+                f'font-weight="400" font-size="58" font-kerning="normal" '
+                f'fill="#6f6f6f">'
+                f"{html.escape(cover_footer_line)}</text>\n"
+            )
+
+        accessible_parts: list[str] = []
+        if cover_banner is not None:
+            accessible_parts.append(cover_banner[0])
+        accessible_parts.append("The Swift Programming Language")
+        if edition_text:
+            accessible_parts.append(edition_text)
+        if cover_footer_line:
+            accessible_parts.append(cover_footer_line)
+        accessible_title = " — ".join(accessible_parts)
+
+        svg_body = "".join(layers)
         return f"""<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
   <head>
     <meta charset="utf-8" />
     <title>{html.escape(book_title)}</title>
-    <link rel="stylesheet" href="{html.escape(relative_href(document.href, "_static/epub.css"))}" type="text/css" />
+    <link rel="stylesheet" href="{css_href}" type="text/css" />
   </head>
   <body class="coverpage" id="coverpage">
-    <div class="cover-shell">
-      <div class="theme-image cover-logo-wrap">
-        <img class="align-center image-light cover-logo" src="{logo_light_href}" alt="Swift logo" />
-        <img class="align-center image-dark cover-logo" src="{logo_dark_href}" alt="Swift logo" />
-      </div>
-      <div class="titleContainer">
-        <h1 id="title1a">The Swift</h1>
-        <h1 id="title1b">Programming</h1>
-        <h1 id="title1c">Language</h1>
-{subtitle_html}      </div>
-    </div>
+    <h1 class="visually-hidden">{html.escape(accessible_title)}</h1>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="cover-canvas-svg" viewBox="0 0 1440 2160" preserveAspectRatio="xMidYMid meet" role="img" aria-label="{html.escape(accessible_title)}">
+{svg_body}    </svg>
   </body>
 </html>
 """
@@ -227,12 +321,17 @@ class EPUBRenderer:
         return self._wrap_xhtml_document(document.title, document.href, body)
 
     def _wrap_xhtml_document(
-        self, title: str, href: str, body_html: str
+        self,
+        title: str,
+        href: str,
+        body_html: str,
+        body_class: str | None = None,
     ) -> str:
         css_href = html.escape(relative_href(href, "_static/epub.css"))
         pygments_href = html.escape(
             relative_href(href, "_static/pygments.css")
         )
+        body_attr = f' class="{html.escape(body_class)}"' if body_class else ""
         return f"""<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
@@ -242,7 +341,7 @@ class EPUBRenderer:
     <link rel="stylesheet" href="{css_href}" type="text/css" />
     <link rel="stylesheet" href="{pygments_href}" type="text/css" />
   </head>
-  <body>
+  <body{body_attr}>
     <main class="book-root" role="main">
 {body_html}
     </main>
@@ -517,6 +616,40 @@ class EPUBRenderer:
         if count == 1:
             return f"grammar_{fragment}"
         return f"grammar_{fragment}_{count}"
+
+
+COVER_TITLE_FONT_SIZE = 176
+COVER_TITLE_ASCENT = 137
+COVER_TITLE_VERTICAL_SCALE = 0.9
+COVER_TITLE_CENTER_X = 720
+
+
+@dataclass(frozen=True)
+class CoverTitleStyle:
+    font_family: str
+    font_kerning: str
+
+
+def _render_cover_title_line(
+    text: str,
+    top_y: float,
+    horizontal_scale: float,
+    letter_spacing: float,
+    style: CoverTitleStyle,
+) -> str:
+    matrix = (
+        f"matrix({horizontal_scale},0,0,{COVER_TITLE_VERTICAL_SCALE},"
+        f"{COVER_TITLE_CENTER_X},{top_y})"
+    )
+    return (
+        f'        <text class="cover-title-text" transform="{matrix}" '
+        f'x="0" y="{COVER_TITLE_ASCENT}" text-anchor="middle" '
+        f'font-family="{style.font_family}" font-weight="400" '
+        f'font-size="{COVER_TITLE_FONT_SIZE}" '
+        f'letter-spacing="{letter_spacing}" '
+        f'font-kerning="{style.font_kerning}" fill="#2b2b2b">'
+        f"{html.escape(text)}</text>\n"
+    )
 
 
 def _heading_level(block: Block) -> int | None:

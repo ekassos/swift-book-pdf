@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Add new `--base-cover-image` option to swift-book-epub to let EPUB builds use a provided cover template image instead of deriving one from the version string and the bundled assets.
+- Add new `--base-cover-image` option to `swift-book-epub` to let EPUB builds use a provided cover template image instead of deriving one from the version string and the bundled assets.
+- Add new `--cover-banner-text` and `--cover-banner-color` options to `swift-book-epub` to add a custom banner to the inner cover, with automatic `Beta` banner support for beta editions.
+
+### Changed
+- Redesign the generated EPUB inner cover to use SVG-based layout and typography, improving cover composition, accessibility text, and support for optional footer lines and banners presented in the outer cover.
 
 ### Fixed
 - Fix an issue where inline code spans that resemble Markdown links could be rendered as placeholder tokens in generated EPUB output.

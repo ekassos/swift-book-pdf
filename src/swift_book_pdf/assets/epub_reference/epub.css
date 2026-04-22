@@ -162,14 +162,38 @@ a {
   color: rgb(0 136 204 / 100%);
 }
 
+body.part-body {
+  margin: 0;
+  padding: 0;
+}
+
+body.part-body .book-root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .part-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1 0 auto;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  text-align: center;
   break-after: always;
   page-break-after: always;
 }
 
 .part-page h1 {
   font-size: 2.5em;
-  margin-top: 55%;
+  line-height: 1.25;
+  margin: 0;
+  padding: 0 0.5em;
   text-align: center;
 }
 

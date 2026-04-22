@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.6.0] - 2026-04-21
+## [2.6.0] - 2026-04-22
 ### Added
 - Add new `--base-cover-image` option to `swift-book-epub` to let EPUB builds use a provided cover template image instead of deriving one from the version string and the bundled assets.
 - Add new `--cover-banner-text` and `--cover-banner-color` options to `swift-book-epub` to add a custom banner to the inner cover, with automatic `Beta` banner support for beta editions.

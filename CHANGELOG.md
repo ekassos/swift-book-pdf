@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add new `--base-cover-image` option to swift-book-epub to let EPUB builds use a provided cover template image instead of deriving one from the version string and the bundled assets.
 
 ### Fixed
 - Fix an issue where inline code spans that resemble Markdown links could be rendered as placeholder tokens in generated EPUB output.

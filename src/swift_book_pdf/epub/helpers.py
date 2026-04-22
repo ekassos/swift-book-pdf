@@ -111,7 +111,12 @@ def cover_edition_text(version_info: str | None) -> str | None:
     return f"Swift {normalized_version} Edition"
 
 
-def cover_template_path(version_info: str | None) -> Path:
+def cover_template_path(
+    version_info: str | None,
+    base_cover_image: Path | None = None,
+) -> Path:
+    if base_cover_image is not None:
+        return base_cover_image
     if version_info is not None and "beta" in version_info.lower():
         return COVER_BETA_TEMPLATE_PATH
     return COVER_TEMPLATE_PATH

@@ -95,6 +95,7 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
             cli_epub.epub,
             (
                 "--export-cover-image",
+                "--base-cover-image",
                 "--cover-footer-line",
                 "--override-version",
                 "--ibooks-version",
@@ -207,11 +208,15 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
 
     output_dir = tmp_path / "dist"
     output_dir.mkdir()
+    cover_path = tmp_path / "custom-cover.png"
+    cover_path.write_bytes(b"png")
     result = runner.invoke(
         cli_epub.epub,
         [
             str(output_dir),
             "--export-cover-image",
+            "--base-cover-image",
+            str(cover_path),
             "--cover-footer-line",
             "Beta",
             "--override-version",
@@ -238,6 +243,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     assert args[1] == str(output_dir / "swift_book.epub")
     assert kwargs["input_path"] == str(tmp_path / "swift-book")
     assert kwargs["export_cover_image"] is True
+    assert kwargs["base_cover_image"] == cover_path
     assert kwargs["cover_footer_line"] == "Beta"
     assert kwargs["override_version"] == "6.2 beta"
     assert kwargs["ibooks_version"] == "1.1"

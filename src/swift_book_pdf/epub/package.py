@@ -114,7 +114,10 @@ class EPUBPackageWriter:
     def write_cover_asset(
         self, workspace: Path, version_info: str | None
     ) -> None:
-        template_path = cover_template_path(version_info)
+        template_path = cover_template_path(
+            version_info,
+            self.config.base_cover_image,
+        )
         if not template_path.exists():
             logger.warning(
                 "Couldn't find cover template %s; skipping cover.",

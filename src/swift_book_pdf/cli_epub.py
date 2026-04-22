@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import click
 
 from swift_book_pdf.book import build_epub
@@ -32,6 +34,19 @@ from swift_book_pdf.schema import OutputFormat
     "-e",
     is_flag=True,
     help="Also save the generated cover image as a separate file in the output directory",
+)
+@click.option(
+    "--base-cover-image",
+    type=click.Path(
+        exists=True,
+        dir_okay=False,
+        path_type=Path,
+    ),
+    default=None,
+    help=(
+        "Use the specified base cover image file instead of selecting one "
+        "from the version string."
+    ),
 )
 @click.option(
     "--cover-footer-line",
@@ -77,6 +92,7 @@ from swift_book_pdf.schema import OutputFormat
 def epub(  # noqa: PLR0913
     output_path: str,
     export_cover_image: bool,
+    base_cover_image: Path | None,
     cover_footer_line: str | None,
     override_version: str | None,
     ibooks_version: str | None,
@@ -97,6 +113,7 @@ def epub(  # noqa: PLR0913
             validated_output_path,
             input_path=input_path,
             export_cover_image=export_cover_image,
+            base_cover_image=base_cover_image,
             cover_footer_line=cover_footer_line,
             override_version=override_version,
             ibooks_version=ibooks_version,

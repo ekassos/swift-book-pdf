@@ -14,6 +14,7 @@
 
 import logging
 import shutil
+from pathlib import Path
 
 from swift_book_pdf.doc import DocConfig
 from swift_book_pdf.files import (
@@ -114,6 +115,7 @@ class EPUBConfig(Config):
         output_path: str,
         input_path: str | None = None,
         export_cover_image: bool = False,
+        base_cover_image: Path | None = None,
         cover_footer_line: str | None = None,
         override_version: str | None = None,
         ibooks_version: str | None = None,
@@ -132,6 +134,7 @@ class EPUBConfig(Config):
             dangerously_skip_legal_notices=dangerously_skip_legal_notices,
         )
         self.export_cover_image = export_cover_image
+        self.base_cover_image = base_cover_image
         self.cover_footer_line = cover_footer_line
         self.override_version = override_version
         self.ibooks_version = ibooks_version
@@ -141,6 +144,7 @@ class EPUBConfig(Config):
         logger.debug(
             f"Save generated cover image as separate file: {export_cover_image}"
         )
+        logger.debug(f"Base cover image: {base_cover_image}")
         logger.debug(f"Cover footer line: {cover_footer_line}")
         logger.debug(f"Version override: {override_version}")
         logger.debug(f"Apple Books version metadata: {ibooks_version}")

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix an issue where inline code spans that resemble Markdown links could be rendered as placeholder tokens in generated EPUB output.
+
 ## [2.5.2] - 2026-04-13
 ### Fixed
 - Fix an issue where double hyphens in generated EPUB prose were not converted to en dashes.

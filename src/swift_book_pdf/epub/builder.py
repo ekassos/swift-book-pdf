@@ -87,6 +87,7 @@ class EPUBBuilder:
         publication_identifier = build_publication_identifier(
             version_info,
             source_revision,
+            self.config.publication_identifier_seed,
         )
         writer.publication_identifier = publication_identifier
         book_title = (

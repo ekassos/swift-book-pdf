@@ -95,6 +95,15 @@ def _validate_hex_color(
     help='Override the version number. Include "beta" for beta versions.',
 )
 @click.option(
+    "--publication-identifier-seed",
+    type=str,
+    default=None,
+    help=(
+        "Override the pre-hash seed used for the EPUB publication identifier. "
+        "This bypasses the default source-revision or version-derived seed."
+    ),
+)
+@click.option(
     "--ibooks-version",
     type=str,
     default=None,
@@ -131,6 +140,7 @@ def epub(  # noqa: PLR0913
     cover_banner_text: str | None,
     cover_banner_color: str | None,
     override_version: str | None,
+    publication_identifier_seed: str | None,
     ibooks_version: str | None,
     publisher: str | None,
     contributor: str | None,
@@ -154,6 +164,7 @@ def epub(  # noqa: PLR0913
             cover_banner_text=cover_banner_text,
             cover_banner_color=cover_banner_color,
             override_version=override_version,
+            publication_identifier_seed=publication_identifier_seed,
             ibooks_version=ibooks_version,
             publisher=publisher,
             contributor=contributor,

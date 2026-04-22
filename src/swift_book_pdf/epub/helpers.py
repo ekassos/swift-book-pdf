@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import html
+import logging
 import posixpath
 import re
 import uuid
@@ -25,6 +26,8 @@ from .constants import (
     COVER_TEMPLATE_PATH,
     OEBPS_DIR_NAME,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def relative_href(current_href: str, target_href: str) -> str:
@@ -152,12 +155,21 @@ def resolve_cover_banner(
 def build_publication_identifier(
     version_info: str | None,
     source_revision: str | None,
+    publication_identifier_seed: str | None = None,
 ) -> str:
-    seed = source_revision
+    seed = publication_identifier_seed
+    if seed is None:
+        seed = source_revision
     if seed is None and version_info is not None:
         normalized_version = " ".join(version_info.split())
         if normalized_version:
             seed = f"version:{normalized_version}"
     if seed is None:
+        logger.debug(
+            "EPUB publication identifier seed unavailable; generating random UUID4"
+        )
         return f"urn:uuid:{uuid.uuid4()}"
+    logger.debug(
+        f"EPUB publication identifier pre-hash seed: swift-book:{seed}"
+    )
     return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, f'swift-book:{seed}')}"

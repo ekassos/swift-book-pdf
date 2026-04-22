@@ -83,6 +83,48 @@ def test_content_opf_omits_ibooks_version_metadata_by_default(
     assert 'property="ibooks:version"' not in content_opf
 
 
+def test_content_opf_marks_cover_document_as_svg(
+    tmp_path: Path,
+) -> None:
+    config = cast(
+        EPUBConfig,
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+            publisher=None,
+            contributor=None,
+            ibooks_version=None,
+        ),
+    )
+    writer = EPUBPackageWriter(config)
+    workspace = writer.prepare_workspace()
+
+    writer.write_content_opf_file(
+        workspace,
+        "The Swift Programming Language",
+        [
+            DocumentEntry(
+                key="cover",
+                title="Cover",
+                subtitle=None,
+                href="cover.xhtml",
+                directory=None,
+            )
+        ],
+        {},
+        "urn:uuid:test-book",
+    )
+
+    content_opf = (workspace / "OEBPS" / "content.opf").read_text(
+        encoding="utf-8"
+    )
+
+    assert (
+        '<item id="epub-doc-0" href="cover.xhtml" '
+        'media-type="application/xhtml+xml" properties="svg" />' in content_opf
+    )
+
+
 def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
     tmp_path: Path,
 ) -> None:

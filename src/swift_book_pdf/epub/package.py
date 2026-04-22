@@ -43,6 +43,7 @@ from .constants import (
     COVER_TEXT_X,
     COVER_TEXT_Y,
     DEFAULT_BOOK_TITLE,
+    EPUB_COVER_DOC_FILE_NAME,
     EPUB_COVER_LOGO_DARK_FILE_NAME,
     EPUB_COVER_LOGO_FILE_NAME,
     EPUB_IDENTIFIER_ID,
@@ -380,6 +381,11 @@ class EPUBPackageWriter:
                     item_id=f"epub-doc-{index}",
                     href=document.href,
                     media_type="application/xhtml+xml",
+                    properties=(
+                        "svg"
+                        if document.href == EPUB_COVER_DOC_FILE_NAME
+                        else None
+                    ),
                 )
             )
 

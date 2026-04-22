@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Redesign the generated EPUB inner cover to use SVG-based layout and typography, improving cover composition, accessibility text, and support for optional footer lines and banners presented in the outer cover.
+- Normalize EPUB aside and grammar block spacing to use relative `em`-based sizing for more consistent scaling across reading environments.
 
 ### Fixed
 - Fix an issue where inline code spans that resemble Markdown links could be rendered as placeholder tokens in generated EPUB output.

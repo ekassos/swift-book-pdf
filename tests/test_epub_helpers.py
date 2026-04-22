@@ -15,6 +15,7 @@
 from pathlib import Path
 
 from swift_book_pdf.epub.helpers import (
+    build_publication_identifier,
     cover_template_path,
     resolve_cover_banner,
 )
@@ -47,4 +48,16 @@ def test_resolve_cover_banner_keeps_version_based_beta_banner_for_explicit_cover
     ) == (
         "Beta",
         "#a5aeb0",
+    )
+
+
+def test_build_publication_identifier_prefers_explicit_seed_override() -> None:
+    expected = "urn:uuid:b984fd30-8362-53d6-9879-e2f1803a9020"
+    assert (
+        build_publication_identifier(
+            "6.2.4",
+            "2306b38fdd2235b9d7a070e342098c2e08dda90d",
+            "version:6.2.3",
+        )
+        == expected
     )

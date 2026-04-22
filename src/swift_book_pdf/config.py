@@ -120,6 +120,7 @@ class EPUBConfig(Config):
         cover_banner_text: str | None = None,
         cover_banner_color: str | None = None,
         override_version: str | None = None,
+        publication_identifier_seed: str | None = None,
         ibooks_version: str | None = None,
         publisher: str | None = None,
         contributor: str | None = None,
@@ -141,6 +142,7 @@ class EPUBConfig(Config):
         self.cover_banner_text = cover_banner_text
         self.cover_banner_color = cover_banner_color
         self.override_version = override_version
+        self.publication_identifier_seed = publication_identifier_seed
         self.ibooks_version = ibooks_version
         self.publisher = publisher
         self.contributor = contributor
@@ -153,6 +155,10 @@ class EPUBConfig(Config):
         logger.debug(f"Cover banner text: {cover_banner_text}")
         logger.debug(f"Cover banner color: {cover_banner_color}")
         logger.debug(f"Version override: {override_version}")
+        logger.debug(
+            "Publication identifier seed override: %s",
+            publication_identifier_seed,
+        )
         logger.debug(f"Apple Books version metadata: {ibooks_version}")
         logger.debug(f"Publisher: {publisher}")
         logger.debug(f"Contributor: {contributor}")

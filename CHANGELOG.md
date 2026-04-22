@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.6.0] - 2026-04-21
 ### Added
 - Add new `--base-cover-image` option to `swift-book-epub` to let EPUB builds use a provided cover template image instead of deriving one from the version string and the bundled assets.
 - Add new `--cover-banner-text` and `--cover-banner-color` options to `swift-book-epub` to add a custom banner to the inner cover, with automatic `Beta` banner support for beta editions.
@@ -261,7 +263,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both modes follow the DocC rendering style used in [docs.swift.org](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/), including code highlighting.
 
 
-[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.2...HEAD
+[unreleased]: https://github.com/ekassos/swift-book-pdf/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.2...v2.6.0
 [2.5.2]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.1...v2.5.2
 [2.5.1]: https://github.com/ekassos/swift-book-pdf/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/ekassos/swift-book-pdf/compare/v2.4.1...v2.5.0

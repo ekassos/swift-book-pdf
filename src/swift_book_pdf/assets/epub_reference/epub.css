@@ -311,9 +311,9 @@ li > code.inline-code {
 
 .aside {
   margin-bottom: 1.5em;
-  margin-left: 5px;
-  padding: 7px 15px;
-  border-left: solid 4px #ccc;
+  margin-left: 0.35em;
+  padding: 0.5em 1em;
+  border-left: solid 0.25em #ccc;
   background-color: #f5f5f5;
   font-size: 0.9em;
   line-height: 1.4em;
@@ -326,7 +326,7 @@ li > code.inline-code {
   color: #777;
   font-size: 0.7em;
   font-weight: normal;
-  letter-spacing: 2px;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
@@ -340,15 +340,15 @@ li > code.inline-code {
 
 .aside.grammar {
   width: inherit;
-  margin: 20px 0;
-  padding-left: 15px;
-  border-left: 5px solid rgb(233 233 233 / 100%);
+  margin: 1.4em 0;
+  padding-left: 1em;
+  border-left: 0.3em solid rgb(233 233 233 / 100%);
   background: transparent;
   font-family: Helvetica, sans-serif;
 }
 
 .aside.grammar p.aside-title {
-  margin-bottom: 8px;
+  margin-bottom: 0.55em;
 }
 
 .aside.grammar p {
@@ -356,8 +356,8 @@ li > code.inline-code {
 }
 
 .aside.grammar p.grammar-rule {
-  margin-left: 25px;
-  text-indent: -25px;
+  margin-left: 1.75em;
+  text-indent: -1.75em;
 }
 
 .aside.grammar .grammar-term {

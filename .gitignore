@@ -23,7 +23,7 @@ build/
 Thumbs.db
 
 # PDF assets not needed in version control
-src/swift_book_pdf/assets/
+src/swift_book_pdf/assets/*
 !src/swift_book_pdf/assets/chapter-icon.png
 !src/swift_book_pdf/assets/chapter-icon~dark.png
 !src/swift_book_pdf/assets/Swift_logo_color.png
@@ -31,7 +31,8 @@ src/swift_book_pdf/assets/
 
 # EPUB assets not needed in version control
 !src/swift_book_pdf/assets/Swift_logo_color_epub.png
-src/swift_book_pdf/assets/epub_reference/
+!src/swift_book_pdf/assets/epub_reference/
+src/swift_book_pdf/assets/epub_reference/*
 !src/swift_book_pdf/assets/epub_reference/cover.png
 !src/swift_book_pdf/assets/epub_reference/cover-beta.png
 !src/swift_book_pdf/assets/epub_reference/epub.css

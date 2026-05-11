@@ -17,7 +17,7 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
 from swift_book_pdf.epub.constants import EPUB_FONT_FILE_NAMES
-from swift_book_pdf.epub.package import EPUBPackageWriter
+from swift_book_pdf.epub.package import EPUBPackageWriter, NavigationDocuments
 from swift_book_pdf.schema import DocumentEntry
 
 if TYPE_CHECKING:
@@ -272,12 +272,12 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
     )
     writer.write_text(workspace, "Edition.xhtml", "<html></html>")
 
-    writer.write_nav_file(workspace, cover, [], None)
+    navigation_documents = NavigationDocuments(cover, None, None)
+    writer.write_nav_file(workspace, navigation_documents, [])
     writer.write_toc_ncx_file(
         workspace,
-        cover,
+        navigation_documents,
         [],
-        None,
         "The Swift Programming Language",
     )
 
@@ -285,8 +285,54 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
     ncx = (workspace / "OEBPS" / "toc.ncx").read_text(encoding="utf-8")
 
     assert 'epub:type="frontmatter"' not in nav
-    assert '<a href="Edition.xhtml">About This Edition</a>' in nav
-    assert "<text>About This Edition</text>" in ncx
+    assert '<a href="Edition.xhtml">About This Edition</a>' not in nav
+    assert "<text>About This Edition</text>" not in ncx
     assert "Acknowledgments" not in nav
     assert 'epub:type="acknowledgements"' not in nav
     assert "Acknowledgments" not in ncx
+
+
+def test_nav_and_ncx_include_edition_notice_when_configured(
+    tmp_path: Path,
+) -> None:
+    config = cast(
+        "EPUBConfig",
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+            publisher=None,
+            contributor=None,
+            ibooks_version=None,
+        ),
+    )
+    writer = EPUBPackageWriter(config)
+    workspace = writer.prepare_workspace()
+    cover = DocumentEntry(
+        key="cover",
+        title="Cover",
+        subtitle=None,
+        href="cover.xhtml",
+        directory=None,
+    )
+    edition_notice = DocumentEntry(
+        key="editionnotice",
+        title="About This Edition",
+        subtitle=None,
+        href="Edition.xhtml",
+        directory=None,
+    )
+
+    navigation_documents = NavigationDocuments(cover, edition_notice, None)
+    writer.write_nav_file(workspace, navigation_documents, [])
+    writer.write_toc_ncx_file(
+        workspace,
+        navigation_documents,
+        [],
+        "The Swift Programming Language",
+    )
+
+    nav = (workspace / "OEBPS" / "toc.xhtml").read_text(encoding="utf-8")
+    ncx = (workspace / "OEBPS" / "toc.ncx").read_text(encoding="utf-8")
+
+    assert '<a href="Edition.xhtml">About This Edition</a>' in nav
+    assert "<text>About This Edition</text>" in ncx

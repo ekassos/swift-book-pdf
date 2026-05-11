@@ -60,7 +60,7 @@ from .helpers import (
     make_unique_anchor,
     resolve_cover_banner,
 )
-from .package import EPUBPackageWriter
+from .package import EPUBPackageWriter, NavigationDocuments
 from .render import (
     CoverPageOptions,
     EPUBRenderer,
@@ -118,7 +118,11 @@ class EPUBBuilder:
                 logger.info(f"Cover image saved to {cover_output_path}")
 
         cover_document = self._build_cover_document(writer, workspace)
-        edition_notice_document = self._build_edition_notice_document()
+        edition_notice_document = (
+            None
+            if self.config.dangerously_skip_legal_notices
+            else self._build_edition_notice_document()
+        )
         documents = self._flatten_documents(
             cover_document, edition_notice_document, parts, notices
         )
@@ -153,11 +157,12 @@ class EPUBBuilder:
                 ),
             )
 
-        writer.write_text(
-            workspace,
-            edition_notice_document.href,
-            renderer.render_edition_notice_page(edition_notice_document),
-        )
+        if edition_notice_document is not None:
+            writer.write_text(
+                workspace,
+                edition_notice_document.href,
+                renderer.render_edition_notice_page(edition_notice_document),
+            )
 
         for part in parts:
             writer.write_text(
@@ -183,12 +188,14 @@ class EPUBBuilder:
                 renderer.render_notices_page(notices),
             )
         writer.copy_image_assets(workspace, image_assets)
-        writer.write_nav_file(workspace, cover_document, parts, notices)
+        navigation_documents = NavigationDocuments(
+            cover_document, edition_notice_document, notices
+        )
+        writer.write_nav_file(workspace, navigation_documents, parts)
         writer.write_toc_ncx_file(
             workspace,
-            cover_document,
+            navigation_documents,
             parts,
-            notices,
             book_title,
         )
         writer.write_content_opf_file(
@@ -300,14 +307,15 @@ class EPUBBuilder:
     def _flatten_documents(
         self,
         cover: DocumentEntry | None,
-        edition_notice: DocumentEntry,
+        edition_notice: DocumentEntry | None,
         parts: list[PartEntry],
         notices: DocumentEntry | None,
     ) -> list[DocumentEntry]:
         documents: list[DocumentEntry] = []
         if cover is not None:
             documents.append(cover)
-        documents.append(edition_notice)
+        if edition_notice is not None:
+            documents.append(edition_notice)
         for part in parts:
             documents.append(
                 DocumentEntry(

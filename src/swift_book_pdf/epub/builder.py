@@ -47,6 +47,8 @@ from .constants import (
     DOC_TAG_LINE_PATTERN,
     EPUB_COVER_DOC_FILE_NAME,
     EPUB_COVER_DOC_TITLE,
+    EPUB_EDITION_NOTICE_DOC_FILE_NAME,
+    EPUB_EDITION_NOTICE_DOC_TITLE,
     HEADING_PATTERN,
     PART_HEADING_PATTERN,
     SUMMARY_DOC_FILE_NAME,
@@ -59,7 +61,12 @@ from .helpers import (
     resolve_cover_banner,
 )
 from .package import EPUBPackageWriter
-from .render import EPUBRenderer, LinkResolver, extract_grammar_terms
+from .render import (
+    CoverPageOptions,
+    EPUBRenderer,
+    LinkResolver,
+    extract_grammar_terms,
+)
 
 if TYPE_CHECKING:
     from swift_book_pdf.config import EPUBConfig
@@ -111,7 +118,10 @@ class EPUBBuilder:
                 logger.info(f"Cover image saved to {cover_output_path}")
 
         cover_document = self._build_cover_document(writer, workspace)
-        documents = self._flatten_documents(cover_document, parts, notices)
+        edition_notice_document = self._build_edition_notice_document()
+        documents = self._flatten_documents(
+            cover_document, edition_notice_document, parts, notices
+        )
         renderer = EPUBRenderer(
             self.asset_path,
             self._build_grammar_target_map(parts),
@@ -125,19 +135,29 @@ class EPUBBuilder:
                 self.config.cover_banner_text,
                 self.config.cover_banner_color,
                 version_info,
-                self.config.base_cover_image,
+                self.config.cover_variant,
             )
             writer.write_text(
                 workspace,
                 cover_document.href,
                 renderer.render_cover_page(
                     cover_document,
-                    book_title,
                     version_info,
-                    cover_banner=cover_banner,
-                    cover_footer_line=self.config.cover_footer_line,
+                    CoverPageOptions(
+                        book_title=book_title,
+                        cover_banner=cover_banner,
+                        cover_footer_line=self.config.cover_footer_line,
+                        compiled_by_name=self.config.contributor,
+                        cover_variant=self.config.cover_variant,
+                    ),
                 ),
             )
+
+        writer.write_text(
+            workspace,
+            edition_notice_document.href,
+            renderer.render_edition_notice_page(edition_notice_document),
+        )
 
         for part in parts:
             writer.write_text(
@@ -268,15 +288,26 @@ class EPUBBuilder:
             directory=None,
         )
 
+    def _build_edition_notice_document(self) -> DocumentEntry:
+        return DocumentEntry(
+            key="editionnotice",
+            title=EPUB_EDITION_NOTICE_DOC_TITLE,
+            subtitle=None,
+            href=EPUB_EDITION_NOTICE_DOC_FILE_NAME,
+            directory=None,
+        )
+
     def _flatten_documents(
         self,
         cover: DocumentEntry | None,
+        edition_notice: DocumentEntry,
         parts: list[PartEntry],
         notices: DocumentEntry | None,
     ) -> list[DocumentEntry]:
         documents: list[DocumentEntry] = []
         if cover is not None:
             documents.append(cover)
+        documents.append(edition_notice)
         for part in parts:
             documents.append(
                 DocumentEntry(

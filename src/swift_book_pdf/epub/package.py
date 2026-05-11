@@ -18,6 +18,7 @@ import html
 import logging
 import shutil
 import zipfile
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -35,26 +36,26 @@ from .constants import (
     COVER_FOOTER_TEXT_FILL,
     COVER_FOOTER_TEXT_SIZE,
     COVER_FOOTER_TEXT_Y,
-    COVER_TEXT_FILL,
+    COVER_SANS_FONT_PATH,
+    COVER_SERIF_ITALIC_FONT_PATH,
+    COVER_TEXT_BASELINE_Y,
     COVER_TEXT_SIZE,
     COVER_TEXT_TRACKING,
-    COVER_TEXT_VERTICAL_SCALE,
-    COVER_TEXT_WIDTH,
     COVER_TEXT_X,
-    COVER_TEXT_Y,
     DEFAULT_BOOK_TITLE,
     EPUB_COVER_DOC_FILE_NAME,
-    EPUB_COVER_LOGO_DARK_FILE_NAME,
-    EPUB_COVER_LOGO_FILE_NAME,
+    EPUB_EDITION_NOTICE_DOC_FILE_NAME,
+    EPUB_EDITION_NOTICE_DOC_TITLE,
+    EPUB_FONT_DIR_NAME,
+    EPUB_FONT_FILE_NAMES,
     EPUB_IDENTIFIER_ID,
     NAV_DOC_FILE_NAME,
     NCX_FILE_NAME,
     REFERENCE_STATIC_DIR,
-    SWIFT_LOGO_PNG_PATH,
-    SWIFT_LOGO_WHITE_PNG_PATH,
 )
 from .helpers import (
-    cover_edition_text,
+    cover_png_version_fill,
+    cover_png_version_text,
     cover_template_path,
     oebps_workspace_path,
     relative_href,
@@ -64,6 +65,13 @@ if TYPE_CHECKING:
     from swift_book_pdf.config import EPUBConfig
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class _CoverTextStyle:
+    font: ImageFont.FreeTypeFont | ImageFont.ImageFont
+    tracking: float
+    fill: str
 
 
 class EPUBPackageWriter:
@@ -99,18 +107,10 @@ class EPUBPackageWriter:
     def write_static_files(self, workspace: Path) -> None:
         self._copy_reference_static_asset("epub.css", workspace)
         self._copy_reference_static_asset("pygments.css", workspace)
-        if SWIFT_LOGO_PNG_PATH.exists():
-            destination = oebps_workspace_path(
-                workspace, EPUB_COVER_LOGO_FILE_NAME
+        for font_file_name in EPUB_FONT_FILE_NAMES:
+            self._copy_reference_static_asset(
+                f"fonts/{font_file_name}", workspace
             )
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(SWIFT_LOGO_PNG_PATH, destination)
-        if SWIFT_LOGO_WHITE_PNG_PATH.exists():
-            dark_destination = oebps_workspace_path(
-                workspace, EPUB_COVER_LOGO_DARK_FILE_NAME
-            )
-            dark_destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(SWIFT_LOGO_WHITE_PNG_PATH, dark_destination)
 
     def write_cover_asset(
         self, workspace: Path, version_info: str | None
@@ -118,6 +118,8 @@ class EPUBPackageWriter:
         template_path = cover_template_path(
             version_info,
             self.config.base_cover_image,
+            self.config.cover_variant,
+            self.config.cover_template_paths,
         )
         if not template_path.exists():
             logger.warning(
@@ -130,17 +132,31 @@ class EPUBPackageWriter:
             workspace, "_static/cover.png"
         )
         cover_destination.parent.mkdir(parents=True, exist_ok=True)
-        edition_text = cover_edition_text(version_info)
-        if edition_text is None and not self.config.cover_footer_line:
+        version_text = cover_png_version_text(
+            version_info,
+            self.config.cover_variant,
+        )
+        if version_text is None and not self.config.cover_footer_line:
             shutil.copy2(template_path, cover_destination)
             return
 
         cover_image = Image.open(template_path).convert("RGBA")
-        if edition_text is not None:
-            font = _load_cover_font(COVER_TEXT_SIZE)
-            _draw_cover_edition_text(cover_image, edition_text, font)
+        if version_text is not None:
+            style = _CoverTextStyle(
+                font=_load_cover_font(COVER_TEXT_SIZE),
+                tracking=COVER_TEXT_TRACKING,
+                fill=cover_png_version_fill(
+                    version_info,
+                    self.config.cover_variant,
+                ),
+            )
+            _draw_cover_version_text(
+                cover_image,
+                version_text,
+                style,
+            )
         if self.config.cover_footer_line:
-            footer_line_font = _load_cover_font(COVER_FOOTER_TEXT_SIZE)
+            footer_line_font = _load_cover_footer_font(COVER_FOOTER_TEXT_SIZE)
             _draw_cover_footer_line(
                 cover_image,
                 self.config.cover_footer_line,
@@ -193,11 +209,23 @@ class EPUBPackageWriter:
             if cover is not None
             else None
         )
+        edition_notice_href = relative_href(
+            NAV_DOC_FILE_NAME, EPUB_EDITION_NOTICE_DOC_FILE_NAME
+        )
+        edition_notice_exists = oebps_workspace_path(
+            workspace, EPUB_EDITION_NOTICE_DOC_FILE_NAME
+        ).exists()
         items = []
         if cover is not None:
             items.append(
                 "        <li>\n"
                 f'          <a href="{html.escape(cover_relative_href or "")}">{html.escape(cover.title)}</a>\n'
+                "        </li>"
+            )
+        if edition_notice_exists:
+            items.append(
+                "        <li>\n"
+                f'          <a href="{html.escape(edition_notice_href)}">{html.escape(EPUB_EDITION_NOTICE_DOC_TITLE)}</a>\n'
                 "        </li>"
             )
         for part in parts:
@@ -312,6 +340,15 @@ class EPUBPackageWriter:
                 cover.href,
             )
             part_navpoints.append(cover_navpoint)
+        if oebps_workspace_path(
+            workspace, EPUB_EDITION_NOTICE_DOC_FILE_NAME
+        ).exists():
+            notice_navpoint, navpoint_index = _build_ncx_navpoint_tree(
+                navpoint_index,
+                EPUB_EDITION_NOTICE_DOC_TITLE,
+                EPUB_EDITION_NOTICE_DOC_FILE_NAME,
+            )
+            part_navpoints.append(notice_navpoint)
         for part in parts:
             part_navpoint, navpoint_index = _build_ncx_navpoint_tree(
                 navpoint_index,
@@ -414,24 +451,14 @@ class EPUBPackageWriter:
                 ),
             ]
         )
-        if oebps_workspace_path(workspace, EPUB_COVER_LOGO_FILE_NAME).exists():
-            manifest.append(
-                ManifestItem(
-                    item_id="epub-cover-logo",
-                    href=EPUB_COVER_LOGO_FILE_NAME,
-                    media_type="image/png",
-                )
+        manifest.extend(
+            ManifestItem(
+                item_id=f"epub-font-{index}",
+                href=f"{EPUB_FONT_DIR_NAME}/{font_file_name}",
+                media_type="font/ttf",
             )
-        if oebps_workspace_path(
-            workspace, EPUB_COVER_LOGO_DARK_FILE_NAME
-        ).exists():
-            manifest.append(
-                ManifestItem(
-                    item_id="epub-cover-logo-dark",
-                    href=EPUB_COVER_LOGO_DARK_FILE_NAME,
-                    media_type="image/png",
-                )
-            )
+            for index, font_file_name in enumerate(EPUB_FONT_FILE_NAMES)
+        )
         if self.has_cover_asset(workspace):
             manifest.append(
                 ManifestItem(
@@ -567,46 +594,22 @@ def _format_manifest_item(item: ManifestItem) -> str:
 def _load_cover_font(
     size: int,
 ) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    candidate_paths = [
-        Path("/Library/Fonts/SF-Pro-Display-Regular.otf"),
-        Path("/System/Library/Fonts/HelveticaNeue.ttc"),
-        Path("/System/Library/Fonts/Helvetica.ttc"),
-        Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
-        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
-        Path("/usr/share/fonts/dejavu/DejaVuSans.ttf"),
-        Path(ImageFont.__file__).resolve().parent / "fonts/DejaVuSans.ttf",
-    ]
-    candidate_names = [
-        "SF-Pro-Display-Regular.otf",
-        "HelveticaNeue.ttc",
-        "Helvetica.ttc",
-        "Arial.ttf",
-        "DejaVuSans.ttf",
-    ]
-
-    for candidate in candidate_paths:
-        if not candidate.exists():
-            continue
-        try:
-            return ImageFont.truetype(str(candidate), size)
-        except OSError:
-            continue
-
-    for candidate_name in candidate_names:
-        font = _load_named_font(candidate_name, size)
-        if font is not None:
-            return font
-
-    return ImageFont.load_default()
+    return ImageFont.truetype(str(COVER_SANS_FONT_PATH), size)
 
 
-def _draw_cover_edition_text(
+def _load_cover_footer_font(
+    size: int,
+) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    return ImageFont.truetype(str(COVER_SERIF_ITALIC_FONT_PATH), size)
+
+
+def _draw_cover_version_text(
     image: Image.Image,
     text: str,
-    font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
+    style: _CoverTextStyle,
 ) -> None:
     text_width, text_height, bbox_left, bbox_top = _measure_tracked_text(
-        text, font
+        text, style.font, style.tracking
     )
     padding = 12
     overlay_width = max(1, int(text_width + (padding * 2)))
@@ -619,19 +622,10 @@ def _draw_cover_edition_text(
         overlay_draw,
         (padding - bbox_left, padding - bbox_top),
         text,
-        font,
-        COVER_TEXT_TRACKING,
+        style,
     )
-    if COVER_TEXT_VERTICAL_SCALE != 1:
-        scaled_height = max(
-            1, round(overlay.height * COVER_TEXT_VERTICAL_SCALE)
-        )
-        overlay = overlay.resize(
-            (overlay.width, scaled_height), Image.Resampling.LANCZOS
-        )
-
-    x = round(COVER_TEXT_X + ((COVER_TEXT_WIDTH - overlay.width) / 2))
-    y = round(COVER_TEXT_Y)
+    x = round(COVER_TEXT_X - padding)
+    y = round(COVER_TEXT_BASELINE_Y - padding + bbox_top)
     image.alpha_composite(overlay, (x, y))
 
 
@@ -667,15 +661,23 @@ def _draw_tracked_text(
     draw: ImageDraw.ImageDraw,
     position: tuple[float, float],
     text: str,
-    font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
-    tracking: float,
+    style: _CoverTextStyle,
 ) -> None:
+    if style.tracking == 0:
+        draw.text(position, text, fill=style.fill, font=style.font)
+        return
+
     cursor_x, y = position
     for index, character in enumerate(text):
-        draw.text((cursor_x, y), character, fill=COVER_TEXT_FILL, font=font)
-        cursor_x += draw.textlength(character, font=font)
+        draw.text(
+            (cursor_x, y),
+            character,
+            fill=style.fill,
+            font=style.font,
+        )
+        cursor_x += draw.textlength(character, font=style.font)
         if index < len(text) - 1:
-            cursor_x += tracking
+            cursor_x += style.tracking
 
 
 def _draw_cover_centered_text(
@@ -707,12 +709,3 @@ def _draw_cover_centered_text(
     x = round((image.width - overlay.width) / 2)
     y = round(top_y)
     image.alpha_composite(overlay, (x, y))
-
-
-def _load_named_font(
-    font_name: str, size: int
-) -> ImageFont.FreeTypeFont | ImageFont.ImageFont | None:
-    try:
-        return ImageFont.truetype(font_name, size)
-    except OSError:
-        return None

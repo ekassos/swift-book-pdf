@@ -12,10 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 from swift_book_pdf.epub.render import (
+    CoverPageOptions,
+    EPUBRenderer,
     LinkResolver,
     _normalize_prose_punctuation,
     _render_inline,
+)
+from swift_book_pdf.schema import DocumentEntry
+
+EPUB_REFERENCE_DIR = (
+    Path(__file__).resolve().parent.parent
+    / "src"
+    / "swift_book_pdf"
+    / "assets"
+    / "epub_reference"
 )
 
 
@@ -60,3 +73,155 @@ def test_render_inline_supports_code_inside_markdown_link_labels() -> None:
         '<a href="https://example.com">'
         '<code class="inline-code">Array</code></a>' in rendered
     )
+
+
+def test_render_cover_page_uses_new_stable_cover_layers(
+    tmp_path: Path,
+) -> None:
+    renderer = EPUBRenderer(tmp_path, {})
+    rendered = renderer.render_cover_page(
+        DocumentEntry(
+            key="cover",
+            title="Cover",
+            subtitle=None,
+            href="cover.xhtml",
+            directory=None,
+        ),
+        "6.3",
+        CoverPageOptions(
+            book_title="The Swift Programming Language",
+            cover_banner=("STABLE VERSION", "#33519e"),
+        ),
+    )
+
+    assert '<rect x="0" y="0" width="1440" height="153"' in rendered
+    assert 'fill="#33519e"' in rendered
+    assert 'x="114.12" y="37.47"' in rendered
+    assert ">STABLE VERSION</text>" in rendered
+    assert 'x="107.81" y="233.67"' in rendered
+    assert ">The</text>" in rendered
+    assert 'x="104.81" y="355.69"' in rendered
+    assert ">Swift</text>" in rendered
+    assert 'x="108.81" y="567.77"' in rendered
+    assert ">Programming</text>" in rendered
+    assert 'x="108.81" y="740.77"' in rendered
+    assert ">Language</text>" in rendered
+    assert 'x="111.81" y="1003.95"' in rendered
+    assert ">Swift 6.3</text>" in rendered
+
+
+def test_render_cover_page_uses_beta_cover_color(tmp_path: Path) -> None:
+    renderer = EPUBRenderer(tmp_path, {})
+    rendered = renderer.render_cover_page(
+        DocumentEntry(
+            key="cover",
+            title="Cover",
+            subtitle=None,
+            href="cover.xhtml",
+            directory=None,
+        ),
+        "6.3 beta",
+        CoverPageOptions(
+            book_title="The Swift Programming Language",
+            cover_banner=("BETA VERSION", "#d94a2b"),
+        ),
+    )
+
+    assert ">BETA VERSION</text>" in rendered
+    assert 'fill="#d94a2b"' in rendered
+    assert 'fill="#d94a2b">Swift 6.3</text>' in rendered
+
+
+def test_render_cover_page_keeps_lowercase_beta_for_nightly(
+    tmp_path: Path,
+) -> None:
+    renderer = EPUBRenderer(tmp_path, {})
+    rendered = renderer.render_cover_page(
+        DocumentEntry(
+            key="cover",
+            title="Cover",
+            subtitle=None,
+            href="cover.xhtml",
+            directory=None,
+        ),
+        "6.3 Beta",
+        CoverPageOptions(
+            book_title="The Swift Programming Language",
+            cover_banner=("NIGHTLY EDITION", "#8e3fa9"),
+            cover_variant="nightly",
+        ),
+    )
+
+    assert ">NIGHTLY EDITION</text>" in rendered
+    assert 'fill="#8e3fa9">Swift 6.3 beta</text>' in rendered
+
+
+def test_render_cover_page_does_not_add_beta_for_nightly(
+    tmp_path: Path,
+) -> None:
+    renderer = EPUBRenderer(tmp_path, {})
+    rendered = renderer.render_cover_page(
+        DocumentEntry(
+            key="cover",
+            title="Cover",
+            subtitle=None,
+            href="cover.xhtml",
+            directory=None,
+        ),
+        "6.3",
+        CoverPageOptions(
+            book_title="The Swift Programming Language",
+            cover_banner=("NIGHTLY EDITION", "#8e3fa9"),
+            cover_variant="nightly",
+        ),
+    )
+
+    assert 'fill="#8e3fa9">Swift 6.3</text>' in rendered
+    assert "Swift 6.3 beta" not in rendered
+
+
+def test_render_edition_notice_page_describes_independent_edition(
+    tmp_path: Path,
+) -> None:
+    renderer = EPUBRenderer(tmp_path, {})
+    rendered = renderer.render_edition_notice_page(
+        DocumentEntry(
+            key="editionnotice",
+            title="About This Edition",
+            subtitle=None,
+            href="Edition.xhtml",
+            directory=None,
+        )
+    )
+
+    assert (
+        "This edition of <em>The Swift Programming Language</em>" in rendered
+    )
+    assert "<h1>About This Edition</h1>" in rendered
+    assert "derived from the Swift.org <em>swift-book</em> project" in rendered
+    assert "formatted for this reading experience" in rendered
+    assert 'class="edition-notice-primary"' in rendered
+    assert (
+        "Swift is a trademark of Apple Inc. This edition is not "
+        "published&#160;by, endorsed&#160;by, or affiliated&#160;with "
+        "Apple Inc. or the Swift.org open source project." in rendered
+    )
+    assert (
+        '<a href="Trademarks.xhtml">Acknowledgments</a> for source, license, '
+        "and attribution details." in rendered
+    )
+    assert 'body class="edition-notice-body"' in rendered
+
+
+def test_epub_css_does_not_override_svg_cover_colors() -> None:
+    css = (EPUB_REFERENCE_DIR / "epub.css").read_text(encoding="utf-8")
+
+    assert 'font-family: "IBM Plex Sans";' in css
+    assert 'url("fonts/IBMPlexSans-Medium.ttf")' in css
+    assert 'font-family: "IBM Plex Serif";' in css
+    assert 'url("fonts/IBMPlexSerif-Regular.ttf")' in css
+    assert 'url("fonts/IBMPlexSerif-Medium.ttf")' in css
+    assert 'url("fonts/IBMPlexSerif-Italic.ttf")' in css
+    assert ".edition-notice-page" in css
+    assert ".cover-canvas-svg .cover-title-text" not in css
+    assert ".cover-canvas-svg .cover-subtitle-text" not in css

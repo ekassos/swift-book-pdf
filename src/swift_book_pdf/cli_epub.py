@@ -64,6 +64,30 @@ def _validate_hex_color(
     ),
 )
 @click.option(
+    "--stable-cover-image",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    hidden=True,
+)
+@click.option(
+    "--beta-cover-image",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    hidden=True,
+)
+@click.option(
+    "--current-cover-image",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    hidden=True,
+)
+@click.option(
+    "--nightly-cover-image",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    hidden=True,
+)
+@click.option(
     "--cover-footer-line",
     type=str,
     default=None,
@@ -74,8 +98,8 @@ def _validate_hex_color(
     type=str,
     default=None,
     help=(
-        "Add a banner at the top of the inner cover with the given text. "
-        'When the version is beta and this flag is omitted, "beta" is used.'
+        "Override the banner text at the top of the inner cover. "
+        'Defaults to "STABLE VERSION" or "BETA VERSION".'
     ),
 )
 @click.option(
@@ -85,9 +109,11 @@ def _validate_hex_color(
     callback=_validate_hex_color,
     help=(
         "Background color of the inner-cover banner as a hex string "
-        "(e.g. #a5aeb0). Defaults to #a5aeb0."
+        "(e.g. #33519e). Defaults to the selected stable or beta cover color."
     ),
 )
+@click.option("--current-edition", is_flag=True, hidden=True)
+@click.option("--nightly-edition", is_flag=True, hidden=True)
 @click.option(
     "--override-version",
     type=str,
@@ -136,9 +162,15 @@ def epub(  # noqa: PLR0913
     output_path: str,
     export_cover_image: bool,
     base_cover_image: Path | None,
+    stable_cover_image: Path | None,
+    beta_cover_image: Path | None,
+    current_cover_image: Path | None,
+    nightly_cover_image: Path | None,
     cover_footer_line: str | None,
     cover_banner_text: str | None,
     cover_banner_color: str | None,
+    current_edition: bool,
+    nightly_edition: bool,
     override_version: str | None,
     publication_identifier_seed: str | None,
     ibooks_version: str | None,
@@ -150,6 +182,26 @@ def epub(  # noqa: PLR0913
     source_sha: str | None,
     verbose: bool,
 ) -> None:
+    if current_edition and nightly_edition:
+        raise click.UsageError(
+            "--current-edition and --nightly-edition cannot be used together."
+        )
+    cover_variant = None
+    if current_edition:
+        cover_variant = "current"
+    elif nightly_edition:
+        cover_variant = "nightly"
+    cover_template_paths = {
+        name: path
+        for name, path in {
+            "stable": stable_cover_image,
+            "beta": beta_cover_image,
+            "current": current_cover_image,
+            "nightly": nightly_cover_image,
+        }.items()
+        if path is not None
+    }
+
     run_build(
         verbose=verbose,
         output_path=output_path,
@@ -160,9 +212,11 @@ def epub(  # noqa: PLR0913
             input_path=input_path,
             export_cover_image=export_cover_image,
             base_cover_image=base_cover_image,
+            cover_template_paths=cover_template_paths,
             cover_footer_line=cover_footer_line,
             cover_banner_text=cover_banner_text,
             cover_banner_color=cover_banner_color,
+            cover_variant=cover_variant,
             override_version=override_version,
             publication_identifier_seed=publication_identifier_seed,
             ibooks_version=ibooks_version,

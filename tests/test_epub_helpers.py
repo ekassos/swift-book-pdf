@@ -14,10 +14,17 @@
 
 from pathlib import Path
 
+from swift_book_pdf.epub.constants import (
+    COVER_CURRENT_TEMPLATE_PATH,
+    COVER_NIGHTLY_TEMPLATE_PATH,
+)
 from swift_book_pdf.epub.helpers import (
     build_publication_identifier,
+    cover_png_version_fill,
+    cover_png_version_text,
     cover_template_path,
     resolve_cover_banner,
+    resolve_cover_variant_name,
 )
 
 
@@ -30,24 +37,115 @@ def test_cover_template_path_prefers_explicit_base_cover_image(
     )
 
 
-def test_resolve_cover_banner_uses_explicit_beta_base_cover_image() -> None:
-    assert resolve_cover_banner(None, None, "6.2 beta", None) == (
-        "Beta",
-        "#a5aeb0",
+def test_resolve_cover_banner_uses_version_based_beta_banner() -> None:
+    assert resolve_cover_banner(None, None, "6.2 beta") == (
+        "BETA VERSION",
+        "#d94a2b",
     )
 
 
-def test_resolve_cover_banner_keeps_version_based_beta_banner_for_explicit_cover_path(
+def test_resolve_cover_banner_defaults_to_stable_cover_banner() -> None:
+    assert resolve_cover_banner(None, None, "6.2") == (
+        "STABLE VERSION",
+        "#33519e",
+    )
+
+
+def test_resolve_cover_banner_supports_current_and_nightly_editions() -> None:
+    assert resolve_cover_banner(None, None, "6.2", "current") == (
+        "CURRENT EDITION",
+        "#19733c",
+    )
+    assert resolve_cover_banner(None, None, "6.2", "nightly") == (
+        "NIGHTLY EDITION",
+        "#8e3fa9",
+    )
+
+
+def test_resolve_cover_banner_uses_default_for_blank_override() -> None:
+    assert resolve_cover_banner("  ", None, "6.2") == (
+        "STABLE VERSION",
+        "#33519e",
+    )
+
+
+def test_cover_template_path_supports_current_and_nightly_editions() -> None:
+    assert cover_template_path("6.2", None, "current") == (
+        COVER_CURRENT_TEMPLATE_PATH
+    )
+    assert cover_template_path("6.2", None, "nightly") == (
+        COVER_NIGHTLY_TEMPLATE_PATH
+    )
+
+
+def test_cover_template_path_uses_selected_variant_override(
     tmp_path: Path,
 ) -> None:
-    assert resolve_cover_banner(
-        None,
-        None,
-        "6.2 beta",
-        tmp_path / "cover-custom.png",
-    ) == (
-        "Beta",
-        "#a5aeb0",
+    stable_cover = tmp_path / "stable.png"
+    beta_cover = tmp_path / "beta.png"
+    current_cover = tmp_path / "current.png"
+    nightly_cover = tmp_path / "nightly.png"
+    cover_template_paths = {
+        "stable": stable_cover,
+        "beta": beta_cover,
+        "current": current_cover,
+        "nightly": nightly_cover,
+    }
+
+    assert cover_template_path("6.2", None, None, cover_template_paths) == (
+        stable_cover
+    )
+    assert (
+        cover_template_path("6.2 beta", None, None, cover_template_paths)
+        == beta_cover
+    )
+    assert (
+        cover_template_path("6.2 beta", None, "current", cover_template_paths)
+        == current_cover
+    )
+    assert (
+        cover_template_path("6.2", None, "nightly", cover_template_paths)
+        == nightly_cover
+    )
+
+
+def test_cover_png_version_fill_supports_current_and_nightly_editions() -> (
+    None
+):
+    assert cover_png_version_fill("6.2", "current") == "#19733c"
+    assert cover_png_version_fill("6.2", "nightly") == "#8e3fa9"
+
+
+def test_cover_png_version_text_omits_edition_suffix() -> None:
+    assert cover_png_version_text("6.2") == "6.2"
+    assert cover_png_version_text("Swift 6.2 Edition") == "6.2"
+    assert cover_png_version_text("6.2 beta") == "6.2"
+
+
+def test_cover_png_version_text_keeps_lowercase_beta_for_nightly() -> None:
+    assert cover_png_version_text("6.2 beta", "nightly") == "6.2 beta"
+    assert cover_png_version_text("6.2 Beta", "nightly") == "6.2 beta"
+    assert cover_png_version_text("6.2", "nightly") == "6.2"
+
+
+def test_cover_png_version_fill_uses_beta_color() -> None:
+    assert cover_png_version_fill("6.2") == "#33519e"
+    assert cover_png_version_fill("6.2 beta") == "#d94a2b"
+
+
+def test_resolve_cover_variant_name_rejects_unknown_variant() -> None:
+    try:
+        resolve_cover_variant_name("6.2", "preview")
+    except ValueError as error:
+        assert "Unknown cover variant 'preview'" in str(error)
+    else:
+        raise AssertionError("Expected ValueError for unknown cover variant")
+
+
+def test_resolve_cover_banner_keeps_version_based_beta_banner() -> None:
+    assert resolve_cover_banner(None, None, "6.2 beta") == (
+        "BETA VERSION",
+        "#d94a2b",
     )
 
 

@@ -27,7 +27,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 <table>
   <tr>
     <td valign="middle" width="70%">
-  <a href="https://books.apple.com/us/book/the-swift-programming-language/id6762236679">
+  <a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book.epub">
     <picture>
   <!-- User prefers light mode: -->
   <source srcset="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e" media="(prefers-color-scheme: light)"/>
@@ -36,20 +36,20 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
   <source srcset="https://github.com/user-attachments/assets/dc82db2f-2816-4246-9492-04559032ecca" media="(prefers-color-scheme: dark)"/>
 
   <!-- User has no color preference: -->
-  <img alt="Read the latest edition. Click this image to get it on Apple Books." src="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e"/>
+  <img alt="Read the latest edition. Click this image to get the EPUB file." src="https://github.com/user-attachments/assets/7682de0f-35ae-4391-8a01-2b802475725e"/>
 </picture>
 </a>
     </td>
     <td valign="middle" width="30%">
-      <p><i>The Swift Programming Language</i>, optimized for Apple Books.</p>
-      <p><a href="https://books.apple.com/us/book/the-swift-programming-language/id6762236679">Open in Apple Books &#8599;</a></p>
-      <a href="https://books.apple.com/us/book/the-swift-programming-language/id6762236679"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/get-it-on-apple-books/badge/en-us" alt="Get it on Apple Books"/></a>
+      <p><i>The Swift Programming Language</i>, optimized for e-readers.</p>
+      <p>Open the EPUB file in Apple Books to sync across all your devices.</p>
+      <p><a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book.epub">Download EPUB &#8599;</a></p>
     </td>
   </tr>
 </table>
 
 <p align="center">
-  <a href="https://github.com/ekassos/swift-book-archive/releases/latest/download/swift_book.epub">Download EPUB &#8599;</a>&nbsp;&nbsp;·&nbsp;&nbsp;For versioned archives of the EPUB edition, see
+  For versioned archives of the EPUB edition, see
   <a href="https://github.com/ekassos/swift-book-archive">swift-book-archive</a>.
 </p>
 

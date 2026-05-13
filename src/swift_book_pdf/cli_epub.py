@@ -99,7 +99,7 @@ def _validate_hex_color(
     default=None,
     help=(
         "Override the banner text at the top of the inner cover. "
-        'Defaults to "STABLE VERSION" or "BETA VERSION".'
+        'Defaults to "RELEASE VERSION" or "BETA VERSION".'
     ),
 )
 @click.option(

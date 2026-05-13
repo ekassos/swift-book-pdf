@@ -46,7 +46,7 @@ class CoverVariant:
 
 COVER_VARIANTS = {
     "stable": CoverVariant(
-        "STABLE VERSION",
+        "RELEASE VERSION",
         COVER_TEXT_FILL,
         COVER_TEMPLATE_PATH,
     ),

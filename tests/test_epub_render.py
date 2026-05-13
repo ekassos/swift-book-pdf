@@ -16,9 +16,11 @@ from pathlib import Path
 
 from swift_book_pdf.epub.render import (
     CoverPageOptions,
+    CoverTextStyle,
     EPUBRenderer,
     LinkResolver,
     _normalize_prose_punctuation,
+    _render_cover_text,
     _render_inline,
 )
 from swift_book_pdf.schema import DocumentEntry
@@ -75,7 +77,25 @@ def test_render_inline_supports_code_inside_markdown_link_labels() -> None:
     )
 
 
-def test_render_cover_page_uses_new_stable_cover_layers(
+def test_render_cover_text_emits_configured_letter_spacing() -> None:
+    rendered = _render_cover_text(
+        "Swift",
+        x=104.81,
+        y=335.69,
+        style=CoverTextStyle(
+            font_family="IBM Plex Serif",
+            font_size=208.333,
+            fill="#33519e",
+            font_weight="500",
+            letter_spacing=-2,
+        ),
+    )
+
+    assert 'letter-spacing="-2"' in rendered
+    assert ">Swift</text>" in rendered
+
+
+def test_render_cover_page_uses_release_cover_layers(
     tmp_path: Path,
 ) -> None:
     renderer = EPUBRenderer(tmp_path, {})
@@ -90,14 +110,14 @@ def test_render_cover_page_uses_new_stable_cover_layers(
         "6.3",
         CoverPageOptions(
             book_title="The Swift Programming Language",
-            cover_banner=("STABLE VERSION", "#33519e"),
+            cover_banner=("RELEASE VERSION", "#33519e"),
         ),
     )
 
     assert '<rect x="0" y="0" width="1440" height="153"' in rendered
     assert 'fill="#33519e"' in rendered
     assert 'x="114.12" y="37.47"' in rendered
-    assert ">STABLE VERSION</text>" in rendered
+    assert ">RELEASE VERSION</text>" in rendered
     assert 'x="107.81" y="233.67"' in rendered
     assert ">The</text>" in rendered
     assert 'x="104.81" y="355.69"' in rendered

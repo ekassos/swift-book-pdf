@@ -184,7 +184,7 @@ class EPUBRenderer:
         layers.append(
             f'        <rect x="0" y="0" width="1440" height="153" '
             f'fill="{banner_color}"/>\n'
-            f'        <text class="cover-banner-text" x="114.12" '
+            f'        <text class="cover-banner-text" x="114.48" '
             f'y="37.47" font-family="{COVER_SANS_FONT_FAMILY}" '
             f'font-weight="500" font-size="58.333" letter-spacing="0" '
             f'dominant-baseline="text-before-edge" '
@@ -196,7 +196,7 @@ class EPUBRenderer:
             _render_cover_text(
                 "The",
                 x=107.81,
-                y=233.67,
+                y=209.67,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=133.333,
@@ -209,12 +209,13 @@ class EPUBRenderer:
             _render_cover_text(
                 "Swift",
                 x=104.81,
-                y=355.69,
+                y=328.69,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=208.333,
                     fill=banner_color,
                     font_weight="500",
+                    letter_spacing=-1.8
                 ),
             )
         )
@@ -222,11 +223,12 @@ class EPUBRenderer:
             _render_cover_text(
                 "Programming",
                 x=108.81,
-                y=567.77,
+                y=535.77,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=176,
                     fill="#1f1f1f",
+                    letter_spacing=-3.5
                 ),
             )
         )
@@ -234,11 +236,12 @@ class EPUBRenderer:
             _render_cover_text(
                 "Language",
                 x=108.81,
-                y=740.77,
+                y=708.77,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=176,
                     fill="#1f1f1f",
+                    letter_spacing=-3.8
                 ),
             )
         )
@@ -249,12 +252,13 @@ class EPUBRenderer:
             _render_cover_text(
                 swift_version_text,
                 x=111.81,
-                y=1003.95,
+                y=980.95,
                 style=CoverTextStyle(
                     font_family=COVER_SANS_FONT_FAMILY,
                     font_size=116.667,
                     fill=banner_color,
                     font_weight="500",
+                    letter_spacing=-0.8
                 ),
             )
         )
@@ -275,17 +279,17 @@ class EPUBRenderer:
         elif options.compiled_by_name:
             layers.append(
                 f'        <text class="cover-compiler-label" x="115.81" '
-                f'y="2000.09" font-family="{COVER_SERIF_FONT_FAMILY}" '
+                f'y="1991.09" font-family="{COVER_SERIF_FONT_FAMILY}" '
                 f'font-weight="400" font-style="italic" '
-                f'font-size="{11 * COVER_DPI / 72:g}" letter-spacing="0" '
+                f'font-size="{11 * COVER_DPI / 72:g}" letter-spacing="-0.8" '
                 f'font-kerning="normal" font-optical-sizing="auto" '
                 f'dominant-baseline="text-before-edge" '
                 f'text-rendering="optimizeLegibility" '
                 f'fill="{COVER_FOOTER_TEXT_FILL}">Compiled by:</text>\n'
                 f'        <text class="cover-compiler-name" x="115.81" '
-                f'y="2053.55" font-family="{COVER_SERIF_FONT_FAMILY}" '
+                f'y="2043.55" font-family="{COVER_SERIF_FONT_FAMILY}" '
                 f'font-weight="500" font-style="normal" '
-                f'font-size="{12 * COVER_DPI / 72:g}" letter-spacing="0" '
+                f'font-size="{12 * COVER_DPI / 72:g}" letter-spacing="-0.7" '
                 f'font-kerning="normal" font-optical-sizing="auto" '
                 f'dominant-baseline="text-before-edge" '
                 f'text-rendering="optimizeLegibility" '
@@ -327,18 +331,18 @@ class EPUBRenderer:
         body = (
             '  <div class="section edition-notice-page" '
             f'id="{html.escape(part_section_id(document.title))}">\n'
-            "<h1>About This Edition</h1>\n"
+            "<h1>About this Edition</h1>\n"
             '<p class="edition-notice-primary">'
             "This edition of <em>The Swift Programming Language</em> "
-            "is derived from the Swift.org <em>swift-book</em> project "
-            "and formatted for this reading experience.</p>\n"
+            "is derived from the <em>swift-book</em> source "
+            "maintained by the Swift.org open source project.</p>\n"
             '<p class="edition-notice-secondary">Swift is a trademark of '
-            "Apple Inc. This edition is not published&#160;by, "
-            "endorsed&#160;by, or affiliated&#160;with Apple Inc. or the "
-            "Swift.org open source project.</p>\n"
+            "Apple&#160;Inc. This edition is not published&#160;by, "
+            "endorsed&#160;by, or affiliated&#160;with Apple&#160;Inc. or the "
+            "Swift.org open&#160;source project.</p>\n"
             '<p class="edition-notice-secondary">See '
-            f'<a href="{notices_href}">Acknowledgments</a> for source, '
-            "license, and attribution details.</p>\n"
+            f'<a href="{notices_href}">Acknowledgments</a> '
+            "for more details.</p>\n"
             "</div>\n"
         )
         return self._wrap_xhtml_document(
@@ -696,6 +700,7 @@ class CoverTextStyle:
     fill: str
     font_weight: str = "400"
     font_style: str = "normal"
+    letter_spacing: float = 0
 
 
 def _render_cover_text(
@@ -709,7 +714,7 @@ def _render_cover_text(
         f'font-family="{style.font_family}" '
         f'font-weight="{style.font_weight}" '
         f'font-style="{style.font_style}" font-size="{style.font_size:g}" '
-        f'letter-spacing="0" '
+        f'letter-spacing="{style.letter_spacing:g}" '
         f'font-kerning="normal" dominant-baseline="text-before-edge" '
         f'fill="{html.escape(style.fill)}">'
         f"{html.escape(text)}</text>\n"

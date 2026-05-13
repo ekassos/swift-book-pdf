@@ -44,9 +44,9 @@ def test_resolve_cover_banner_uses_version_based_beta_banner() -> None:
     )
 
 
-def test_resolve_cover_banner_defaults_to_stable_cover_banner() -> None:
+def test_resolve_cover_banner_defaults_to_release_cover_banner() -> None:
     assert resolve_cover_banner(None, None, "6.2") == (
-        "STABLE VERSION",
+        "RELEASE VERSION",
         "#33519e",
     )
 
@@ -64,7 +64,7 @@ def test_resolve_cover_banner_supports_current_and_nightly_editions() -> None:
 
 def test_resolve_cover_banner_uses_default_for_blank_override() -> None:
     assert resolve_cover_banner("  ", None, "6.2") == (
-        "STABLE VERSION",
+        "RELEASE VERSION",
         "#33519e",
     )
 

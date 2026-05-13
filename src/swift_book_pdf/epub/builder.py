@@ -47,8 +47,6 @@ from .constants import (
     DOC_TAG_LINE_PATTERN,
     EPUB_COVER_DOC_FILE_NAME,
     EPUB_COVER_DOC_TITLE,
-    EPUB_EDITION_NOTICE_DOC_FILE_NAME,
-    EPUB_EDITION_NOTICE_DOC_TITLE,
     HEADING_PATTERN,
     PART_HEADING_PATTERN,
     SUMMARY_DOC_FILE_NAME,
@@ -118,14 +116,7 @@ class EPUBBuilder:
                 logger.info(f"Cover image saved to {cover_output_path}")
 
         cover_document = self._build_cover_document(writer, workspace)
-        edition_notice_document = (
-            None
-            if self.config.dangerously_skip_legal_notices
-            else self._build_edition_notice_document()
-        )
-        documents = self._flatten_documents(
-            cover_document, edition_notice_document, parts, notices
-        )
+        documents = self._flatten_documents(cover_document, parts, notices)
         renderer = EPUBRenderer(
             self.asset_path,
             self._build_grammar_target_map(parts),
@@ -157,13 +148,6 @@ class EPUBBuilder:
                 ),
             )
 
-        if edition_notice_document is not None:
-            writer.write_text(
-                workspace,
-                edition_notice_document.href,
-                renderer.render_edition_notice_page(edition_notice_document),
-            )
-
         for part in parts:
             writer.write_text(
                 workspace,
@@ -188,9 +172,7 @@ class EPUBBuilder:
                 renderer.render_notices_page(notices),
             )
         writer.copy_image_assets(workspace, image_assets)
-        navigation_documents = NavigationDocuments(
-            cover_document, edition_notice_document, notices
-        )
+        navigation_documents = NavigationDocuments(cover_document, notices)
         writer.write_nav_file(workspace, navigation_documents, parts)
         writer.write_toc_ncx_file(
             workspace,
@@ -295,27 +277,15 @@ class EPUBBuilder:
             directory=None,
         )
 
-    def _build_edition_notice_document(self) -> DocumentEntry:
-        return DocumentEntry(
-            key="editionnotice",
-            title=EPUB_EDITION_NOTICE_DOC_TITLE,
-            subtitle=None,
-            href=EPUB_EDITION_NOTICE_DOC_FILE_NAME,
-            directory=None,
-        )
-
     def _flatten_documents(
         self,
         cover: DocumentEntry | None,
-        edition_notice: DocumentEntry | None,
         parts: list[PartEntry],
         notices: DocumentEntry | None,
     ) -> list[DocumentEntry]:
         documents: list[DocumentEntry] = []
         if cover is not None:
             documents.append(cover)
-        if edition_notice is not None:
-            documents.append(edition_notice)
         for part in parts:
             documents.append(
                 DocumentEntry(

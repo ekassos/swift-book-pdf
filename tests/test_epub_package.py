@@ -128,67 +128,6 @@ def test_content_opf_marks_cover_document_as_svg(
     )
 
 
-def test_content_opf_can_place_edition_notice_between_cover_and_body(
-    tmp_path: Path,
-) -> None:
-    config = cast(
-        "EPUBConfig",
-        SimpleNamespace(
-            temp_dir=str(tmp_path),
-            output_path=str(tmp_path / "swift_book.epub"),
-            publisher=None,
-            contributor=None,
-            ibooks_version=None,
-        ),
-    )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
-
-    writer.write_content_opf_file(
-        workspace,
-        "The Swift Programming Language",
-        [
-            DocumentEntry(
-                key="cover",
-                title="Cover",
-                subtitle=None,
-                href="cover.xhtml",
-                directory=None,
-            ),
-            DocumentEntry(
-                key="editionnotice",
-                title="About This Edition",
-                subtitle=None,
-                href="Edition.xhtml",
-                directory=None,
-            ),
-            DocumentEntry(
-                key="guidedtour",
-                title="Guided Tour",
-                subtitle=None,
-                href="GuidedTour/GuidedTour.xhtml",
-                directory="GuidedTour",
-            ),
-        ],
-        {},
-        "urn:uuid:test-book",
-    )
-
-    content_opf = (workspace / "OEBPS" / "content.opf").read_text(
-        encoding="utf-8"
-    )
-
-    assert content_opf.index('href="cover.xhtml"') < content_opf.index(
-        'href="Edition.xhtml"'
-    )
-    assert content_opf.index('href="Edition.xhtml"') < content_opf.index(
-        'href="GuidedTour/GuidedTour.xhtml"'
-    )
-    assert '<itemref idref="epub-doc-0" />' in content_opf
-    assert '<itemref idref="epub-doc-1" />' in content_opf
-    assert '<itemref idref="epub-doc-2" />' in content_opf
-
-
 def test_static_files_include_bundled_ibm_plex_fonts(
     tmp_path: Path,
 ) -> None:
@@ -272,7 +211,7 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
     )
     writer.write_text(workspace, "Edition.xhtml", "<html></html>")
 
-    navigation_documents = NavigationDocuments(cover, None, None)
+    navigation_documents = NavigationDocuments(cover, None)
     writer.write_nav_file(workspace, navigation_documents, [])
     writer.write_toc_ncx_file(
         workspace,
@@ -290,49 +229,3 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
     assert "Acknowledgments" not in nav
     assert 'epub:type="acknowledgements"' not in nav
     assert "Acknowledgments" not in ncx
-
-
-def test_nav_and_ncx_include_edition_notice_when_configured(
-    tmp_path: Path,
-) -> None:
-    config = cast(
-        "EPUBConfig",
-        SimpleNamespace(
-            temp_dir=str(tmp_path),
-            output_path=str(tmp_path / "swift_book.epub"),
-            publisher=None,
-            contributor=None,
-            ibooks_version=None,
-        ),
-    )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
-    cover = DocumentEntry(
-        key="cover",
-        title="Cover",
-        subtitle=None,
-        href="cover.xhtml",
-        directory=None,
-    )
-    edition_notice = DocumentEntry(
-        key="editionnotice",
-        title="About This Edition",
-        subtitle=None,
-        href="Edition.xhtml",
-        directory=None,
-    )
-
-    navigation_documents = NavigationDocuments(cover, edition_notice, None)
-    writer.write_nav_file(workspace, navigation_documents, [])
-    writer.write_toc_ncx_file(
-        workspace,
-        navigation_documents,
-        [],
-        "The Swift Programming Language",
-    )
-
-    nav = (workspace / "OEBPS" / "toc.xhtml").read_text(encoding="utf-8")
-    ncx = (workspace / "OEBPS" / "toc.ncx").read_text(encoding="utf-8")
-
-    assert '<a href="Edition.xhtml">About This Edition</a>' in nav
-    assert "<text>About This Edition</text>" in ncx

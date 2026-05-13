@@ -26,7 +26,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import SwiftLexer
 
-from swift_book_pdf.notices import NOTICES_DOC_FILE_NAME, render_notices_xhtml
+from swift_book_pdf.notices import render_notices_xhtml
 from swift_book_pdf.schema import (
     Block,
     CodeBlock,
@@ -215,7 +215,7 @@ class EPUBRenderer:
                     font_size=208.333,
                     fill=banner_color,
                     font_weight="500",
-                    letter_spacing=-1.8
+                    letter_spacing=-1.8,
                 ),
             )
         )
@@ -228,7 +228,7 @@ class EPUBRenderer:
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=176,
                     fill="#1f1f1f",
-                    letter_spacing=-3.5
+                    letter_spacing=-3.5,
                 ),
             )
         )
@@ -241,7 +241,7 @@ class EPUBRenderer:
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=176,
                     fill="#1f1f1f",
-                    letter_spacing=-3.8
+                    letter_spacing=-3.8,
                 ),
             )
         )
@@ -258,7 +258,7 @@ class EPUBRenderer:
                     font_size=116.667,
                     fill=banner_color,
                     font_weight="500",
-                    letter_spacing=-0.8
+                    letter_spacing=-0.8,
                 ),
             )
         )
@@ -323,34 +323,6 @@ class EPUBRenderer:
   </body>
 </html>
 """
-
-    def render_edition_notice_page(self, document: DocumentEntry) -> str:
-        notices_href = html.escape(
-            relative_href(document.href, NOTICES_DOC_FILE_NAME)
-        )
-        body = (
-            '  <div class="section edition-notice-page" '
-            f'id="{html.escape(part_section_id(document.title))}">\n'
-            "<h1>About this Edition</h1>\n"
-            '<p class="edition-notice-primary">'
-            "This edition of <em>The Swift Programming Language</em> "
-            "is derived from the <em>swift-book</em> source "
-            "maintained by the Swift.org open source project.</p>\n"
-            '<p class="edition-notice-secondary">Swift is a trademark of '
-            "Apple&#160;Inc. This edition is not published&#160;by, "
-            "endorsed&#160;by, or affiliated&#160;with Apple&#160;Inc. or the "
-            "Swift.org open&#160;source project.</p>\n"
-            '<p class="edition-notice-secondary">See '
-            f'<a href="{notices_href}">Acknowledgments</a> '
-            "for more details.</p>\n"
-            "</div>\n"
-        )
-        return self._wrap_xhtml_document(
-            document.title,
-            document.href,
-            body,
-            body_class="edition-notice-body",
-        )
 
     def render_chapter_page(
         self,

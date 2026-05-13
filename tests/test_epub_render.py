@@ -200,39 +200,6 @@ def test_render_cover_page_does_not_add_beta_for_nightly(
     assert "Swift 6.3 beta" not in rendered
 
 
-def test_render_edition_notice_page_describes_independent_edition(
-    tmp_path: Path,
-) -> None:
-    renderer = EPUBRenderer(tmp_path, {})
-    rendered = renderer.render_edition_notice_page(
-        DocumentEntry(
-            key="editionnotice",
-            title="About This Edition",
-            subtitle=None,
-            href="Edition.xhtml",
-            directory=None,
-        )
-    )
-
-    assert (
-        "This edition of <em>The Swift Programming Language</em>" in rendered
-    )
-    assert "<h1>About This Edition</h1>" in rendered
-    assert "derived from the Swift.org <em>swift-book</em> project" in rendered
-    assert "formatted for this reading experience" in rendered
-    assert 'class="edition-notice-primary"' in rendered
-    assert (
-        "Swift is a trademark of Apple Inc. This edition is not "
-        "published&#160;by, endorsed&#160;by, or affiliated&#160;with "
-        "Apple Inc. or the Swift.org open source project." in rendered
-    )
-    assert (
-        '<a href="Trademarks.xhtml">Acknowledgments</a> for source, license, '
-        "and attribution details." in rendered
-    )
-    assert 'body class="edition-notice-body"' in rendered
-
-
 def test_epub_css_does_not_override_svg_cover_colors() -> None:
     css = (EPUB_REFERENCE_DIR / "epub.css").read_text(encoding="utf-8")
 

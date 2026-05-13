@@ -75,7 +75,6 @@ class _CoverTextStyle:
 @dataclass(frozen=True)
 class NavigationDocuments:
     cover: DocumentEntry | None
-    edition_notice: DocumentEntry | None
     notices: DocumentEntry | None
 
 
@@ -197,7 +196,6 @@ class EPUBPackageWriter:
         parts: list[PartEntry],
     ) -> None:
         cover = documents.cover
-        edition_notice = documents.edition_notice
         notices = documents.notices
         reader_start_href = (
             parts[0].href
@@ -216,22 +214,11 @@ class EPUBPackageWriter:
             if cover is not None
             else None
         )
-        edition_notice_href = (
-            relative_href(NAV_DOC_FILE_NAME, edition_notice.href)
-            if edition_notice is not None
-            else None
-        )
         items = []
         if cover is not None:
             items.append(
                 "        <li>\n"
                 f'          <a href="{html.escape(cover_relative_href or "")}">{html.escape(cover.title)}</a>\n'
-                "        </li>"
-            )
-        if edition_notice is not None and edition_notice_href is not None:
-            items.append(
-                "        <li>\n"
-                f'          <a href="{html.escape(edition_notice_href)}">{html.escape(edition_notice.title)}</a>\n'
                 "        </li>"
             )
         for part in parts:
@@ -337,7 +324,6 @@ class EPUBPackageWriter:
         book_title: str,
     ) -> None:
         cover = documents.cover
-        edition_notice = documents.edition_notice
         notices = documents.notices
         part_navpoints: list[str] = []
         navpoint_index = 1
@@ -348,13 +334,6 @@ class EPUBPackageWriter:
                 cover.href,
             )
             part_navpoints.append(cover_navpoint)
-        if edition_notice is not None:
-            notice_navpoint, navpoint_index = _build_ncx_navpoint_tree(
-                navpoint_index,
-                edition_notice.title,
-                edition_notice.href,
-            )
-            part_navpoints.append(notice_navpoint)
         for part in parts:
             part_navpoint, navpoint_index = _build_ncx_navpoint_tree(
                 navpoint_index,

@@ -81,19 +81,19 @@ def test_cover_template_path_supports_current_and_nightly_editions() -> None:
 def test_cover_template_path_uses_selected_variant_override(
     tmp_path: Path,
 ) -> None:
-    stable_cover = tmp_path / "stable.png"
+    release_cover = tmp_path / "release.png"
     beta_cover = tmp_path / "beta.png"
     current_cover = tmp_path / "current.png"
     nightly_cover = tmp_path / "nightly.png"
     cover_template_paths = {
-        "stable": stable_cover,
+        "release": release_cover,
         "beta": beta_cover,
         "current": current_cover,
         "nightly": nightly_cover,
     }
 
     assert cover_template_path("6.2", None, None, cover_template_paths) == (
-        stable_cover
+        release_cover
     )
     assert (
         cover_template_path("6.2 beta", None, None, cover_template_paths)

@@ -111,7 +111,7 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
                 "--typesets",
                 "--current-edition",
                 "--nightly-edition",
-                "--stable-cover-image",
+                "--release-cover-image",
                 "--beta-cover-image",
                 "--current-cover-image",
                 "--nightly-cover-image",
@@ -223,12 +223,12 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     output_dir.mkdir()
     cover_path = tmp_path / "custom-cover.png"
     cover_path.write_bytes(b"png")
-    stable_cover_path = tmp_path / "stable-cover.png"
+    release_cover_path = tmp_path / "release-cover.png"
     beta_cover_path = tmp_path / "beta-cover.png"
     current_cover_path = tmp_path / "current-cover.png"
     nightly_cover_path = tmp_path / "nightly-cover.png"
     for path in (
-        stable_cover_path,
+        release_cover_path,
         beta_cover_path,
         current_cover_path,
         nightly_cover_path,
@@ -241,8 +241,8 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
             "--export-cover-image",
             "--base-cover-image",
             str(cover_path),
-            "--stable-cover-image",
-            str(stable_cover_path),
+            "--release-cover-image",
+            str(release_cover_path),
             "--beta-cover-image",
             str(beta_cover_path),
             "--current-cover-image",
@@ -280,7 +280,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     assert kwargs["export_cover_image"] is True
     assert kwargs["base_cover_image"] == cover_path
     assert kwargs["cover_template_paths"] == {
-        "stable": stable_cover_path,
+        "release": release_cover_path,
         "beta": beta_cover_path,
         "current": current_cover_path,
         "nightly": nightly_cover_path,

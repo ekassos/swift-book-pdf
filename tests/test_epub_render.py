@@ -167,20 +167,27 @@ def test_render_cover_page_uses_release_cover_layers(
         ),
     )
 
-    assert '<rect x="0" y="0" width="1440" height="153"' in rendered
+    assert '<rect x="0" y="1029" width="1440" height="153"' in rendered
     assert 'fill="#33519e"' in rendered
-    assert 'x="114.12" y="37.47"' in rendered
+    assert 'x="114.48" y="1066.47"' in rendered
     assert ">RELEASE VERSION</text>" in rendered
-    assert 'x="107.81" y="233.67"' in rendered
+    assert 'x="107.81" y="57.67"' in rendered
     assert ">The</text>" in rendered
-    assert 'x="104.81" y="355.69"' in rendered
+    assert 'x="104.81" y="176.69"' in rendered
     assert ">Swift</text>" in rendered
-    assert 'x="108.81" y="567.77"' in rendered
+    assert 'x="108.81" y="383.77"' in rendered
     assert ">Programming</text>" in rendered
-    assert 'x="108.81" y="740.77"' in rendered
+    assert 'x="108.81" y="556.77"' in rendered
     assert ">Language</text>" in rendered
-    assert 'x="111.81" y="1003.95"' in rendered
-    assert ">Swift 6.3</text>" in rendered
+    assert 'x="111.81" y="843.95"' in rendered
+    assert (
+        '<tspan dominant-baseline="text-before-edge" letter-spacing="-0.5">t </tspan>'
+        in rendered
+    )
+    assert (
+        '<tspan dominant-baseline="text-before-edge" letter-spacing="-2.5">6.3</tspan>'
+        in rendered
+    )
 
 
 def test_render_cover_page_uses_beta_cover_color(tmp_path: Path) -> None:
@@ -202,7 +209,10 @@ def test_render_cover_page_uses_beta_cover_color(tmp_path: Path) -> None:
 
     assert ">BETA VERSION</text>" in rendered
     assert 'fill="#d94a2b"' in rendered
-    assert 'fill="#d94a2b">Swift 6.3</text>' in rendered
+    assert (
+        '<tspan dominant-baseline="text-before-edge" letter-spacing="-2.5">6.3</tspan>'
+        in rendered
+    )
 
 
 def test_render_cover_page_keeps_lowercase_beta_for_nightly(
@@ -226,7 +236,10 @@ def test_render_cover_page_keeps_lowercase_beta_for_nightly(
     )
 
     assert ">NIGHTLY EDITION</text>" in rendered
-    assert 'fill="#8e3fa9">Swift 6.3 beta</text>' in rendered
+    assert (
+        '<tspan dominant-baseline="text-before-edge" letter-spacing="-2.5">6.3 beta</tspan>'
+        in rendered
+    )
 
 
 def test_render_cover_page_does_not_add_beta_for_nightly(
@@ -249,7 +262,10 @@ def test_render_cover_page_does_not_add_beta_for_nightly(
         ),
     )
 
-    assert 'fill="#8e3fa9">Swift 6.3</text>' in rendered
+    assert (
+        '<tspan dominant-baseline="text-before-edge" letter-spacing="-2.5">6.3</tspan>'
+        in rendered
+    )
     assert "Swift 6.3 beta" not in rendered
 
 

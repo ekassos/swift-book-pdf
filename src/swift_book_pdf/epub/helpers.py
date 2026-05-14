@@ -45,7 +45,7 @@ class CoverVariant:
 
 
 COVER_VARIANTS = {
-    "stable": CoverVariant(
+    "release": CoverVariant(
         "RELEASE VERSION",
         COVER_TEXT_FILL,
         COVER_TEMPLATE_PATH,
@@ -195,7 +195,7 @@ def resolve_cover_variant_name(
         return cover_variant
     if version_info is not None and "beta" in version_info.lower():
         return "beta"
-    return "stable"
+    return "release"
 
 
 def cover_png_version_fill(

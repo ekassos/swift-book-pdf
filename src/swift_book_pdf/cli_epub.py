@@ -64,7 +64,7 @@ def _validate_hex_color(
     ),
 )
 @click.option(
-    "--stable-cover-image",
+    "--release-cover-image",
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
     default=None,
     hidden=True,
@@ -109,7 +109,7 @@ def _validate_hex_color(
     callback=_validate_hex_color,
     help=(
         "Background color of the inner-cover banner as a hex string "
-        "(e.g. #33519e). Defaults to the selected stable or beta cover color."
+        "(e.g. #33519e). Defaults to the selected release or beta cover color."
     ),
 )
 @click.option("--current-edition", is_flag=True, hidden=True)
@@ -162,7 +162,7 @@ def epub(  # noqa: PLR0913
     output_path: str,
     export_cover_image: bool,
     base_cover_image: Path | None,
-    stable_cover_image: Path | None,
+    release_cover_image: Path | None,
     beta_cover_image: Path | None,
     current_cover_image: Path | None,
     nightly_cover_image: Path | None,
@@ -194,7 +194,7 @@ def epub(  # noqa: PLR0913
     cover_template_paths = {
         name: path
         for name, path in {
-            "stable": stable_cover_image,
+            "release": release_cover_image,
             "beta": beta_cover_image,
             "current": current_cover_image,
             "nightly": nightly_cover_image,

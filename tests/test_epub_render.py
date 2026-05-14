@@ -16,6 +16,7 @@ from pathlib import Path
 
 from swift_book_pdf.epub.render import (
     CoverPageOptions,
+    CoverTextSpan,
     CoverTextStyle,
     EPUBRenderer,
     LinkResolver,
@@ -93,6 +94,58 @@ def test_render_cover_text_emits_configured_letter_spacing() -> None:
 
     assert 'letter-spacing="-2"' in rendered
     assert ">Swift</text>" in rendered
+
+
+def test_render_cover_text_accepts_spans_with_letter_spacing() -> None:
+    rendered = _render_cover_text(
+        [
+            CoverTextSpan("Swift", letter_spacing=-2),
+            CoverTextSpan(" 6.3", letter_spacing=-0.8),
+        ],
+        x=104.81,
+        y=335.69,
+        style=CoverTextStyle(
+            font_family="IBM Plex Serif",
+            font_size=208.333,
+            fill="#33519e",
+            font_weight="500",
+        ),
+    )
+
+    assert (
+        '<tspan dominant-baseline="text-before-edge" '
+        'letter-spacing="-2">Swift</tspan>' in rendered
+    )
+    assert (
+        '<tspan dominant-baseline="text-before-edge" '
+        'letter-spacing="-0.8"> 6.3</tspan>' in rendered
+    )
+
+
+def test_render_cover_text_accepts_spans_with_dx() -> None:
+    rendered = _render_cover_text(
+        (
+            CoverTextSpan("Swift", dx=4),
+            CoverTextSpan(" 6.3", dx=-1.5),
+        ),
+        x=104.81,
+        y=335.69,
+        style=CoverTextStyle(
+            font_family="IBM Plex Serif",
+            font_size=208.333,
+            fill="#33519e",
+            font_weight="500",
+        ),
+    )
+
+    assert (
+        '<tspan dominant-baseline="text-before-edge" '
+        'dx="4">Swift</tspan>' in rendered
+    )
+    assert (
+        '<tspan dominant-baseline="text-before-edge" '
+        'dx="-1.5"> 6.3</tspan>' in rendered
+    )
 
 
 def test_render_cover_page_uses_release_cover_layers(

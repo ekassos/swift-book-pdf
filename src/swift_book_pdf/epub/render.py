@@ -182,11 +182,11 @@ class EPUBRenderer:
         banner_text = banner_text.upper()
         banner_color = html.escape(banner_color)
         layers.append(
-            f'        <rect x="0" y="0" width="1440" height="153" '
+            f'        <rect x="0" y="1029" width="1440" height="153" '
             f'fill="{banner_color}"/>\n'
             f'        <text class="cover-banner-text" x="114.48" '
-            f'y="37.47" font-family="{COVER_SANS_FONT_FAMILY}" '
-            f'font-weight="500" font-size="58.333" letter-spacing="0" '
+            f'y="1066.47" font-family="{COVER_SANS_FONT_FAMILY}" '
+            f'font-weight="500" font-size="58.333" letter-spacing="-0.7" '
             f'dominant-baseline="text-before-edge" '
             f'font-kerning="normal" text-rendering="optimizeLegibility" '
             f'fill="#ffffff">'
@@ -196,7 +196,7 @@ class EPUBRenderer:
             _render_cover_text(
                 "The",
                 x=107.81,
-                y=209.67,
+                y=57.67,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=133.333,
@@ -209,7 +209,7 @@ class EPUBRenderer:
             _render_cover_text(
                 "Swift",
                 x=104.81,
-                y=328.69,
+                y=176.69,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=208.333,
@@ -223,7 +223,7 @@ class EPUBRenderer:
             _render_cover_text(
                 "Programming",
                 x=108.81,
-                y=535.77,
+                y=383.77,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=176,
@@ -236,7 +236,7 @@ class EPUBRenderer:
             _render_cover_text(
                 "Language",
                 x=108.81,
-                y=708.77,
+                y=556.77,
                 style=CoverTextStyle(
                     font_family=COVER_SERIF_FONT_FAMILY,
                     font_size=176,
@@ -245,20 +245,27 @@ class EPUBRenderer:
                 ),
             )
         )
-        swift_version_text = (
-            f"Swift {version_label}" if version_label else "Swift"
-        )
+        swift_version_text = [
+            CoverTextSpan("S", letter_spacing=-5.0),
+            CoverTextSpan("w", letter_spacing=-3.2),
+            CoverTextSpan("i", letter_spacing=-4),
+            CoverTextSpan("f", letter_spacing=0),
+            CoverTextSpan("t ", letter_spacing=-0.5),
+        ]
+        if version_label:
+            swift_version_text.append(
+                CoverTextSpan(version_label, letter_spacing=-2.5)
+            )
         layers.append(
             _render_cover_text(
                 swift_version_text,
                 x=111.81,
-                y=980.95,
+                y=843.95,
                 style=CoverTextStyle(
                     font_family=COVER_SANS_FONT_FAMILY,
                     font_size=116.667,
                     fill=banner_color,
                     font_weight="500",
-                    letter_spacing=-0.8,
                 ),
             )
         )
@@ -675,12 +682,23 @@ class CoverTextStyle:
     letter_spacing: float = 0
 
 
+@dataclass(frozen=True)
+class CoverTextSpan:
+    text: str
+    letter_spacing: float | None = None
+    dx: float | None = None
+
+
+CoverTextContent = str | tuple[CoverTextSpan, ...] | list[CoverTextSpan]
+
+
 def _render_cover_text(
-    text: str,
+    text: CoverTextContent,
     x: float,
     y: float,
     style: CoverTextStyle,
 ) -> str:
+    text_content = _render_cover_text_content(text)
     return (
         f'        <text class="cover-title-text" x="{x:g}" y="{y:g}" '
         f'font-family="{style.font_family}" '
@@ -689,8 +707,23 @@ def _render_cover_text(
         f'letter-spacing="{style.letter_spacing:g}" '
         f'font-kerning="normal" dominant-baseline="text-before-edge" '
         f'fill="{html.escape(style.fill)}">'
-        f"{html.escape(text)}</text>\n"
+        f"{text_content}</text>\n"
     )
+
+
+def _render_cover_text_content(text: CoverTextContent) -> str:
+    if isinstance(text, str):
+        return html.escape(text)
+    return "".join(_render_cover_text_span(span) for span in text)
+
+
+def _render_cover_text_span(span: CoverTextSpan) -> str:
+    attributes = ['dominant-baseline="text-before-edge"']
+    if span.letter_spacing is not None:
+        attributes.append(f'letter-spacing="{span.letter_spacing:g}"')
+    if span.dx is not None:
+        attributes.append(f'dx="{span.dx:g}"')
+    return f"<tspan {' '.join(attributes)}>{html.escape(span.text)}</tspan>"
 
 
 def _heading_level(block: Block) -> int | None:

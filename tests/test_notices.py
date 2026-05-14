@@ -110,6 +110,9 @@ def test_render_notices_uses_detected_year_range_without_process_text() -> (
     )
     assert "swift-book-pdf" in xhtml
     assert "supporting assets derived from <em>swift-book-pdf</em>." in xhtml
+    assert "This edition uses IBM Plex Sans and IBM Plex Serif" in xhtml
+    assert "IBM Plex Font License" in xhtml
+    assert "SIL OPEN FONT LICENSE Version 1.1" in xhtml
     assert "swift-docc-render project" not in xhtml
     assert f"{{{NOTICES_DOC_KEY}}}" in latex
     assert r"\begin{plainlistingbox}" in latex

@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- When `--cover-footer-line` is omitted, render the `--contributor` value (if any) as a "Compiled by:" credit on the inner cover.
+- Bundle IBM Plex Sans and IBM Plex Serif with the EPUB so cover text and front matter render consistently across reading environments, regardless of host-installed fonts.
+
+### Changed
+- Redesign generated EPUB cover artwork and rendered cover text for release and beta editions, with new templates, edition-specific colors, and adjusted version-label spacing and positioning.
+- Redesign the EPUB inner cover with a new typographic layout that uses the bundled IBM Plex fonts, edition-specific accent colors, and a redesigned banner.
+- Make the inner-cover banner unconditional and default its text to `RELEASE VERSION` or `BETA VERSION` based on the resolved edition; `--cover-banner-text` now overrides the label and `--cover-banner-color` defaults to the edition's accent color.
+- Refresh the trademark wording in the generated notices page and acknowledge the bundled IBM Plex fonts under the SIL Open Font License 1.1, including the full OFL text.
+
+### Removed
+- Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.
 
 ## [2.6.0] - 2026-04-22
 ### Added

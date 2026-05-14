@@ -116,9 +116,11 @@ class EPUBConfig(Config):
         input_path: str | None = None,
         export_cover_image: bool = False,
         base_cover_image: Path | None = None,
+        cover_template_paths: dict[str, Path] | None = None,
         cover_footer_line: str | None = None,
         cover_banner_text: str | None = None,
         cover_banner_color: str | None = None,
+        cover_variant: str | None = None,
         override_version: str | None = None,
         publication_identifier_seed: str | None = None,
         ibooks_version: str | None = None,
@@ -138,9 +140,11 @@ class EPUBConfig(Config):
         )
         self.export_cover_image = export_cover_image
         self.base_cover_image = base_cover_image
+        self.cover_template_paths = cover_template_paths or {}
         self.cover_footer_line = cover_footer_line
         self.cover_banner_text = cover_banner_text
         self.cover_banner_color = cover_banner_color
+        self.cover_variant = cover_variant
         self.override_version = override_version
         self.publication_identifier_seed = publication_identifier_seed
         self.ibooks_version = ibooks_version
@@ -151,9 +155,11 @@ class EPUBConfig(Config):
             f"Save generated cover image as separate file: {export_cover_image}"
         )
         logger.debug(f"Base cover image: {base_cover_image}")
+        logger.debug(f"Cover template paths: {self.cover_template_paths}")
         logger.debug(f"Cover footer line: {cover_footer_line}")
         logger.debug(f"Cover banner text: {cover_banner_text}")
         logger.debug(f"Cover banner color: {cover_banner_color}")
+        logger.debug(f"Cover variant: {cover_variant}")
         logger.debug(f"Version override: {override_version}")
         logger.debug(
             "Publication identifier seed override: %s",

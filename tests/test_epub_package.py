@@ -14,18 +14,21 @@
 
 from pathlib import Path
 from types import SimpleNamespace
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
-from swift_book_pdf.config import EPUBConfig
-from swift_book_pdf.epub.package import EPUBPackageWriter
+from swift_book_pdf.epub.constants import EPUB_FONT_FILE_NAMES
+from swift_book_pdf.epub.package import EPUBPackageWriter, NavigationDocuments
 from swift_book_pdf.schema import DocumentEntry
+
+if TYPE_CHECKING:
+    from swift_book_pdf.config import EPUBConfig
 
 
 def test_content_opf_includes_ibooks_version_metadata_when_configured(
     tmp_path: Path,
 ) -> None:
     config = cast(
-        EPUBConfig,
+        "EPUBConfig",
         SimpleNamespace(
             temp_dir=str(tmp_path),
             output_path=str(tmp_path / "swift_book.epub"),
@@ -56,7 +59,7 @@ def test_content_opf_omits_ibooks_version_metadata_by_default(
     tmp_path: Path,
 ) -> None:
     config = cast(
-        EPUBConfig,
+        "EPUBConfig",
         SimpleNamespace(
             temp_dir=str(tmp_path),
             output_path=str(tmp_path / "swift_book.epub"),
@@ -87,7 +90,7 @@ def test_content_opf_marks_cover_document_as_svg(
     tmp_path: Path,
 ) -> None:
     config = cast(
-        EPUBConfig,
+        "EPUBConfig",
         SimpleNamespace(
             temp_dir=str(tmp_path),
             output_path=str(tmp_path / "swift_book.epub"),
@@ -125,11 +128,70 @@ def test_content_opf_marks_cover_document_as_svg(
     )
 
 
+def test_static_files_include_bundled_ibm_plex_fonts(
+    tmp_path: Path,
+) -> None:
+    config = cast(
+        "EPUBConfig",
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+            publisher=None,
+            contributor=None,
+            ibooks_version=None,
+        ),
+    )
+    writer = EPUBPackageWriter(config)
+    workspace = writer.prepare_workspace()
+
+    writer.write_static_files(workspace)
+    writer.write_content_opf_file(
+        workspace,
+        "The Swift Programming Language",
+        [],
+        {},
+        "urn:uuid:test-book",
+    )
+
+    for font_file_name in EPUB_FONT_FILE_NAMES:
+        assert (
+            workspace / "OEBPS" / "_static" / "fonts" / font_file_name
+        ).exists()
+
+    content_opf = (workspace / "OEBPS" / "content.opf").read_text(
+        encoding="utf-8"
+    )
+    assert 'href="_static/fonts/IBMPlexSans-Medium.ttf"' in content_opf
+    assert 'media-type="font/ttf"' in content_opf
+
+
+def test_write_cover_asset_uses_bundled_ibm_plex_fonts(
+    tmp_path: Path,
+) -> None:
+    config = cast(
+        "EPUBConfig",
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+            base_cover_image=None,
+            cover_template_paths={},
+            cover_variant=None,
+            cover_footer_line="Updated for Swift 6.3",
+        ),
+    )
+    writer = EPUBPackageWriter(config)
+    workspace = writer.prepare_workspace()
+
+    writer.write_cover_asset(workspace, "6.3")
+
+    assert (workspace / "OEBPS" / "_static" / "cover.png").exists()
+
+
 def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
     tmp_path: Path,
 ) -> None:
     config = cast(
-        EPUBConfig,
+        "EPUBConfig",
         SimpleNamespace(
             temp_dir=str(tmp_path),
             output_path=str(tmp_path / "swift_book.epub"),
@@ -147,19 +209,23 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
         href="cover.xhtml",
         directory=None,
     )
+    writer.write_text(workspace, "Edition.xhtml", "<html></html>")
 
-    writer.write_nav_file(workspace, cover, [], None)
+    navigation_documents = NavigationDocuments(cover, None)
+    writer.write_nav_file(workspace, navigation_documents, [])
     writer.write_toc_ncx_file(
         workspace,
-        cover,
+        navigation_documents,
         [],
-        None,
         "The Swift Programming Language",
     )
 
     nav = (workspace / "OEBPS" / "toc.xhtml").read_text(encoding="utf-8")
     ncx = (workspace / "OEBPS" / "toc.ncx").read_text(encoding="utf-8")
 
+    assert 'epub:type="frontmatter"' not in nav
+    assert '<a href="Edition.xhtml">About This Edition</a>' not in nav
+    assert "<text>About This Edition</text>" not in ncx
     assert "Acknowledgments" not in nav
     assert 'epub:type="acknowledgements"' not in nav
     assert "Acknowledgments" not in ncx

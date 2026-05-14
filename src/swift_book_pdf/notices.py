@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import html
+from pathlib import Path
 
 from swift_book_pdf.latex_helpers import (
     apply_formatting,
@@ -37,6 +38,16 @@ SWIFT_CONTRIBUTORS_URL = "https://swift.org/CONTRIBUTORS.txt"
 SWIFT_BOOK_REPO_URL = "https://github.com/swiftlang/swift-book"
 SWIFT_DOCC_RENDER_REPO_URL = "https://github.com/swiftlang/swift-docc-render"
 SWIFT_BOOK_PDF_REPO_URL = "https://github.com/ekassos/swift-book-pdf"
+IBM_PLEX_OFL_PATH = (
+    Path(__file__).resolve().parent
+    / "assets"
+    / "epub_reference"
+    / "fonts"
+    / "IBM-Plex-OFL.txt"
+)
+IBM_PLEX_OFL_TEXT = IBM_PLEX_OFL_PATH.read_text(encoding="utf-8").replace(
+    "\r\n", "\n"
+)
 
 APACHE_LICENSE_V2_TEXT = """                                 Apache License
                            Version 2.0, January 2004
@@ -424,10 +435,14 @@ def render_notices_xhtml(
         f'See <a href="{html.escape(SWIFT_LICENSE_URL)}">{html.escape(SWIFT_LICENSE_URL)}</a> for details. '
         f"{_render_copyright_for_xhtml(build_original_work_copyright_sentence_epub(year_range))} The Swift project authors are credited at "
         f'<a href="{html.escape(SWIFT_CONTRIBUTORS_URL)}">{html.escape(SWIFT_CONTRIBUTORS_URL)}</a>.</p>\n'
-        "<p>The Swift logo is a trademark of Apple Inc. "
+        "<p>Swift is a trademark of Apple Inc. "
         "This edition is not published by, endorsed by, or affiliated with Apple Inc. or the Swift.org open source project.</p>\n"
+        "<p>This edition uses IBM Plex Sans and IBM Plex Serif, Copyright &#169; 2017 IBM Corp. "
+        'with Reserved Font Name "Plex", licensed under the SIL Open Font License 1.1.</p>\n'
         "<h2>Apache License 2.0</h2>\n"
         f"<pre>{html.escape(APACHE_LICENSE_V2_TEXT)}</pre>\n"
+        "<h2>IBM Plex Font License</h2>\n"
+        f"<pre>{html.escape(IBM_PLEX_OFL_TEXT)}</pre>\n"
         "</div>\n"
     )
 
@@ -472,7 +487,7 @@ def render_notices_latex(
         f"{original_work_copyright} "
         "The Swift project authors are credited at "
         f"{contributors_reference}.",
-        "The Swift logo is a trademark of Apple Inc. This edition is not "
+        "Swift and the Swift logo are trademarks of Apple Inc. This edition is not "
         "published by, endorsed by, or affiliated with Apple Inc. or the "
         "Swift.org open source project.",
     ]

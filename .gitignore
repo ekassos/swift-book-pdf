@@ -30,10 +30,13 @@ src/swift_book_pdf/assets/*
 !src/swift_book_pdf/assets/Swift_logo_white.png
 
 # EPUB assets not needed in version control
-!src/swift_book_pdf/assets/Swift_logo_color_epub.png
 !src/swift_book_pdf/assets/epub_reference/
 src/swift_book_pdf/assets/epub_reference/*
 !src/swift_book_pdf/assets/epub_reference/cover.png
 !src/swift_book_pdf/assets/epub_reference/cover-beta.png
+!src/swift_book_pdf/assets/epub_reference/cover-current.png
+!src/swift_book_pdf/assets/epub_reference/cover-nightly.png
 !src/swift_book_pdf/assets/epub_reference/epub.css
+!src/swift_book_pdf/assets/epub_reference/fonts/
+!src/swift_book_pdf/assets/epub_reference/fonts/*
 !src/swift_book_pdf/assets/epub_reference/pygments.css

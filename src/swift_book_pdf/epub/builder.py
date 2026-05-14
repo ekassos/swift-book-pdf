@@ -58,8 +58,13 @@ from .helpers import (
     make_unique_anchor,
     resolve_cover_banner,
 )
-from .package import EPUBPackageWriter
-from .render import EPUBRenderer, LinkResolver, extract_grammar_terms
+from .package import EPUBPackageWriter, NavigationDocuments
+from .render import (
+    CoverPageOptions,
+    EPUBRenderer,
+    LinkResolver,
+    extract_grammar_terms,
+)
 
 if TYPE_CHECKING:
     from swift_book_pdf.config import EPUBConfig
@@ -125,17 +130,21 @@ class EPUBBuilder:
                 self.config.cover_banner_text,
                 self.config.cover_banner_color,
                 version_info,
-                self.config.base_cover_image,
+                self.config.cover_variant,
             )
             writer.write_text(
                 workspace,
                 cover_document.href,
                 renderer.render_cover_page(
                     cover_document,
-                    book_title,
                     version_info,
-                    cover_banner=cover_banner,
-                    cover_footer_line=self.config.cover_footer_line,
+                    CoverPageOptions(
+                        book_title=book_title,
+                        cover_banner=cover_banner,
+                        cover_footer_line=self.config.cover_footer_line,
+                        compiled_by_name=self.config.contributor,
+                        cover_variant=self.config.cover_variant,
+                    ),
                 ),
             )
 
@@ -163,12 +172,12 @@ class EPUBBuilder:
                 renderer.render_notices_page(notices),
             )
         writer.copy_image_assets(workspace, image_assets)
-        writer.write_nav_file(workspace, cover_document, parts, notices)
+        navigation_documents = NavigationDocuments(cover_document, notices)
+        writer.write_nav_file(workspace, navigation_documents, parts)
         writer.write_toc_ncx_file(
             workspace,
-            cover_document,
+            navigation_documents,
             parts,
-            notices,
             book_title,
         )
         writer.write_content_opf_file(

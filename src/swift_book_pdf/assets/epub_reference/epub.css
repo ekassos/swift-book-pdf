@@ -15,6 +15,34 @@
  *
  */
 
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  src: url("fonts/IBMPlexSans-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Serif";
+  font-style: normal;
+  font-weight: 400;
+  src: url("fonts/IBMPlexSerif-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Serif";
+  font-style: normal;
+  font-weight: 500;
+  src: url("fonts/IBMPlexSerif-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Serif";
+  font-style: italic;
+  font-weight: 400;
+  src: url("fonts/IBMPlexSerif-Italic.ttf") format("truetype");
+}
+
 body {
   font-family: "iBooks_Iowan_Old_Style", serif;
   font-size: 0.7em;
@@ -66,46 +94,44 @@ body.coverpage {
   align-items: stretch;
 }
 
+body.edition-notice-body {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  min-height: 100vh;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.edition-notice-page {
+  margin: 0 auto;
+  max-width: 34em;
+  padding: 12vh 2em;
+}
+
+.edition-notice-page h1 {
+  text-align: center;
+}
+
+.edition-notice-page p {
+  font-size: 1em;
+  line-height: 1.5em;
+  text-align: center;
+  text-wrap: pretty;
+  -webkit-hyphens: none;
+  hyphens: none;
+  overflow-wrap: normal;
+}
+
+.edition-notice-page p + p {
+  margin-top: 0.8em;
+}
+
 .cover-canvas-svg {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.cover-canvas-svg .cover-title-text,
-.cover-canvas-svg .cover-subtitle-text {
-  fill: #2b2b2b;
-}
-
-.cover-canvas-svg .cover-footer-text {
-  fill: #6f6f6f;
-}
-
-.cover-canvas-svg .cover-svg-logo-dark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  body.coverpage {
-    background: #1c1c1e;
-  }
-
-  .cover-canvas-svg .cover-title-text,
-  .cover-canvas-svg .cover-subtitle-text {
-    fill: #f2f2f2;
-  }
-
-  .cover-canvas-svg .cover-footer-text {
-    fill: #a0a0a0;
-  }
-
-  .cover-canvas-svg .cover-svg-logo-light {
-    display: none;
-  }
-
-  .cover-canvas-svg .cover-svg-logo-dark {
-    display: inline;
-  }
 }
 
 ul.simple,

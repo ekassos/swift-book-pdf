@@ -97,13 +97,25 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
                 "--export-cover-image",
                 "--base-cover-image",
                 "--cover-footer-line",
+                "--cover-banner-text",
+                "--cover-banner-color",
                 "--override-version",
                 "--publication-identifier-seed",
                 "--ibooks-version",
                 "--publisher",
                 "--dangerously-skip-legal-notices",
             ),
-            ("--mode", "--paper", "--typesets"),
+            (
+                "--mode",
+                "--paper",
+                "--typesets",
+                "--current-edition",
+                "--nightly-edition",
+                "--release-cover-image",
+                "--beta-cover-image",
+                "--current-cover-image",
+                "--nightly-cover-image",
+            ),
             id="epub-help",
         ),
     ],
@@ -211,6 +223,17 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     output_dir.mkdir()
     cover_path = tmp_path / "custom-cover.png"
     cover_path.write_bytes(b"png")
+    release_cover_path = tmp_path / "release-cover.png"
+    beta_cover_path = tmp_path / "beta-cover.png"
+    current_cover_path = tmp_path / "current-cover.png"
+    nightly_cover_path = tmp_path / "nightly-cover.png"
+    for path in (
+        release_cover_path,
+        beta_cover_path,
+        current_cover_path,
+        nightly_cover_path,
+    ):
+        path.write_bytes(b"png")
     result = runner.invoke(
         cli_epub.epub,
         [
@@ -218,8 +241,17 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
             "--export-cover-image",
             "--base-cover-image",
             str(cover_path),
+            "--release-cover-image",
+            str(release_cover_path),
+            "--beta-cover-image",
+            str(beta_cover_path),
+            "--current-cover-image",
+            str(current_cover_path),
+            "--nightly-cover-image",
+            str(nightly_cover_path),
             "--cover-footer-line",
             "Beta",
+            "--current-edition",
             "--override-version",
             "6.2 beta",
             "--publication-identifier-seed",
@@ -247,7 +279,14 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     assert kwargs["input_path"] == str(tmp_path / "swift-book")
     assert kwargs["export_cover_image"] is True
     assert kwargs["base_cover_image"] == cover_path
+    assert kwargs["cover_template_paths"] == {
+        "release": release_cover_path,
+        "beta": beta_cover_path,
+        "current": current_cover_path,
+        "nightly": nightly_cover_path,
+    }
     assert kwargs["cover_footer_line"] == "Beta"
+    assert kwargs["cover_variant"] == "current"
     assert kwargs["override_version"] == "6.2 beta"
     assert kwargs["publication_identifier_seed"] == "version:6.2.3"
     assert kwargs["ibooks_version"] == "1.1"

@@ -310,6 +310,42 @@ def test_directory_output_defaults_to_format_extension(
     )
 
 
+def test_pdf_command_supports_custom_output_filename(
+    runner: CliRunner,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_config = SimpleNamespace(dangerously_skip_legal_notices=False)
+
+    stub_pdf_font_config(monkeypatch)
+
+    pdf_config = Mock(return_value=fake_config)
+    build_pdf = Mock()
+
+    monkeypatch.setattr(cli_pdf, "PDFConfig", pdf_config)
+    monkeypatch.setattr(cli_pdf, "build_pdf", build_pdf)
+
+    output_dir = tmp_path / "dist"
+    output_dir.mkdir()
+
+    result = runner.invoke(
+        cli_pdf.pdf,
+        [
+            str(output_dir),
+            "--output",
+            "custom-book.pdf",
+        ],
+    )
+
+    assert_success(result)
+
+    assert pdf_config.call_args.args[1] == str(
+        output_dir / "custom-book.pdf"
+    )
+
+    build_pdf.assert_called_once_with(fake_config)
+
+
 @pytest.mark.parametrize(
     "scenario",
     [

@@ -208,7 +208,12 @@ class PDFConverter:
     def __init__(self, config: PDFConfig) -> None:
         lualatex_executable = shutil.which("lualatex")
         if lualatex_executable is None:
-            raise RuntimeError("lualatex is not installed or not in PATH.")
+            raise RuntimeError(
+                "LaTeX is required to generate PDFs, but 'lualatex' was not found. "
+                "Install a LaTeX distribution and make sure it is available on PATH. "
+                "Windows users can install MiKTeX, macOS users can install MacTeX, "
+                "and Linux users can install TeX Live."
+            )
         self.lualatex_executable = lualatex_executable
         check_required_latex_packages_installed()
         check_minted_runtime_compatibility()

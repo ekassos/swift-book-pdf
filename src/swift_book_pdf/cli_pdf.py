@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import click
 
 from swift_book_pdf.book import build_pdf
@@ -101,6 +103,13 @@ DEFAULT_TYPESETS = 4
     help="Base paragraph font size in points. All other font sizes scale proportionally",
     show_default="9",
 )
+@click.option(
+    "--output",
+    "output_filename",
+    type=str,
+    default=None,
+    help="Custom output PDF filename.",
+)
 @click.option("--dark", is_flag=True, help="Render the book in dark mode")
 @click.option(
     "--dangerously-skip-legal-notices",
@@ -132,6 +141,7 @@ def pdf(  # noqa: PLR0913
     emoji: str | None,
     header_footer: str | None,
     font_size: float | None,
+    output_filename: str | None,
     dark: bool,
     dangerously_skip_legal_notices: bool,
     gutter: bool | None,
@@ -158,7 +168,7 @@ def pdf(  # noqa: PLR0913
 
     run_build(
         verbose=verbose,
-        output_path=output_path,
+        output_path=_resolve_pdf_output_path(output_path, output_filename),
         output_format=OutputFormat.PDF,
         config_builder=lambda temp_dir, validated_output_path: PDFConfig(
             temp_dir,
@@ -173,6 +183,33 @@ def pdf(  # noqa: PLR0913
         ),
         builder=build_pdf,
     )
+
+
+def _resolve_pdf_output_path(output_path: str, output_filename: str | None) -> str:
+    if output_filename is None:
+        return output_path
+
+    filename = output_filename.strip()
+
+    if not filename:
+        raise click.BadParameter(
+            "Output filename cannot be empty.",
+            param_hint="--output",
+        )
+
+    if Path(filename).name != filename:
+        raise click.BadParameter(
+            "Output filename must be a filename, not a path.",
+            param_hint="--output",
+        )
+
+    if Path(filename).suffix.lower() != ".pdf":
+        raise click.BadParameter(
+            "Output filename must end with .pdf.",
+            param_hint="--output",
+        )
+
+    return str(Path(output_path) / filename)
 
 
 def _build_font_config(

@@ -212,7 +212,9 @@ class PDFConverter:
         self.lualatex_executable = lualatex_executable
         check_required_latex_packages_installed()
         check_minted_runtime_compatibility()
-        self.local_assets_dir = str(Path(__file__).resolve().parent / "assets")
+        self.local_assets_dir = str(
+            Path(__file__).resolve().parent.parent / "assets"
+        )
         self.config = config
 
     def does_minted_need_shell_escape(self) -> bool:

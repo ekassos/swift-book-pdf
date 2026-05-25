@@ -12,12 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from pathlib import Path
+from __future__ import annotations
+
+import re
 
 
-@dataclass(frozen=True)
-class ImageAsset:
-    source_path: Path
-    href: str
-    media_type: str
+def anchor_for_heading(title: str) -> str:
+    cleaned = re.sub(r"[*`]", "", title).strip()
+    cleaned = re.sub("[()/:,.!?'\\u2019]", "", cleaned)
+    cleaned = re.sub(r"\s+", "-", cleaned)
+    return re.sub(r"-{2,}", "-", cleaned)
+
+
+def make_unique_anchor(anchor: str, seen: dict[str, int]) -> str:
+    count = seen.get(anchor, 0)
+    seen[anchor] = count + 1
+    if count == 0:
+        return anchor
+    return f"{anchor}-{count + 1}"
+
+
+def part_section_id(title: str) -> str:
+    return anchor_for_heading(title).lower()

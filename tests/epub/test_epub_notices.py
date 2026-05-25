@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.epub.notices import render_notices_xhtml
+from swift_book_pdf.epub.render.notices import render_notices_xhtml
 
 
 def test_render_notices_xhtml_uses_detected_year_range() -> None:

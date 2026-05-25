@@ -15,15 +15,17 @@
 from pathlib import Path
 
 from swift_book_pdf.core.document import DocumentEntry
-from swift_book_pdf.epub.render import (
+from swift_book_pdf.epub.cover.xhtml import (
     CoverPageOptions,
     CoverTextSpan,
     CoverTextStyle,
-    EPUBRenderer,
+    render_cover_page,
+    render_cover_text,
+)
+from swift_book_pdf.epub.render import (
     LinkResolver,
-    _normalize_prose_punctuation,
-    _render_cover_text,
-    _render_inline,
+    normalize_prose_punctuation,
+    render_inline,
 )
 
 EPUB_REFERENCE_DIR = (
@@ -38,19 +40,19 @@ EPUB_REFERENCE_DIR = (
 def test_normalize_prose_punctuation_converts_triple_hyphen_to_em_dash() -> (
     None
 ):
-    assert _normalize_prose_punctuation("before --- after") == "before—after"
+    assert normalize_prose_punctuation("before --- after") == "before—after"
 
 
 def test_normalize_prose_punctuation_converts_double_hyphen_to_en_dash() -> (
     None
 ):
     assert (
-        _normalize_prose_punctuation("Swift 5.9--6.0") == "Swift 5.9\u20136.0"
+        normalize_prose_punctuation("Swift 5.9--6.0") == "Swift 5.9\u20136.0"
     )
 
 
 def test_render_inline_keeps_markdown_like_code_spans_literal() -> None:
-    rendered = _render_inline(
+    rendered = render_inline(
         (
             "Alternatively, you can create an empty array of a certain type "
             "using explicit initializer syntax, by writing the element type "
@@ -66,7 +68,7 @@ def test_render_inline_keeps_markdown_like_code_spans_literal() -> None:
 
 
 def test_render_inline_supports_code_inside_markdown_link_labels() -> None:
-    rendered = _render_inline(
+    rendered = render_inline(
         "Read [`Array`](https://example.com) first.",
         "CollectionTypes.xhtml",
         LinkResolver([]),
@@ -79,7 +81,7 @@ def test_render_inline_supports_code_inside_markdown_link_labels() -> None:
 
 
 def test_render_cover_text_emits_configured_letter_spacing() -> None:
-    rendered = _render_cover_text(
+    rendered = render_cover_text(
         "Swift",
         x=104.81,
         y=335.69,
@@ -97,7 +99,7 @@ def test_render_cover_text_emits_configured_letter_spacing() -> None:
 
 
 def test_render_cover_text_accepts_spans_with_letter_spacing() -> None:
-    rendered = _render_cover_text(
+    rendered = render_cover_text(
         [
             CoverTextSpan("Swift", letter_spacing=-2),
             CoverTextSpan(" 6.3", letter_spacing=-0.8),
@@ -123,7 +125,7 @@ def test_render_cover_text_accepts_spans_with_letter_spacing() -> None:
 
 
 def test_render_cover_text_accepts_spans_with_dx() -> None:
-    rendered = _render_cover_text(
+    rendered = render_cover_text(
         (
             CoverTextSpan("Swift", dx=4),
             CoverTextSpan(" 6.3", dx=-1.5),
@@ -148,11 +150,8 @@ def test_render_cover_text_accepts_spans_with_dx() -> None:
     )
 
 
-def test_render_cover_page_uses_release_cover_layers(
-    tmp_path: Path,
-) -> None:
-    renderer = EPUBRenderer(tmp_path, {})
-    rendered = renderer.render_cover_page(
+def test_render_cover_page_uses_release_cover_layers() -> None:
+    rendered = render_cover_page(
         DocumentEntry(
             key="cover",
             title="Cover",
@@ -190,9 +189,8 @@ def test_render_cover_page_uses_release_cover_layers(
     )
 
 
-def test_render_cover_page_uses_beta_cover_color(tmp_path: Path) -> None:
-    renderer = EPUBRenderer(tmp_path, {})
-    rendered = renderer.render_cover_page(
+def test_render_cover_page_uses_beta_cover_color() -> None:
+    rendered = render_cover_page(
         DocumentEntry(
             key="cover",
             title="Cover",
@@ -216,10 +214,8 @@ def test_render_cover_page_uses_beta_cover_color(tmp_path: Path) -> None:
 
 
 def test_render_cover_page_keeps_lowercase_beta_for_nightly(
-    tmp_path: Path,
 ) -> None:
-    renderer = EPUBRenderer(tmp_path, {})
-    rendered = renderer.render_cover_page(
+    rendered = render_cover_page(
         DocumentEntry(
             key="cover",
             title="Cover",
@@ -243,10 +239,8 @@ def test_render_cover_page_keeps_lowercase_beta_for_nightly(
 
 
 def test_render_cover_page_does_not_add_beta_for_nightly(
-    tmp_path: Path,
 ) -> None:
-    renderer = EPUBRenderer(tmp_path, {})
-    rendered = renderer.render_cover_page(
+    rendered = render_cover_page(
         DocumentEntry(
             key="cover",
             title="Cover",

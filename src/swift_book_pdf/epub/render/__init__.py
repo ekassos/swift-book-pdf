@@ -12,12 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from pathlib import Path
+from swift_book_pdf.epub.cover import CoverPageOptions
 
+from .grammar import extract_grammar_terms
+from .inline import normalize_prose_punctuation, render_inline
+from .links import LinkResolver
+from .renderer import EPUBRenderer
 
-@dataclass(frozen=True)
-class ImageAsset:
-    source_path: Path
-    href: str
-    media_type: str
+__all__ = [
+    "CoverPageOptions",
+    "EPUBRenderer",
+    "LinkResolver",
+    "extract_grammar_terms",
+    "normalize_prose_punctuation",
+    "render_inline",
+]

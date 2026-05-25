@@ -14,17 +14,19 @@
 
 from pathlib import Path
 
-from swift_book_pdf.epub.constants import (
-    COVER_CURRENT_TEMPLATE_PATH,
-    COVER_NIGHTLY_TEMPLATE_PATH,
-)
-from swift_book_pdf.epub.helpers import (
-    build_publication_identifier,
+from swift_book_pdf.epub.cover import (
     cover_png_version_fill,
     cover_png_version_text,
     cover_template_path,
     resolve_cover_banner,
     resolve_cover_variant_name,
+)
+from swift_book_pdf.epub.cover.constants import (
+    COVER_CURRENT_TEMPLATE_PATH,
+    COVER_NIGHTLY_TEMPLATE_PATH,
+)
+from swift_book_pdf.epub.identifiers import (
+    build_publication_identifier,
 )
 
 

@@ -32,16 +32,7 @@ def render_notices_xhtml(
     title: str,
     year_range: tuple[int, int] | None = None,
 ) -> str:
-    """Render the generated notices body for an EPUB XHTML document.
-
-    Args:
-        title: Visible chapter title.
-        year_range: Optional inclusive copyright years detected from the
-            upstream Swift Book source.
-
-    Returns:
-        XHTML body markup for the generated notices page.
-    """
+    """Render the generated notices body for an EPUB XHTML document."""
     return (
         f'  <div class="section" id="{html.escape(NOTICES_SECTION_ID)}">\n'
         f"<h1>{html.escape(title)}</h1>\n"
@@ -72,7 +63,6 @@ def render_notices_xhtml(
 def _build_original_work_copyright_sentence(
     year_range: tuple[int, int] | None,
 ) -> str:
-    """Build the EPUB copyright sentence for upstream Swift source."""
     year_text = format_copyright_year_range(year_range)
     if year_text:
         return (

@@ -17,11 +17,40 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
 from swift_book_pdf.core.document import DocumentEntry
-from swift_book_pdf.epub.constants import EPUB_FONT_FILE_NAMES
-from swift_book_pdf.epub.package import EPUBPackageWriter, NavigationDocuments
+from swift_book_pdf.epub.cover.png import write_cover_asset
+from swift_book_pdf.epub.package.nav import FrontBackMatter, write_nav_file
+from swift_book_pdf.epub.package.ncx import write_toc_ncx_file
+from swift_book_pdf.epub.package.opf import (
+    OPFPackageInput,
+    write_content_opf_file,
+)
+from swift_book_pdf.epub.package.static import (
+    EPUB_FONT_FILE_NAMES,
+    write_static_files,
+)
+from swift_book_pdf.epub.package.workspace import prepare_workspace, write_text
 
 if TYPE_CHECKING:
     from swift_book_pdf.epub.config import EPUBConfig
+
+
+def _write_content_opf_file(
+    workspace: Path,
+    config: "EPUBConfig",
+    documents: list[DocumentEntry],
+    publication_identifier: str,
+) -> None:
+    write_content_opf_file(
+        workspace,
+        OPFPackageInput(
+            config=config,
+            book_title="The Swift Programming Language",
+            documents=documents,
+            image_assets={},
+            publication_identifier=publication_identifier,
+            has_cover_asset=False,
+        ),
+    )
 
 
 def test_content_opf_includes_ibooks_version_metadata_when_configured(
@@ -37,14 +66,12 @@ def test_content_opf_includes_ibooks_version_metadata_when_configured(
             ibooks_version="1.1",
         ),
     )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
+    workspace = prepare_workspace(config)
 
-    writer.write_content_opf_file(
+    _write_content_opf_file(
         workspace,
-        "The Swift Programming Language",
+        config,
         [],
-        {},
         "urn:uuid:test-book",
     )
 
@@ -68,14 +95,12 @@ def test_content_opf_omits_ibooks_version_metadata_by_default(
             ibooks_version=None,
         ),
     )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
+    workspace = prepare_workspace(config)
 
-    writer.write_content_opf_file(
+    _write_content_opf_file(
         workspace,
-        "The Swift Programming Language",
+        config,
         [],
-        {},
         "urn:uuid:test-book",
     )
 
@@ -99,12 +124,11 @@ def test_content_opf_marks_cover_document_as_svg(
             ibooks_version=None,
         ),
     )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
+    workspace = prepare_workspace(config)
 
-    writer.write_content_opf_file(
+    _write_content_opf_file(
         workspace,
-        "The Swift Programming Language",
+        config,
         [
             DocumentEntry(
                 key="cover",
@@ -114,7 +138,6 @@ def test_content_opf_marks_cover_document_as_svg(
                 directory=None,
             )
         ],
-        {},
         "urn:uuid:test-book",
     )
 
@@ -141,15 +164,13 @@ def test_static_files_include_bundled_ibm_plex_fonts(
             ibooks_version=None,
         ),
     )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
+    workspace = prepare_workspace(config)
 
-    writer.write_static_files(workspace)
-    writer.write_content_opf_file(
+    write_static_files(workspace)
+    _write_content_opf_file(
         workspace,
-        "The Swift Programming Language",
+        config,
         [],
-        {},
         "urn:uuid:test-book",
     )
 
@@ -179,10 +200,9 @@ def test_write_cover_asset_uses_bundled_ibm_plex_fonts(
             cover_footer_line="Updated for Swift 6.3",
         ),
     )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
+    workspace = prepare_workspace(config)
 
-    writer.write_cover_asset(workspace, "6.3")
+    write_cover_asset(config, workspace, "6.3")
 
     assert (workspace / "OEBPS" / "_static" / "cover.png").exists()
 
@@ -200,8 +220,7 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
             ibooks_version=None,
         ),
     )
-    writer = EPUBPackageWriter(config)
-    workspace = writer.prepare_workspace()
+    workspace = prepare_workspace(config)
     cover = DocumentEntry(
         key="cover",
         title="Cover",
@@ -209,13 +228,14 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
         href="cover.xhtml",
         directory=None,
     )
-    writer.write_text(workspace, "Edition.xhtml", "<html></html>")
+    write_text(workspace, "Edition.xhtml", "<html></html>")
 
-    navigation_documents = NavigationDocuments(cover, None)
-    writer.write_nav_file(workspace, navigation_documents, [])
-    writer.write_toc_ncx_file(
+    front_back_matter = FrontBackMatter(cover, None)
+    write_nav_file(workspace, front_back_matter, [])
+    write_toc_ncx_file(
         workspace,
-        navigation_documents,
+        "urn:uuid:test-book",
+        front_back_matter,
         [],
         "The Swift Programming Language",
     )

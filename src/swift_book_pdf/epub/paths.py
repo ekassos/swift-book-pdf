@@ -12,12 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from pathlib import Path
+from __future__ import annotations
+
+import posixpath
+from pathlib import Path, PurePosixPath
+
+from swift_book_pdf.epub.constants import OEBPS_DIR_NAME
 
 
-@dataclass(frozen=True)
-class ImageAsset:
-    source_path: Path
-    href: str
-    media_type: str
+def relative_href(current_href: str, target_href: str) -> str:
+    current_parent = PurePosixPath(current_href).parent
+    current_parent_str = (
+        "." if str(current_parent) == "." else str(current_parent)
+    )
+    return posixpath.relpath(target_href, current_parent_str)
+
+
+def oebps_workspace_path(workspace: Path, relative_path: str) -> Path:
+    return workspace / OEBPS_DIR_NAME / PurePosixPath(relative_path)

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:epub="http://www.idpf.org/2007/ops"
+      xmlns:ibooks="http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0"
+      epub:prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/"
+      lang="en" xml:lang="en">
+  <head>
+    <title>Table of Contents</title>
+    <link rel="stylesheet" href="_static/epub.css" type="text/css" />
+  </head>
+  <body>
+    <section>
+      <header>
+        <h1>Table of Contents</h1>
+      </header>
+      <nav epub:type="toc" id="toc">
+        <ol>
+{% for item in toc_items %}
+        <li>
+          <a href="{{ item.href }}">{{ item.title }}</a>
+{% if item.children %}
+          <ol>
+{% for child in item.children %}
+            <li>
+              <a href="{{ child.href }}">{{ child.title }}</a>
+            </li>
+{% endfor %}
+          </ol>
+{% endif %}
+        </li>
+{% endfor %}
+        </ol>
+      </nav>
+      <nav epub:type="landmarks">
+        <h1>Guide</h1>
+        <ol>
+{% for landmark in landmarks %}
+        <li>
+          <a epub:type="{{ landmark.epub_type }}" href="{{ landmark.href }}">{{ landmark.title }}</a>
+        </li>
+{% endfor %}
+
+        </ol>
+      </nav>
+    </section>
+  </body>
+</html>

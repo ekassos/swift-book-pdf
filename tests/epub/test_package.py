@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
-from swift_book_pdf.core.document import DocumentEntry
+from swift_book_pdf.core.document import DocumentEntry, PartEntry
 from swift_book_pdf.epub.cover.png import write_cover_asset
 from swift_book_pdf.epub.package.nav import FrontBackMatter, write_nav_file
 from swift_book_pdf.epub.package.ncx import write_toc_ncx_file
@@ -249,3 +250,38 @@ def test_nav_and_ncx_omit_acknowledgments_when_notices_are_skipped(
     assert "Acknowledgments" not in nav
     assert 'epub:type="acknowledgements"' not in nav
     assert "Acknowledgments" not in ncx
+
+
+def test_nav_file_escapes_titles_and_parses_as_xhtml(tmp_path: Path) -> None:
+    config = cast(
+        "EPUBConfig",
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+        ),
+    )
+    workspace = prepare_workspace(config)
+    part = DocumentEntry(
+        key="generics",
+        title="Generics <T> & Operators",
+        subtitle=None,
+        href="Basics/Operators&Symbols.xhtml",
+        directory="Basics",
+    )
+    parts = [
+        PartEntry(
+            title="Language & Runtime",
+            href="Basics/BasicsPart.xhtml",
+            directory="Basics",
+            children=[part],
+        )
+    ]
+
+    write_nav_file(workspace, FrontBackMatter(None, None), parts)
+
+    nav = (workspace / "OEBPS" / "toc.xhtml").read_text(encoding="utf-8")
+
+    ET.fromstring(nav)  # noqa: S314 - parses generated test output
+    assert "Language &amp; Runtime" in nav
+    assert "Generics &lt;T&gt; &amp; Operators" in nav
+    assert 'href="Basics/Operators&amp;Symbols.xhtml"' in nav

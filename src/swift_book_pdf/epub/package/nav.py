@@ -16,13 +16,13 @@
 
 from __future__ import annotations
 
-import html
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from swift_book_pdf.epub.constants import DEFAULT_BOOK_TITLE, NAV_DOC_FILE_NAME
 from swift_book_pdf.epub.package.workspace import write_text
 from swift_book_pdf.epub.paths import relative_href
+from swift_book_pdf.epub.templating import render_epub_template
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -43,6 +43,34 @@ class FrontBackMatter:
     notices: DocumentEntry | None
 
 
+@dataclass(frozen=True)
+class NavItem:
+    """A visible table-of-contents item for the EPUB nav document."""
+
+    href: str
+    """Navigation-document-relative href for the item target."""
+
+    title: str
+    """Display title for the item link."""
+
+    children: tuple[NavItem, ...] = ()
+    """Nested child items displayed under this item."""
+
+
+@dataclass(frozen=True)
+class LandmarkItem:
+    """A landmark entry for EPUB reader navigation."""
+
+    epub_type: str
+    """EPUB semantic type for the landmark link."""
+
+    href: str
+    """Navigation-document-relative href for the landmark target."""
+
+    title: str
+    """Display title for the landmark link."""
+
+
 def write_nav_file(
     workspace: Path,
     front_back_matter: FrontBackMatter,
@@ -53,6 +81,11 @@ def write_nav_file(
     The navigation document contains both the visible table of contents and
     Apple Books landmarks. Reader start falls back from the first body part to
     notices, then cover, then the nav document itself for degenerate builds.
+
+    Args:
+        workspace: Root temporary EPUB workspace.
+        front_back_matter: Optional generated cover and notices documents.
+        parts: Top-level book parts and their child chapter entries.
     """
     cover = front_back_matter.cover
     notices = front_back_matter.notices
@@ -73,104 +106,119 @@ def write_nav_file(
         if cover is not None
         else None
     )
-    items = []
+    toc_items = _build_toc_items(front_back_matter, parts)
+    landmarks = _build_landmarks(
+        front_back_matter,
+        parts,
+        reader_start_relative_href,
+        cover_relative_href,
+    )
+    rendered = render_epub_template(
+        "nav.xhtml",
+        {
+            "toc_items": toc_items,
+            "landmarks": landmarks,
+        },
+    )
+    write_text(workspace, NAV_DOC_FILE_NAME, rendered)
+
+
+def _build_toc_items(
+    front_back_matter: FrontBackMatter,
+    parts: list[PartEntry],
+) -> tuple[NavItem, ...]:
+    """Build visible table-of-contents items for the nav template.
+
+    Args:
+        front_back_matter: Optional generated cover and notices documents.
+        parts: Top-level bodymatter parts and their child chapter entries.
+
+    Returns:
+        Ordered nav items containing cover, bodymatter, and notices entries.
+    """
+    cover = front_back_matter.cover
+    notices = front_back_matter.notices
+    items: list[NavItem] = []
     if cover is not None:
         items.append(
-            "        <li>\n"
-            f'          <a href="{html.escape(cover_relative_href or "")}">{html.escape(cover.title)}</a>\n'
-            "        </li>"
-        )
-    for part in parts:
-        chapter_items = "\n".join(
-            (
-                "            <li>\n"
-                f'              <a href="{html.escape(relative_href(NAV_DOC_FILE_NAME, child.href))}">{html.escape(child.title)}</a>\n'
-                "            </li>"
+            NavItem(
+                href=relative_href(NAV_DOC_FILE_NAME, cover.href),
+                title=cover.title,
             )
-            for child in part.children
         )
-        items.append(
-            "        <li>\n"
-            f'          <a href="{html.escape(relative_href(NAV_DOC_FILE_NAME, part.href))}">{html.escape(part.title)}</a>\n'
-            "          <ol>\n"
-            f"{chapter_items}\n"
-            "          </ol>\n"
-            "        </li>"
+    items.extend(
+        (
+            NavItem(
+                href=relative_href(NAV_DOC_FILE_NAME, part.href),
+                title=part.title,
+                children=tuple(
+                    NavItem(
+                        href=relative_href(NAV_DOC_FILE_NAME, child.href),
+                        title=child.title,
+                    )
+                    for child in part.children
+                ),
+            )
         )
+        for part in parts
+    )
     if notices is not None:
         items.append(
-            "        <li>\n"
-            f'          <a href="{html.escape(relative_href(NAV_DOC_FILE_NAME, notices.href))}">{html.escape(notices.title)}</a>\n'
-            "        </li>"
+            NavItem(
+                href=relative_href(NAV_DOC_FILE_NAME, notices.href),
+                title=notices.title,
+            )
         )
-    write_text(
-        workspace,
-        NAV_DOC_FILE_NAME,
-        """<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:epub="http://www.idpf.org/2007/ops"
-      xmlns:ibooks="http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0"
-      epub:prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/"
-      lang="en" xml:lang="en">
-  <head>
-    <title>Table of Contents</title>
-    <link rel="stylesheet" href="_static/epub.css" type="text/css" />
-  </head>
-  <body>
-    <section>
-      <header>
-        <h1>Table of Contents</h1>
-      </header>
-      <nav epub:type="toc" id="toc">
-        <ol>
-"""
-        + "\n".join(items)
-        + """
-        </ol>
-      </nav>
-      <nav epub:type="landmarks">
-        <h1>Guide</h1>
-        <ol>
-        <li>
-          <a epub:type="ibooks:reader-start-page" href=\""""
-        + html.escape(reader_start_relative_href)
-        + """\">Start Reading</a>
-        </li>
-"""
-        + (
-            """        <li>
-          <a epub:type="cover" href=\""""
-            + html.escape(cover_relative_href)
-            + """\">Cover</a>
-        </li>
-"""
-            if cover_relative_href is not None
-            else ""
+    return tuple(items)
+
+
+def _build_landmarks(
+    front_back_matter: FrontBackMatter,
+    parts: list[PartEntry],
+    reader_start_relative_href: str,
+    cover_relative_href: str | None,
+) -> tuple[LandmarkItem, ...]:
+    """Build EPUB landmarks for reader navigation.
+
+    Args:
+        front_back_matter: Optional generated cover and notices documents.
+        parts: Top-level bodymatter parts, used to label the bodymatter entry.
+        reader_start_relative_href: Navigation-document-relative start href.
+        cover_relative_href: Navigation-document-relative cover href, if any.
+
+    Returns:
+        Ordered landmark entries for reader start, cover, bodymatter, and
+        acknowledgments when available.
+    """
+    notices = front_back_matter.notices
+    items = [
+        LandmarkItem(
+            epub_type="ibooks:reader-start-page",
+            href=reader_start_relative_href,
+            title="Start Reading",
         )
-        + """        <li>
-          <a epub:type="bodymatter" href=\""""
-        + html.escape(reader_start_relative_href)
-        + """\">"""
-        + html.escape(parts[0].title if parts else DEFAULT_BOOK_TITLE)
-        + """</a>
-        </li>
-"""
-        + (
-            """        <li>
-          <a epub:type="acknowledgements" href=\""""
-            + html.escape(relative_href(NAV_DOC_FILE_NAME, notices.href))
-            + """\">Acknowledgments</a>
-        </li>
-"""
-            if notices is not None
-            else ""
+    ]
+    if cover_relative_href is not None:
+        items.append(
+            LandmarkItem(
+                epub_type="cover",
+                href=cover_relative_href,
+                title="Cover",
+            )
         )
-        + """
-        </ol>
-      </nav>
-    </section>
-  </body>
-</html>
-""",
+    items.append(
+        LandmarkItem(
+            epub_type="bodymatter",
+            href=reader_start_relative_href,
+            title=parts[0].title if parts else DEFAULT_BOOK_TITLE,
+        )
     )
+    if notices is not None:
+        items.append(
+            LandmarkItem(
+                epub_type="acknowledgements",
+                href=relative_href(NAV_DOC_FILE_NAME, notices.href),
+                title="Acknowledgments",
+            )
+        )
+    return tuple(items)

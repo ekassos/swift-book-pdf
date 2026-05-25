@@ -12,8 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""EPUB CLI entrypoint."""
-
-from swift_book_pdf.epub.cli.command import epub
-
-__all__ = ["epub"]
+"""EPUB CLI package."""

@@ -19,8 +19,8 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.core.blocks import parse_blocks
 from swift_book_pdf.core.blocks.models import NoteBlock
+from swift_book_pdf.core.blocks.parser import parse_blocks
 from swift_book_pdf.core.document import (
     DocumentEntry,
     PartEntry,

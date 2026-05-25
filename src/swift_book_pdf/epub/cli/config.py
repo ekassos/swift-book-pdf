@@ -18,8 +18,7 @@ from pathlib import Path
 
 import click
 
-from swift_book_pdf.core.config.models import BuildSourceConfig
-from swift_book_pdf.core.config.source import resolve_build_source
+from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.epub.config import EPUBConfig
 
 
@@ -127,13 +126,11 @@ def build_epub_config(  # noqa: PLR0913
     Returns:
         EPUB builder configuration.
     """
-    source = resolve_build_source(
-        BuildSourceConfig(
-            temp_dir=temp_dir,
-            input_path=input_path,
-            source_ref=source_ref,
-            source_sha=source_sha,
-        )
+    source = resolve_cli_build_source(
+        temp_dir=temp_dir,
+        input_path=input_path,
+        source_ref=source_ref,
+        source_sha=source_sha,
     )
     return EPUBConfig(
         source=source,

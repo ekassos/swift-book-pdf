@@ -14,7 +14,7 @@
 
 from pathlib import Path
 
-from swift_book_pdf.core.blocks import parse_blocks
+from swift_book_pdf.core.blocks.parser import parse_blocks
 from swift_book_pdf.core.markdown import (
     convert_markdown_links,
     remove_multiline_comments,

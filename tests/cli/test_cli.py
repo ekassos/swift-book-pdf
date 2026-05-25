@@ -26,7 +26,7 @@ from click.testing import CliRunner, Result
 from swift_book_pdf.cli.legal_notices import LEGAL_NOTICES_WARNING
 from swift_book_pdf.cli.logging_config import configure_logging
 from swift_book_pdf.cli.output import validate_output_path
-from swift_book_pdf.core.config import BuildSourceConfig, ResolvedBuildSource
+from swift_book_pdf.core.config import ResolvedBuildSource
 from swift_book_pdf.core.output import OutputFormat
 from swift_book_pdf.epub.cli import command as epub_cli
 from swift_book_pdf.epub.cli import config as epub_cli_config
@@ -90,11 +90,11 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
     return font_config
 
 
-def stub_resolve_build_source(
+def stub_resolve_cli_build_source(
     module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> Mock:
     resolver = Mock(return_value=RESOLVED_SOURCE)
-    monkeypatch.setattr(module, "resolve_build_source", resolver)
+    monkeypatch.setattr(module, "resolve_cli_build_source", resolver)
     return resolver
 
 
@@ -168,7 +168,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
 ) -> None:
     fake_config = SimpleNamespace(dangerously_skip_legal_notices=True)
     font_config = stub_pdf_font_config(monkeypatch)
-    resolve_source = stub_resolve_build_source(pdf_cli_config, monkeypatch)
+    resolve_source = stub_resolve_cli_build_source(pdf_cli_config, monkeypatch)
     pdf_config = Mock(return_value=fake_config)
     build_pdf = Mock()
     monkeypatch.setattr(pdf_cli_config, "PDFConfig", pdf_config)
@@ -213,12 +213,11 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     )
 
     assert_success(result)
-    source_config = resolve_source.call_args.args[0]
-    assert isinstance(source_config, BuildSourceConfig)
-    assert source_config.temp_dir
-    assert source_config.input_path == str(tmp_path / "swift-book")
-    assert source_config.source_ref == "swift-6.2-branch"
-    assert source_config.source_sha == "abc123"
+    source_kwargs = resolve_source.call_args.kwargs
+    assert source_kwargs["temp_dir"]
+    assert source_kwargs["input_path"] == str(tmp_path / "swift-book")
+    assert source_kwargs["source_ref"] == "swift-6.2-branch"
+    assert source_kwargs["source_sha"] == "abc123"
     kwargs = pdf_config.call_args.kwargs
     assert kwargs["source"] is RESOLVED_SOURCE
     assert kwargs["output_path"] == str(output_dir / "swift_book.pdf")
@@ -241,7 +240,9 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     tmp_path: Path,
 ) -> None:
     fake_config = SimpleNamespace(dangerously_skip_legal_notices=True)
-    resolve_source = stub_resolve_build_source(epub_cli_config, monkeypatch)
+    resolve_source = stub_resolve_cli_build_source(
+        epub_cli_config, monkeypatch
+    )
     epub_config = Mock(return_value=fake_config)
     build_epub = Mock()
     monkeypatch.setattr(epub_cli_config, "EPUBConfig", epub_config)
@@ -301,12 +302,11 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     )
 
     assert_success(result)
-    source_config = resolve_source.call_args.args[0]
-    assert isinstance(source_config, BuildSourceConfig)
-    assert source_config.temp_dir
-    assert source_config.input_path == str(tmp_path / "swift-book")
-    assert source_config.source_ref == "swift-6.2-branch"
-    assert source_config.source_sha == "abc123"
+    source_kwargs = resolve_source.call_args.kwargs
+    assert source_kwargs["temp_dir"]
+    assert source_kwargs["input_path"] == str(tmp_path / "swift-book")
+    assert source_kwargs["source_ref"] == "swift-6.2-branch"
+    assert source_kwargs["source_sha"] == "abc123"
     kwargs = epub_config.call_args.kwargs
     assert kwargs["source"] is RESOLVED_SOURCE
     assert kwargs["output_path"] == str(output_dir / "swift_book.epub")
@@ -370,7 +370,7 @@ def test_directory_output_defaults_to_format_extension(
     config_module = (
         pdf_cli_config if scenario.module is pdf_cli else epub_cli_config
     )
-    stub_resolve_build_source(config_module, monkeypatch)
+    stub_resolve_cli_build_source(config_module, monkeypatch)
     monkeypatch.setattr(config_module, scenario.config_name, config_mock)
     monkeypatch.setattr(scenario.module, scenario.builder_name, Mock())
 

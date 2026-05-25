@@ -14,8 +14,7 @@
 
 """PDF config assembly for CLI commands."""
 
-from swift_book_pdf.core.config.models import BuildSourceConfig
-from swift_book_pdf.core.config.source import resolve_build_source
+from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.doc import DocConfig
 from swift_book_pdf.pdf.fonts import FontConfig
@@ -111,13 +110,11 @@ def build_pdf_config(  # noqa: PLR0913
     Returns:
         PDF builder configuration.
     """
-    source = resolve_build_source(
-        BuildSourceConfig(
-            temp_dir=temp_dir,
-            input_path=input_path,
-            source_ref=source_ref,
-            source_sha=source_sha,
-        )
+    source = resolve_cli_build_source(
+        temp_dir=temp_dir,
+        input_path=input_path,
+        source_ref=source_ref,
+        source_sha=source_sha,
     )
     return PDFConfig(
         source=source,

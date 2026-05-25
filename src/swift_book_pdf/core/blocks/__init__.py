@@ -12,39 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Public backend-neutral block models and parser entry point."""
-
-from swift_book_pdf.core.blocks.models import (
-    Block,
-    CodeBlock,
-    Header2Block,
-    Header3Block,
-    Header4Block,
-    ImageBlock,
-    NoteBlock,
-    OrderedListBlock,
-    ParagraphBlock,
-    TableBlock,
-    TermListBlock,
-    TermListItem,
-    UnorderedListBlock,
-)
-
-from .parser import parse_blocks
-
-__all__ = [
-    "Block",
-    "CodeBlock",
-    "Header2Block",
-    "Header3Block",
-    "Header4Block",
-    "ImageBlock",
-    "NoteBlock",
-    "OrderedListBlock",
-    "ParagraphBlock",
-    "TableBlock",
-    "TermListBlock",
-    "TermListItem",
-    "UnorderedListBlock",
-    "parse_blocks",
-]
+"""Backend-neutral block parsing package."""

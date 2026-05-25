@@ -12,8 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""PDF CLI entrypoint."""
-
-from swift_book_pdf.pdf.cli.command import pdf
-
-__all__ = ["pdf"]
+"""PDF CLI package."""

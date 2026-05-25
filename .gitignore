@@ -22,23 +22,42 @@ build/
 .DS_Store
 Thumbs.db
 
-# PDF assets not needed in version control
+# Bundled assets.
 src/swift_book_pdf/assets/*
-!src/swift_book_pdf/assets/chapter-icon.png
-!src/swift_book_pdf/assets/chapter-icon~dark.png
-!src/swift_book_pdf/assets/Swift_logo_color.png
-!src/swift_book_pdf/assets/Swift_logo_white.png
+
+# Shared brand artwork used by PDF output.
+!src/swift_book_pdf/assets/brand/
+src/swift_book_pdf/assets/brand/*
+!src/swift_book_pdf/assets/brand/Swift_logo_color.png
+!src/swift_book_pdf/assets/brand/Swift_logo_white.png
+
+# Shared icons used by PDF output.
+!src/swift_book_pdf/assets/icons/
+src/swift_book_pdf/assets/icons/*
+!src/swift_book_pdf/assets/icons/chapter-icon.png
+!src/swift_book_pdf/assets/icons/chapter-icon~dark.png
+
+# Shared fonts.
+!src/swift_book_pdf/assets/fonts/
+src/swift_book_pdf/assets/fonts/*
+!src/swift_book_pdf/assets/fonts/ibm-plex/
+src/swift_book_pdf/assets/fonts/ibm-plex/*
+!src/swift_book_pdf/assets/fonts/ibm-plex/*.ttf
+
+# EPUB-specific cover templates and static CSS.
+!src/swift_book_pdf/assets/epub/
+src/swift_book_pdf/assets/epub/*
+!src/swift_book_pdf/assets/epub/covers/
+src/swift_book_pdf/assets/epub/covers/*
+!src/swift_book_pdf/assets/epub/covers/cover.png
+!src/swift_book_pdf/assets/epub/covers/cover-beta.png
+!src/swift_book_pdf/assets/epub/covers/cover-current.png
+!src/swift_book_pdf/assets/epub/covers/cover-nightly.png
+!src/swift_book_pdf/assets/epub/static/
+src/swift_book_pdf/assets/epub/static/*
+!src/swift_book_pdf/assets/epub/static/epub.css
+!src/swift_book_pdf/assets/epub/static/pygments.css
+
+# Legal notices copied or rendered into generated outputs.
 !src/swift_book_pdf/assets/notices/
 !src/swift_book_pdf/assets/notices/*
-
-# EPUB assets not needed in version control
-!src/swift_book_pdf/assets/epub_reference/
-src/swift_book_pdf/assets/epub_reference/*
-!src/swift_book_pdf/assets/epub_reference/cover.png
-!src/swift_book_pdf/assets/epub_reference/cover-beta.png
-!src/swift_book_pdf/assets/epub_reference/cover-current.png
-!src/swift_book_pdf/assets/epub_reference/cover-nightly.png
-!src/swift_book_pdf/assets/epub_reference/epub.css
-!src/swift_book_pdf/assets/epub_reference/fonts/
-!src/swift_book_pdf/assets/epub_reference/fonts/*
-!src/swift_book_pdf/assets/epub_reference/pygments.css

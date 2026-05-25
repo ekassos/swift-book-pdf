@@ -19,7 +19,7 @@ from __future__ import annotations
 import shutil
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.epub.assets import REFERENCE_STATIC_DIR
+from swift_book_pdf.assets import EPUB_STATIC_DIR, IBM_PLEX_FONT_DIR
 from swift_book_pdf.epub.paths import oebps_workspace_path
 
 if TYPE_CHECKING:
@@ -40,20 +40,29 @@ def write_static_files(workspace: Path) -> None:
     Args:
         workspace: Temporary EPUB workspace root.
     """
-    _copy_reference_static_asset("epub.css", workspace)
-    _copy_reference_static_asset("pygments.css", workspace)
+    _copy_static_asset(EPUB_STATIC_DIR / "epub.css", workspace)
+    _copy_static_asset(EPUB_STATIC_DIR / "pygments.css", workspace)
     for font_file_name in EPUB_FONT_FILE_NAMES:
-        _copy_reference_static_asset(f"fonts/{font_file_name}", workspace)
+        _copy_static_asset(
+            IBM_PLEX_FONT_DIR / font_file_name,
+            workspace,
+            f"fonts/{font_file_name}",
+        )
 
 
-def _copy_reference_static_asset(name: str, workspace: Path) -> None:
-    """Copy one bundled reference static asset into OEBPS.
+def _copy_static_asset(
+    source: Path,
+    workspace: Path,
+    destination_name: str | None = None,
+) -> None:
+    """Copy one bundled static asset into OEBPS.
 
     Args:
-        name: Reference asset path relative to `epub_reference`.
+        source: Bundled package asset path.
         workspace: Temporary EPUB workspace root.
+        destination_name: Optional path relative to `_static`.
     """
-    source = REFERENCE_STATIC_DIR / name
+    name = destination_name or source.name
     destination = oebps_workspace_path(workspace, f"_static/{name}")
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, destination)

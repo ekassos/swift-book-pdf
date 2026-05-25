@@ -39,7 +39,12 @@ def test_pdf_converter_uses_package_assets_dir(
 
     converter = engine.PDFConverter(cast("PDFConfig", SimpleNamespace()))
 
-    assets_dir = Path(converter.local_assets_dir)
-    assert assets_dir.name == "assets"
-    assert (assets_dir / "Swift_logo_white.png").is_file()
-    assert (assets_dir / "chapter-icon.png").is_file()
+    asset_dirs = tuple(Path(path) for path in converter.local_asset_dirs)
+    assert [path.name for path in asset_dirs] == [
+        "brand",
+        "icons",
+        "ibm-plex",
+    ]
+    assert (asset_dirs[0] / "Swift_logo_white.png").is_file()
+    assert (asset_dirs[1] / "chapter-icon.png").is_file()
+    assert (asset_dirs[2] / "IBMPlexSerif-Regular.ttf").is_file()

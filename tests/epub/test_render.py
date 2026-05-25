@@ -28,12 +28,13 @@ from swift_book_pdf.epub.render import (
     render_inline,
 )
 
-EPUB_REFERENCE_DIR = (
+EPUB_STATIC_DIR = (
     Path(__file__).resolve().parents[2]
     / "src"
     / "swift_book_pdf"
     / "assets"
-    / "epub_reference"
+    / "epub"
+    / "static"
 )
 
 
@@ -262,7 +263,7 @@ def test_render_cover_page_does_not_add_beta_for_nightly() -> None:
 
 
 def test_epub_css_does_not_override_svg_cover_colors() -> None:
-    css = (EPUB_REFERENCE_DIR / "epub.css").read_text(encoding="utf-8")
+    css = (EPUB_STATIC_DIR / "epub.css").read_text(encoding="utf-8")
 
     assert 'font-family: "IBM Plex Sans";' in css
     assert 'url("fonts/IBMPlexSans-Medium.ttf")' in css

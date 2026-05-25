@@ -22,6 +22,11 @@ import tempfile
 from importlib import metadata
 from pathlib import Path
 
+from swift_book_pdf.assets import (
+    BRAND_ASSETS_DIR,
+    IBM_PLEX_FONT_DIR,
+    ICON_ASSETS_DIR,
+)
 from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.fonts import check_for_missing_font_logs
 from swift_book_pdf.pdf.process import run_process_with_logs
@@ -212,9 +217,12 @@ class PDFConverter:
         self.lualatex_executable = lualatex_executable
         check_required_latex_packages_installed()
         check_minted_runtime_compatibility()
-        self.local_assets_dir = str(
-            Path(__file__).resolve().parent.parent / "assets"
+        self.local_asset_dirs = (
+            str(BRAND_ASSETS_DIR),
+            str(ICON_ASSETS_DIR),
+            str(IBM_PLEX_FONT_DIR),
         )
+        self.local_assets_dir = self.local_asset_dirs[0]
         self.config = config
 
     def does_minted_need_shell_escape(self) -> bool:
@@ -290,7 +298,7 @@ class PDFConverter:
         env["TEXINPUTS"] = os.pathsep.join(
             [
                 "",
-                self.local_assets_dir,
+                *self.local_asset_dirs,
                 env.get("TEXINPUTS", ""),
             ],
         )

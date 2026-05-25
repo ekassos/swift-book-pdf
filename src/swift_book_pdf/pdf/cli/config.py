@@ -14,7 +14,9 @@
 
 """PDF config assembly for CLI commands."""
 
-from swift_book_pdf.config import PDFConfig
+from swift_book_pdf.core.config.models import BuildSourceConfig
+from swift_book_pdf.core.config.source import resolve_build_source
+from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.doc import DocConfig
 from swift_book_pdf.pdf.fonts import FontConfig
 from swift_book_pdf.pdf.options import PaperSize, RenderingMode
@@ -109,16 +111,21 @@ def build_pdf_config(  # noqa: PLR0913
     Returns:
         PDF builder configuration.
     """
+    source = resolve_build_source(
+        BuildSourceConfig(
+            temp_dir=temp_dir,
+            input_path=input_path,
+            source_ref=source_ref,
+            source_sha=source_sha,
+        )
+    )
     return PDFConfig(
-        temp_dir,
-        output_path,
-        font_config,
-        doc_config,
-        override_version=override_version,
-        source_ref=source_ref,
-        source_sha=source_sha,
-        input_path=input_path,
+        source=source,
+        output_path=output_path,
         dangerously_skip_legal_notices=dangerously_skip_legal_notices,
+        font_config=font_config,
+        doc_config=doc_config,
+        override_version=override_version,
     )
 
 

@@ -16,8 +16,7 @@ import logging
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any
+from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
 
 import click
@@ -27,6 +26,7 @@ from click.testing import CliRunner, Result
 from swift_book_pdf.cli.legal_notices import LEGAL_NOTICES_WARNING
 from swift_book_pdf.cli.logging_config import configure_logging
 from swift_book_pdf.cli.output import validate_output_path
+from swift_book_pdf.core.config import BuildSourceConfig, ResolvedBuildSource
 from swift_book_pdf.core.output import OutputFormat
 from swift_book_pdf.epub.cli import command as epub_cli
 from swift_book_pdf.epub.cli import config as epub_cli_config
@@ -36,11 +36,18 @@ from swift_book_pdf.pdf.cli import config as pdf_cli_config
 
 PDF_TYPESSETS = 2
 PDF_FONT_SIZE = 10.5
+RESOLVED_SOURCE = ResolvedBuildSource(
+    temp_dir="swift-book-build",
+    root_dir="swift-book/TSPL.docc",
+    toc_file_path="swift-book/TSPL.docc/The-Swift-Programming-Language.md",
+    assets_dir="swift-book/TSPL.docc/Assets",
+    original_work_copyright_year_range=(2014, 2026),
+)
 
 
 @dataclass(frozen=True)
 class DirectoryOutputScenario:
-    module: Any
+    module: ModuleType
     command: click.Command
     config_name: str
     builder_name: str
@@ -81,6 +88,14 @@ def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
         Mock(return_value=font_config),
     )
     return font_config
+
+
+def stub_resolve_build_source(
+    module: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> Mock:
+    resolver = Mock(return_value=RESOLVED_SOURCE)
+    monkeypatch.setattr(module, "resolve_build_source", resolver)
+    return resolver
 
 
 @pytest.mark.parametrize(
@@ -153,6 +168,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
 ) -> None:
     fake_config = SimpleNamespace(dangerously_skip_legal_notices=True)
     font_config = stub_pdf_font_config(monkeypatch)
+    resolve_source = stub_resolve_build_source(pdf_cli_config, monkeypatch)
     pdf_config = Mock(return_value=fake_config)
     build_pdf = Mock()
     monkeypatch.setattr(pdf_cli_config, "PDFConfig", pdf_config)
@@ -197,21 +213,24 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     )
 
     assert_success(result)
-    args = pdf_config.call_args.args
+    source_config = resolve_source.call_args.args[0]
+    assert isinstance(source_config, BuildSourceConfig)
+    assert source_config.temp_dir
+    assert source_config.input_path == str(tmp_path / "swift-book")
+    assert source_config.source_ref == "swift-6.2-branch"
+    assert source_config.source_sha == "abc123"
     kwargs = pdf_config.call_args.kwargs
-    assert args[1] == str(output_dir / "swift_book.pdf")
-    assert args[2] is font_config
-    assert args[3].mode.value == "print"
-    assert args[3].paper_size.value == "a4"
-    assert args[3].typesets == PDF_TYPESSETS
-    assert args[3].appearance.value == "dark"
-    assert args[3].gutter is False
-    assert args[3].font_size == PDF_FONT_SIZE
+    assert kwargs["source"] is RESOLVED_SOURCE
+    assert kwargs["output_path"] == str(output_dir / "swift_book.pdf")
+    assert kwargs["font_config"] is font_config
+    assert kwargs["doc_config"].mode.value == "print"
+    assert kwargs["doc_config"].paper_size.value == "a4"
+    assert kwargs["doc_config"].typesets == PDF_TYPESSETS
+    assert kwargs["doc_config"].appearance.value == "dark"
+    assert kwargs["doc_config"].gutter is False
+    assert kwargs["doc_config"].font_size == PDF_FONT_SIZE
     assert kwargs["override_version"] == "6.2 beta"
-    assert kwargs["input_path"] == str(tmp_path / "swift-book")
     assert kwargs["dangerously_skip_legal_notices"] is True
-    assert kwargs["source_ref"] == "swift-6.2-branch"
-    assert kwargs["source_sha"] == "abc123"
     assert LEGAL_NOTICES_WARNING in result.output
     build_pdf.assert_called_once_with(fake_config)
 
@@ -222,6 +241,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     tmp_path: Path,
 ) -> None:
     fake_config = SimpleNamespace(dangerously_skip_legal_notices=True)
+    resolve_source = stub_resolve_build_source(epub_cli_config, monkeypatch)
     epub_config = Mock(return_value=fake_config)
     build_epub = Mock()
     monkeypatch.setattr(epub_cli_config, "EPUBConfig", epub_config)
@@ -281,10 +301,15 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     )
 
     assert_success(result)
-    args = epub_config.call_args.args
+    source_config = resolve_source.call_args.args[0]
+    assert isinstance(source_config, BuildSourceConfig)
+    assert source_config.temp_dir
+    assert source_config.input_path == str(tmp_path / "swift-book")
+    assert source_config.source_ref == "swift-6.2-branch"
+    assert source_config.source_sha == "abc123"
     kwargs = epub_config.call_args.kwargs
-    assert args[1] == str(output_dir / "swift_book.epub")
-    assert kwargs["input_path"] == str(tmp_path / "swift-book")
+    assert kwargs["source"] is RESOLVED_SOURCE
+    assert kwargs["output_path"] == str(output_dir / "swift_book.epub")
     assert kwargs["export_cover_image"] is True
     assert kwargs["base_cover_image"] == cover_path
     assert kwargs["cover_template_paths"] == {
@@ -301,8 +326,6 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     assert kwargs["publisher"] == "Swift.org"
     assert kwargs["contributor"] == "Open Source Contributors"
     assert kwargs["dangerously_skip_legal_notices"] is True
-    assert kwargs["source_ref"] == "swift-6.2-branch"
-    assert kwargs["source_sha"] == "abc123"
     assert LEGAL_NOTICES_WARNING in result.output
     build_epub.assert_called_once_with(fake_config)
 
@@ -347,6 +370,7 @@ def test_directory_output_defaults_to_format_extension(
     config_module = (
         pdf_cli_config if scenario.module is pdf_cli else epub_cli_config
     )
+    stub_resolve_build_source(config_module, monkeypatch)
     monkeypatch.setattr(config_module, scenario.config_name, config_mock)
     monkeypatch.setattr(scenario.module, scenario.builder_name, Mock())
 
@@ -355,7 +379,7 @@ def test_directory_output_defaults_to_format_extension(
     result = runner.invoke(scenario.command, [str(output_dir)])
 
     assert_success(result)
-    assert config_mock.call_args.args[1] == str(
+    assert config_mock.call_args.kwargs["output_path"] == str(
         output_dir / scenario.expected_file
     )
 

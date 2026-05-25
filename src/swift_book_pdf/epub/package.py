@@ -55,8 +55,8 @@ from .helpers import (
 )
 
 if TYPE_CHECKING:
-    from swift_book_pdf.config import EPUBConfig
     from swift_book_pdf.core.document import DocumentEntry, PartEntry
+    from swift_book_pdf.epub.config import EPUBConfig
     from swift_book_pdf.epub.models import ImageAsset
 
 logger = logging.getLogger(__name__)

@@ -15,7 +15,7 @@
 import logging
 from string import Template
 
-from swift_book_pdf.config import PDFConfig
+from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.latex.typography import (
     compute_font_sizes,
     compute_spacing,

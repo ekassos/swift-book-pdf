@@ -41,8 +41,10 @@ LEGAL_NOTICES_WARNING = (
 class LegalNoticesConfig(Protocol):
     """Build configuration fields used by legal-notice CLI policy."""
 
-    dangerously_skip_legal_notices: bool
-    """Whether generated legal notices were intentionally omitted."""
+    @property
+    def dangerously_skip_legal_notices(self) -> bool:
+        """Whether generated legal notices were intentionally omitted."""
+        ...
 
 
 def legal_notices_option(func: OptionTarget) -> OptionTarget:

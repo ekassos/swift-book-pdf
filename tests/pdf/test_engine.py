@@ -21,7 +21,7 @@ import pytest
 from swift_book_pdf.pdf import engine
 
 if TYPE_CHECKING:
-    from swift_book_pdf.config import PDFConfig
+    from swift_book_pdf.pdf.config import PDFConfig
 
 
 def test_pdf_converter_uses_package_assets_dir(

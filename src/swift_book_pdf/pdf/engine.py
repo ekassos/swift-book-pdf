@@ -22,7 +22,7 @@ import tempfile
 from importlib import metadata
 from pathlib import Path
 
-from swift_book_pdf.config import PDFConfig
+from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.fonts import check_for_missing_font_logs
 from swift_book_pdf.pdf.process import run_process_with_logs
 

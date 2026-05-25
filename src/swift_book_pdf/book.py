@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.config import Config, EPUBConfig, PDFConfig
+from swift_book_pdf.core.config import BaseBuildConfig
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.epub import EPUBBuilder
+from swift_book_pdf.epub.config import EPUBConfig
 from swift_book_pdf.pdf.builder import PDFBookBuilder
+from swift_book_pdf.pdf.config import PDFConfig
 
 
 def build_pdf(config: PDFConfig) -> None:
@@ -27,7 +29,7 @@ def build_epub(config: EPUBConfig) -> None:
     EPUBBuilder(config, toc).build()
 
 
-def _build_table_of_contents(config: Config) -> TableOfContents:
+def _build_table_of_contents(config: BaseBuildConfig) -> TableOfContents:
     return TableOfContents(
         config.root_dir,
         config.toc_file_path,

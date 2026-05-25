@@ -66,8 +66,8 @@ from .render import (
 )
 
 if TYPE_CHECKING:
-    from swift_book_pdf.config import EPUBConfig
     from swift_book_pdf.core.navigation.toc import TableOfContents
+    from swift_book_pdf.epub.config import EPUBConfig
     from swift_book_pdf.epub.models import ImageAsset
 
 logger = logging.getLogger(__name__)

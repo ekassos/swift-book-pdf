@@ -14,13 +14,13 @@
 
 from pathlib import Path
 
-from swift_book_pdf.config import PDFConfig
 from swift_book_pdf.core.blocks import parse_blocks
 from swift_book_pdf.core.markdown import (
     convert_markdown_links,
     remove_multiline_comments,
 )
 from swift_book_pdf.core.source.paths import get_file_name
+from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.latex.blocks import convert_blocks_to_latex
 from swift_book_pdf.pdf.latex.chapter import generate_chapter_title
 

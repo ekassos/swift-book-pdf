@@ -26,8 +26,10 @@ from swift_book_pdf.core.output import OutputFormat
 class BuildConfig(Protocol):
     """Build configuration fields used by shared CLI orchestration."""
 
-    dangerously_skip_legal_notices: bool
-    """Whether generated legal notices were intentionally omitted."""
+    @property
+    def dangerously_skip_legal_notices(self) -> bool:
+        """Whether generated legal notices were intentionally omitted."""
+        ...
 
 
 ConfigT = TypeVar("ConfigT", bound=BuildConfig)

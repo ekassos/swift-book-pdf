@@ -21,7 +21,7 @@ from swift_book_pdf.epub.constants import EPUB_FONT_FILE_NAMES
 from swift_book_pdf.epub.package import EPUBPackageWriter, NavigationDocuments
 
 if TYPE_CHECKING:
-    from swift_book_pdf.config import EPUBConfig
+    from swift_book_pdf.epub.config import EPUBConfig
 
 
 def test_content_opf_includes_ibooks_version_metadata_when_configured(

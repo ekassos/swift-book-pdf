@@ -41,7 +41,7 @@ from swift_book_pdf.core.blocks.models import (
     UnorderedListBlock,
 )
 from swift_book_pdf.epub.models import ImageAsset
-from swift_book_pdf.notices import render_notices_xhtml
+from swift_book_pdf.epub.notices import render_notices_xhtml
 
 from .constants import (
     CODE_PLACEHOLDER_PATTERN,

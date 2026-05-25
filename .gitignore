@@ -28,6 +28,8 @@ src/swift_book_pdf/assets/*
 !src/swift_book_pdf/assets/chapter-icon~dark.png
 !src/swift_book_pdf/assets/Swift_logo_color.png
 !src/swift_book_pdf/assets/Swift_logo_white.png
+!src/swift_book_pdf/assets/notices/
+!src/swift_book_pdf/assets/notices/*
 
 # EPUB assets not needed in version control
 !src/swift_book_pdf/assets/epub_reference/

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Backend-neutral metadata for the generated notices chapter."""
+
 from swift_book_pdf.core.source import ChapterMetadata
 
 NOTICES_DOC_TAG = "CopyrightAndNotices"

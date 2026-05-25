@@ -14,7 +14,7 @@
 
 from pathlib import Path
 
-from swift_book_pdf.core.generated.notices import (
+from swift_book_pdf.core.generated.notices.metadata import (
     NOTICES_DOC_TAG,
     build_notices_chapter_metadata,
 )

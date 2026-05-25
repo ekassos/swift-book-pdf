@@ -12,4 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generated book content shared by output builders."""
+"""Generated notices content shared by output builders.
+
+This package owns backend-neutral metadata, URLs, and bundled legal notice
+text for the generated acknowledgments chapter. EPUB and PDF rendering stays
+in their output-specific packages.
+"""

@@ -14,7 +14,7 @@
 
 from pathlib import Path
 
-from swift_book_pdf.core.generated.notices import (
+from swift_book_pdf.core.generated.notices.metadata import (
     NOTICES_DOC_KEY,
     NOTICES_DOC_TAG,
     NOTICES_SECTION_TITLE,
@@ -24,16 +24,6 @@ from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.core.source.copyright import (
     find_swift_book_copyright_year_range,
 )
-from swift_book_pdf.notices import (
-    SWIFT_BOOK_PDF_REPO_URL,
-    SWIFT_BOOK_REPO_URL,
-    SWIFT_CONTRIBUTORS_URL,
-    SWIFT_DOCC_RENDER_NOTICE_TEXT,
-    SWIFT_LICENSE_URL,
-    render_notices_latex,
-    render_notices_xhtml,
-)
-from swift_book_pdf.pdf.options import RenderingMode
 
 
 def test_find_swift_book_copyright_year_range_uses_earliest_and_latest_years(
@@ -55,7 +45,7 @@ def test_find_swift_book_copyright_year_range_uses_earliest_and_latest_years(
     assert find_swift_book_copyright_year_range(docc_root) == (2014, 2026)
 
 
-def test_pdf_toc_tracks_notices_as_final_generated_chapter(
+def test_toc_tracks_notices_as_final_generated_chapter(
     tmp_path: Path,
 ) -> None:
     toc_path = _create_minimal_swift_book_checkout(tmp_path)
@@ -72,7 +62,7 @@ def test_pdf_toc_tracks_notices_as_final_generated_chapter(
     )
 
 
-def test_pdf_notices_toc_lines_include_section_heading_only_when_requested() -> (
+def test_notices_toc_lines_include_section_heading_only_when_requested() -> (
     None
 ):
     assert build_notices_toc_lines() == ["\n", f"- <doc:{NOTICES_DOC_TAG}>\n"]
@@ -84,7 +74,7 @@ def test_pdf_notices_toc_lines_include_section_heading_only_when_requested() -> 
     ]
 
 
-def test_pdf_toc_can_skip_notices_chapter(
+def test_toc_can_skip_notices_chapter(
     tmp_path: Path,
 ) -> None:
     toc_path = _create_minimal_swift_book_checkout(tmp_path)
@@ -98,62 +88,6 @@ def test_pdf_toc_can_skip_notices_chapter(
 
     assert NOTICES_DOC_TAG not in toc.doc_tags
     assert NOTICES_DOC_KEY not in toc.chapter_metadata
-
-
-def test_render_notices_uses_detected_year_range_without_process_text() -> (
-    None
-):
-    year_range = (2014, 2026)
-
-    xhtml = render_notices_xhtml("Acknowledgments", year_range)
-    latex = render_notices_latex(RenderingMode.DIGITAL, year_range)
-
-    assert (
-        "Copyright &#169; 2014-2026 Apple Inc. and the Swift project authors"
-        in xhtml
-    )
-    assert "swift-book-pdf" in xhtml
-    assert "supporting assets derived from <em>swift-book-pdf</em>." in xhtml
-    assert "This edition uses IBM Plex Sans and IBM Plex Serif" in xhtml
-    assert "IBM Plex Font License" in xhtml
-    assert "SIL OPEN FONT LICENSE Version 1.1" in xhtml
-    assert "swift-docc-render project" not in xhtml
-    assert f"{{{NOTICES_DOC_KEY}}}" in latex
-    assert r"\begin{plainlistingbox}" in latex
-    assert r"\textcopyright{} 2025-2026" in latex
-    assert (
-        r"\textcopyright{} 2014-2026 Apple Inc. and the Swift project authors"
-        in latex
-    )
-    assert SWIFT_DOCC_RENDER_NOTICE_TEXT in latex
-
-
-def test_print_notices_does_not_footnote_named_url_strings() -> None:
-    latex = render_notices_latex(RenderingMode.PRINT, (2014, 2026))
-
-    assert SWIFT_LICENSE_URL in latex
-    assert SWIFT_CONTRIBUTORS_URL in latex
-    assert r"\footnote{\url{https://swift.org/LICENSE.txt}}" not in latex
-    assert r"\footnote{\url{https://swift.org/CONTRIBUTORS.txt}}" not in latex
-
-
-def test_digital_notices_keeps_named_url_strings_as_links() -> None:
-    latex = render_notices_latex(RenderingMode.DIGITAL, (2014, 2026))
-
-    assert (
-        rf"\href{{{SWIFT_BOOK_PDF_REPO_URL}}}{{\emph{{swift-book-pdf}}}}"
-        in latex
-    )
-    assert rf"\href{{{SWIFT_BOOK_REPO_URL}}}{{\emph{{swift-book}}}}" in latex
-    assert (
-        r"\href{https://github.com/swiftlang/swift-docc-render}"
-        r"{\emph{swift-docc-render}}" in latex
-    )
-    assert rf"\href{{{SWIFT_LICENSE_URL}}}{{{SWIFT_LICENSE_URL}}}" in latex
-    assert (
-        rf"\href{{{SWIFT_CONTRIBUTORS_URL}}}{{{SWIFT_CONTRIBUTORS_URL}}}"
-        in latex
-    )
 
 
 def _create_minimal_swift_book_checkout(tmp_path: Path) -> Path:

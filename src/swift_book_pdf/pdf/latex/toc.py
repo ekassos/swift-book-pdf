@@ -14,7 +14,9 @@
 
 import re
 
-from swift_book_pdf.core.generated.notices import build_notices_toc_lines
+from swift_book_pdf.core.generated.notices.metadata import (
+    build_notices_toc_lines,
+)
 from swift_book_pdf.core.markdown import (
     remove_directives,
     replace_and_extract_version,

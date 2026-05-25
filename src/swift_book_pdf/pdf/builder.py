@@ -19,12 +19,12 @@ from pathlib import Path
 from tqdm import trange
 
 from swift_book_pdf.config import PDFConfig
-from swift_book_pdf.core.generated.notices import NOTICES_DOC_KEY
+from swift_book_pdf.core.generated.notices.metadata import NOTICES_DOC_KEY
 from swift_book_pdf.core.markdown import resolve_version_info
 from swift_book_pdf.core.navigation.toc import TableOfContents
-from swift_book_pdf.notices import render_notices_latex
 from swift_book_pdf.pdf.engine import PDFConverter
 from swift_book_pdf.pdf.latex import LaTeXConverter
+from swift_book_pdf.pdf.latex.notices import render_notices_latex
 from swift_book_pdf.pdf.latex.preamble import generate_preamble
 from swift_book_pdf.pdf.latex.toc import generate_toc_latex
 

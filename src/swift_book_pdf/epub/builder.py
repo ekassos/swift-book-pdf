@@ -26,7 +26,7 @@ from swift_book_pdf.core.document import (
     PartEntry,
     SourceDocument,
 )
-from swift_book_pdf.core.generated.notices import (
+from swift_book_pdf.core.generated.notices.metadata import (
     NOTICES_DOC_FILE_NAME,
     NOTICES_DOC_KEY,
     NOTICES_DOC_TITLE,

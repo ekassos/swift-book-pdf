@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""High-level EPUB XHTML document renderer."""
+
 from __future__ import annotations
 
 import html
@@ -37,12 +39,15 @@ if TYPE_CHECKING:
 
 
 class EPUBRenderer:
+    """Render source documents, part pages, and notices to XHTML."""
+
     def __init__(
         self,
         asset_path: Path,
         grammar_targets: dict[str, str],
         original_work_copyright_year_range: tuple[int, int] | None = None,
     ) -> None:
+        """Create a renderer with source assets and grammar link targets."""
         self.asset_catalog = AssetCatalog(asset_path)
         self.grammar_targets = grammar_targets
         self.original_work_copyright_year_range = (
@@ -50,6 +55,7 @@ class EPUBRenderer:
         )
 
     def render_part_page(self, part: PartEntry) -> str:
+        """Render a top-level book part page."""
         section_id = anchor_for_heading(part.title).lower()
         body = (
             f'  <div class="section part-page" id="{html.escape(section_id)}">\n'
@@ -66,6 +72,7 @@ class EPUBRenderer:
         link_resolver: LinkResolver,
         image_assets: dict[str, ImageAsset],
     ) -> str:
+        """Render one source chapter page and collect referenced images."""
         document = source_document.entry
         context = RenderContext(
             current_href=document.href,
@@ -90,6 +97,7 @@ class EPUBRenderer:
         )
 
     def render_notices_page(self, document: DocumentEntry) -> str:
+        """Render the generated notices page."""
         body = render_notices_xhtml(
             document.title, self.original_work_copyright_year_range
         )
@@ -102,6 +110,7 @@ class EPUBRenderer:
         body_html: str,
         body_class: str | None = None,
     ) -> str:
+        """Wrap rendered body XHTML in the shared EPUB document shell."""
         css_href = html.escape(relative_href(href, "_static/epub.css"))
         pygments_href = html.escape(
             relative_href(href, "_static/pygments.css")

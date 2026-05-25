@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Cover image and typography constants."""
+
 from swift_book_pdf.epub.assets import REFERENCE_STATIC_DIR
 
 COVER_FONT_DIR = REFERENCE_STATIC_DIR / "fonts"

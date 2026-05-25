@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""OPF metadata XML rendering."""
+
 from __future__ import annotations
 
 import html
@@ -24,6 +26,7 @@ if TYPE_CHECKING:
 
 
 def render_metadata(package_input: OPFPackageInput, modified: str) -> str:
+    """Render the OPF metadata block for a generated EPUB."""
     config = package_input.config
     return (
         f"    <dc:language>en</dc:language>\n"
@@ -41,18 +44,21 @@ def render_metadata(package_input: OPFPackageInput, modified: str) -> str:
 
 
 def _optional_publisher(publisher: str | None) -> str:
+    """Render optional publisher metadata."""
     if publisher is None:
         return ""
     return f"<dc:publisher>{html.escape(publisher)}</dc:publisher>\n    "
 
 
 def _optional_contributor(contributor: str | None) -> str:
+    """Render optional contributor metadata."""
     if contributor is None:
         return ""
     return f"<dc:contributor>{html.escape(contributor)}</dc:contributor>\n    "
 
 
 def _optional_ibooks_version(ibooks_version: str | None) -> str:
+    """Render optional Apple Books version metadata."""
     if ibooks_version is None:
         return ""
     return (
@@ -62,6 +68,7 @@ def _optional_ibooks_version(ibooks_version: str | None) -> str:
 
 
 def _optional_cover_meta(has_cover_asset: bool) -> str:
+    """Render optional legacy cover metadata."""
     if not has_cover_asset:
         return ""
     return '<meta name="cover" content="epub-cover"/>\n    '

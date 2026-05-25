@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Render Swift grammar asides and cross-linked grammar references."""
+
 from __future__ import annotations
 
 import html
@@ -34,6 +36,7 @@ def render_grammar_block(
     grammar_targets: dict[str, str],
     grammar_anchor_counts: dict[str, int],
 ) -> str:
+    """Render a `Grammar of ...` aside as EPUB XHTML."""
     groups: list[str] = []
     for sub_block in block.blocks:
         if not isinstance(sub_block, ParagraphBlock):
@@ -66,6 +69,7 @@ def render_grammar_line(
     grammar_targets: dict[str, str],
     grammar_anchor_counts: dict[str, int],
 ) -> str:
+    """Render one grammar rule or prose line."""
     rule = parse_grammar_rule(line)
     if rule is None:
         return (
@@ -91,6 +95,7 @@ def _render_grammar_fragment(
     current_href: str,
     grammar_targets: dict[str, str],
 ) -> str:
+    """Render inline grammar tokens while preserving generated markup."""
     placeholders: dict[str, str] = {}
     placeholder_index = 0
 
@@ -142,6 +147,7 @@ def _render_grammar_category(
     current_href: str,
     grammar_targets: dict[str, str],
 ) -> str:
+    """Render a grammar category reference with a link when known."""
     target_href = grammar_targets.get(text)
     if target_href is None:
         return '<span class="grammar-ref">' + html.escape(text) + "</span>"
@@ -156,6 +162,7 @@ def _render_grammar_category(
 def _next_grammar_anchor_id(
     term: str, grammar_anchor_counts: dict[str, int]
 ) -> str:
+    """Return the next unique grammar anchor ID for a term."""
     fragment = grammar_anchor_fragment(term)
     count = grammar_anchor_counts.get(fragment, 0) + 1
     grammar_anchor_counts[fragment] = count

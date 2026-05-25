@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Path helpers for EPUB workspace and package hrefs."""
+
 from __future__ import annotations
 
 import posixpath
@@ -21,6 +23,7 @@ from swift_book_pdf.epub.constants import OEBPS_DIR_NAME
 
 
 def relative_href(current_href: str, target_href: str) -> str:
+    """Return a POSIX relative href from one package document to another."""
     current_parent = PurePosixPath(current_href).parent
     current_parent_str = (
         "." if str(current_parent) == "." else str(current_parent)
@@ -29,4 +32,5 @@ def relative_href(current_href: str, target_href: str) -> str:
 
 
 def oebps_workspace_path(workspace: Path, relative_path: str) -> Path:
+    """Return the filesystem path for an OEBPS-relative package path."""
     return workspace / OEBPS_DIR_NAME / PurePosixPath(relative_path)

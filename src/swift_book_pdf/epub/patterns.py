@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Compiled regular expressions used by EPUB parsing and rendering."""
+
 import re
 
 DOC_LINK_PATTERN = re.compile(r"<doc:([^>]+)>")

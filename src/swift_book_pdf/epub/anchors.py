@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB anchor generation helpers."""
+
 from __future__ import annotations
 
 import re
 
 
 def anchor_for_heading(title: str) -> str:
+    """Build a stable EPUB fragment identifier from heading text."""
     cleaned = re.sub(r"[*`]", "", title).strip()
     cleaned = re.sub("[()/:,.!?'\\u2019]", "", cleaned)
     cleaned = re.sub(r"\s+", "-", cleaned)
@@ -25,6 +28,7 @@ def anchor_for_heading(title: str) -> str:
 
 
 def make_unique_anchor(anchor: str, seen: dict[str, int]) -> str:
+    """Return `anchor` or a numbered variant unique within `seen`."""
     count = seen.get(anchor, 0)
     seen[anchor] = count + 1
     if count == 0:

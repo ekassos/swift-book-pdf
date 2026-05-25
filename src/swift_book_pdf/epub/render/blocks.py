@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Backend-neutral block rendering to EPUB XHTML."""
+
 from __future__ import annotations
 
 import html
@@ -47,6 +49,17 @@ if TYPE_CHECKING:
 
 @dataclass
 class RenderContext:
+    """State shared while rendering one EPUB document.
+
+    Attributes:
+        current_href: Href of the document currently being rendered.
+        link_resolver: Resolver for `<doc:...>` links.
+        image_assets: Mutable collection of image assets referenced so far.
+        asset_catalog: Source asset lookup table.
+        grammar_targets: Map from grammar terms to target hrefs.
+        grammar_anchor_counts: Per-document grammar anchor counters.
+    """
+
     current_href: str
     link_resolver: LinkResolver
     image_assets: dict[str, ImageAsset]
@@ -56,7 +69,10 @@ class RenderContext:
 
 
 class BlockRenderer:
+    """Render parsed Swift Book blocks into XHTML snippets."""
+
     def __init__(self, context: RenderContext) -> None:
+        """Create a renderer with document-local rendering context."""
         self.context = context
 
     def render_blocks(
@@ -64,6 +80,7 @@ class BlockRenderer:
         blocks: list[Block],
         initial_level: int,
     ) -> list[str]:
+        """Render block sequence and close nested heading sections."""
         rendered: list[str] = []
         current_level = initial_level
 
@@ -94,6 +111,7 @@ class BlockRenderer:
         return rendered
 
     def _render_block(self, block: Block) -> str:
+        """Dispatch one parsed block to the matching EPUB renderer."""
         if isinstance(block, ParagraphBlock):
             rendered_block = self._render_paragraph_block(block)
         elif isinstance(block, CodeBlock):
@@ -120,6 +138,7 @@ class BlockRenderer:
         return rendered_block
 
     def _render_paragraph_block(self, block: ParagraphBlock) -> str:
+        """Render a paragraph block."""
         return (
             "<p>"
             + render_inline(
@@ -131,6 +150,7 @@ class BlockRenderer:
         )
 
     def _render_ordered_list_block(self, block: OrderedListBlock) -> str:
+        """Render a flat ordered-list block."""
         items = "".join(
             "<li><p>"
             + render_inline(
@@ -144,6 +164,7 @@ class BlockRenderer:
         return f'<ol class="arabic simple">{items}</ol>'
 
     def _render_unordered_list_block(self, block: UnorderedListBlock) -> str:
+        """Render an unordered list with nested block content."""
         list_items: list[str] = []
         for item_blocks in block.items:
             item_html = "".join(
@@ -153,6 +174,7 @@ class BlockRenderer:
         return '<ul class="simple">' + "".join(list_items) + "</ul>"
 
     def _render_term_list_block(self, block: TermListBlock) -> str:
+        """Render a Swift grammar term-list block."""
         items = "".join(
             (
                 "<dt>"
@@ -174,6 +196,7 @@ class BlockRenderer:
         return f'<dl class="simple">{items}</dl>'
 
     def _render_table_block(self, block: TableBlock) -> str:
+        """Render a Markdown table block."""
         header_cells = "".join(
             "<th>"
             + render_inline(
@@ -206,6 +229,7 @@ class BlockRenderer:
         )
 
     def _render_note_block(self, block: NoteBlock) -> str:
+        """Render a Swift Book aside or grammar block."""
         if is_grammar_note_label(block.label):
             return render_grammar_block(
                 block,
@@ -225,6 +249,7 @@ class BlockRenderer:
 
 
 def _heading_level(block: Block) -> int | None:
+    """Return the EPUB heading level represented by a heading block."""
     if isinstance(block, Header2Block):
         return 2
     if isinstance(block, Header3Block):
@@ -235,4 +260,5 @@ def _heading_level(block: Block) -> int | None:
 
 
 def _heading_text(block: Header2Block | Header3Block | Header4Block) -> str:
+    """Return display text from a heading block."""
     return block.content

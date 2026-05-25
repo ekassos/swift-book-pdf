@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Top-level orchestration for building EPUB artifacts."""
+
 from __future__ import annotations
 
 import logging
@@ -72,6 +74,15 @@ def build_epub(config: EPUBConfig) -> None:
 
 @dataclass(frozen=True)
 class PublicationMetadata:
+    """Metadata derived once and reused across EPUB package writers.
+
+    Attributes:
+        version_info: Swift version string detected from the source.
+        source_revision: Source repository revision when available.
+        publication_identifier: Stable EPUB publication identifier.
+        book_title: Display title written into EPUB metadata.
+    """
+
     version_info: str
     source_revision: str | None
     publication_identifier: str
@@ -79,12 +90,16 @@ class PublicationMetadata:
 
 
 class EPUBBuilder:
+    """Build an EPUB workspace, render documents, and package the archive."""
+
     def __init__(self, config: EPUBConfig, toc: TableOfContents) -> None:
+        """Create a builder from resolved config and a loaded source TOC."""
         self.config = config
         self.toc = toc
         self.asset_path = Path(config.assets_dir)
 
     def build(self) -> None:
+        """Render and package the EPUB described by the builder config."""
         logger.info("Creating EPUB...")
         workspace = prepare_workspace(self.config)
         metadata = self._build_publication_metadata()
@@ -101,6 +116,7 @@ class EPUBBuilder:
         logger.info(f"EPUB saved to {self.config.output_path}")
 
     def _build_publication_metadata(self) -> PublicationMetadata:
+        """Resolve publication metadata shared by rendered and package files."""
         version_info = self._version_info()
         source_revision = get_swift_book_repository_revision(
             self.config.root_dir
@@ -125,6 +141,7 @@ class EPUBBuilder:
     def _write_cover_assets(
         self, workspace: Path, version_info: str | None
     ) -> None:
+        """Write the package cover asset and optional exported cover image."""
         write_cover_asset(self.config, workspace, version_info)
         if not self.config.export_cover_image:
             return
@@ -135,6 +152,7 @@ class EPUBBuilder:
             logger.info(f"Cover image saved to {cover_output_path}")
 
     def _collect_structure(self, cover_asset_exists: bool) -> EPUBStructure:
+        """Collect book structure from the source TOC and build config."""
         return EPUBStructureCollector(
             self.config,
             self.toc,
@@ -147,6 +165,7 @@ class EPUBBuilder:
         structure: EPUBStructure,
         metadata: PublicationMetadata,
     ) -> dict[str, ImageAsset]:
+        """Render XHTML documents and collect image assets they reference."""
         renderer = EPUBRenderer(
             self.asset_path,
             structure.grammar_targets,
@@ -172,6 +191,7 @@ class EPUBBuilder:
         structure: EPUBStructure,
         metadata: PublicationMetadata,
     ) -> None:
+        """Render the generated cover XHTML document when a cover exists."""
         if structure.cover_document is None:
             return
 
@@ -205,6 +225,7 @@ class EPUBBuilder:
         link_resolver: LinkResolver,
         image_assets: dict[str, ImageAsset],
     ) -> None:
+        """Render part pages and their child chapter documents."""
         for part in structure.parts:
             write_text(
                 workspace,
@@ -228,6 +249,7 @@ class EPUBBuilder:
         structure: EPUBStructure,
         renderer: EPUBRenderer,
     ) -> None:
+        """Render the generated notices document when it is enabled."""
         if structure.notices_document is not None:
             write_text(
                 workspace,
@@ -242,6 +264,7 @@ class EPUBBuilder:
         image_assets: dict[str, ImageAsset],
         metadata: PublicationMetadata,
     ) -> None:
+        """Write navigation, NCX, and OPF package files."""
         front_back_matter = FrontBackMatter(
             structure.cover_document, structure.notices_document
         )
@@ -266,6 +289,7 @@ class EPUBBuilder:
         )
 
     def _version_info(self) -> str:
+        """Resolve the Swift version string for this build."""
         return resolve_version_info(
             self.toc.file_content, self.config.override_version
         )

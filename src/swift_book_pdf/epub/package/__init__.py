@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB package-file writer exports."""
+
 from .nav import FrontBackMatter, write_nav_file
 from .ncx import write_toc_ncx_file
 from .opf import OPFPackageInput, write_content_opf_file

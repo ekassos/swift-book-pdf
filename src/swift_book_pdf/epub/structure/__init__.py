@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB structure collection exports."""
+
 from .collector import EPUBStructure, EPUBStructureCollector
 
 __all__ = ["EPUBStructure", "EPUBStructureCollector"]

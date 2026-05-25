@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Collect source TOC data into EPUB document structure."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -44,6 +46,18 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class EPUBStructure:
+    """Collected structure needed by EPUB renderers and package writers.
+
+    Attributes:
+        parts: Top-level book parts and their child documents.
+        source_documents: Parsed source documents keyed by document key.
+        cover_document: Optional generated cover document.
+        notices_document: Optional generated notices document.
+        documents: Flattened package document list in spine order.
+        grammar_targets: Grammar term target hrefs for cross-linking.
+        has_cover_asset: Whether the package includes an outer cover image.
+    """
+
     parts: list[PartEntry]
     source_documents: dict[str, SourceDocument]
     cover_document: DocumentEntry | None
@@ -54,6 +68,8 @@ class EPUBStructure:
 
 
 class EPUBStructureCollector:
+    """Build the EPUB document tree from a loaded Swift Book TOC."""
+
     def __init__(
         self,
         config: EPUBConfig,
@@ -61,12 +77,14 @@ class EPUBStructureCollector:
         *,
         has_cover_asset: bool,
     ) -> None:
+        """Create a collector for one EPUB build."""
         self.config = config
         self.toc = toc
         self.has_cover_asset = has_cover_asset
         self.source_documents: dict[str, SourceDocument] = {}
 
     def collect(self) -> EPUBStructure:
+        """Collect parts, generated documents, and grammar targets."""
         parts = self._build_parts()
         cover_document = self._build_cover_document()
         notices_document = (
@@ -90,6 +108,7 @@ class EPUBStructureCollector:
         )
 
     def _build_parts(self) -> list[PartEntry]:
+        """Build top-level book parts from TOC sections."""
         parts: list[PartEntry] = []
         for title, tags in parse_toc_sections(self.toc.file_content):
             documents = [self._get_source_document(tag).entry for tag in tags]
@@ -111,6 +130,7 @@ class EPUBStructureCollector:
         return parts
 
     def _get_source_document(self, tag: str) -> SourceDocument:
+        """Load or return the cached source document for a doc tag."""
         key = tag.lower()
         cached = self.source_documents.get(key)
         if cached is not None:
@@ -127,6 +147,7 @@ class EPUBStructureCollector:
         return source_document
 
     def _build_cover_document(self) -> DocumentEntry | None:
+        """Build the generated cover document entry when a cover exists."""
         if not self.has_cover_asset:
             return None
 
@@ -139,6 +160,7 @@ class EPUBStructureCollector:
         )
 
     def _build_notices_document(self) -> DocumentEntry:
+        """Build the generated notices document entry."""
         return DocumentEntry(
             key=NOTICES_DOC_KEY,
             title=NOTICES_DOC_TITLE,
@@ -153,6 +175,7 @@ class EPUBStructureCollector:
         parts: list[PartEntry],
         notices: DocumentEntry | None,
     ) -> list[DocumentEntry]:
+        """Flatten front matter, parts, chapters, and notices in spine order."""
         documents: list[DocumentEntry] = []
         if cover is not None:
             documents.append(cover)

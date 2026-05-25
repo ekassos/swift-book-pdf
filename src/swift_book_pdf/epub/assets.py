@@ -12,29 +12,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB asset discovery and media-type helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 
 LOCAL_ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
+"""Bundled package asset directory."""
+
 REFERENCE_STATIC_DIR = LOCAL_ASSETS_DIR / "epub_reference"
+"""Directory containing EPUB reference CSS, fonts, and cover art."""
+
 REFERENCE_NOTICES_DIR = LOCAL_ASSETS_DIR / "notices"
+"""Directory containing bundled notices text."""
+
 IBM_PLEX_OFL_PATH = REFERENCE_NOTICES_DIR / "IBM-Plex-OFL.txt"
+"""Path to the bundled IBM Plex Open Font License text."""
 
 
 @dataclass(frozen=True)
 class ImageAsset:
+    """An image copied into the EPUB package.
+
+    Attributes:
+        source_path: Source image path on disk.
+        href: EPUB package href where the image is written.
+        media_type: Manifest media type for the image.
+    """
+
     source_path: Path
     href: str
     media_type: str
 
 
 class AssetCatalog:
+    """Lookup table for source image assets and optional dark variants."""
+
     def __init__(self, asset_path: Path) -> None:
+        """Index image assets from an upstream Swift Book asset directory."""
         self._assets = self._build_asset_pairs(asset_path)
 
     def resolve(self, image_name: str) -> tuple[Path, Path | None]:
+        """Resolve an image reference to light and optional dark assets."""
         key = normalize_asset_key(Path(image_name).stem)
         asset_pair = self._assets.get(key)
         if asset_pair is None:
@@ -44,6 +65,7 @@ class AssetCatalog:
     def _build_asset_pairs(
         self, asset_path: Path
     ) -> dict[str, tuple[Path, Path | None]]:
+        """Index light/dark image variants by normalized asset key."""
         asset_pairs: dict[str, tuple[Path, Path | None]] = {}
         for asset in asset_path.iterdir():
             if not asset.is_file():
@@ -60,6 +82,7 @@ class AssetCatalog:
 
 
 def normalize_asset_key(stem: str) -> str:
+    """Strip scale and dark-mode suffixes from an image stem."""
     normalized = stem.replace("~dark", "")
     normalized = normalized.replace("@2x", "")
     if normalized.endswith("_2x"):
@@ -68,6 +91,7 @@ def normalize_asset_key(stem: str) -> str:
 
 
 def image_destination_name(asset_path: Path) -> str:
+    """Return the normalized EPUB file name for a source image asset."""
     key = normalize_asset_key(asset_path.stem)
     suffix = asset_path.suffix.lower()
     scale_suffix = (
@@ -80,6 +104,7 @@ def image_destination_name(asset_path: Path) -> str:
 
 
 def media_type_for_path(path: Path) -> str:
+    """Return the EPUB manifest media type for a supported image path."""
     suffix = path.suffix.lower()
     if suffix == ".png":
         return "image/png"

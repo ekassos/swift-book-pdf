@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB 2 NCX table-of-contents rendering."""
+
 from __future__ import annotations
 
 import html
@@ -34,6 +36,7 @@ def write_toc_ncx_file(
     parts: list[PartEntry],
     book_title: str,
 ) -> None:
+    """Write the NCX table-of-contents file to the workspace."""
     cover = front_back_matter.cover
     notices = front_back_matter.notices
     part_navpoints: list[str] = []
@@ -94,6 +97,7 @@ def _build_ncx_navpoint_tree(
     href: str,
     children: list[tuple[str, str]] | None = None,
 ) -> tuple[str, int]:
+    """Render one NCX navPoint subtree and return the next play order."""
     current_index = index
     next_index = index + 1
     child_navpoints: list[str] = []

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Cover rendering and cover-variant exports."""
+
 from .svg import (
     CoverPageOptions,
     CoverTextSpan,

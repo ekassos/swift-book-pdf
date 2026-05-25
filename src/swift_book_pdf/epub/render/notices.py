@@ -63,6 +63,7 @@ def render_notices_xhtml(
 def _build_original_work_copyright_sentence(
     year_range: tuple[int, int] | None,
 ) -> str:
+    """Build the original-work copyright sentence for notices."""
     year_text = format_copyright_year_range(year_range)
     if year_text:
         return (

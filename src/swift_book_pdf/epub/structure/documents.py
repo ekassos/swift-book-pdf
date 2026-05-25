@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Build parsed source documents for EPUB rendering."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -39,6 +41,7 @@ def build_source_document(
     key: str,
     metadata: ChapterMetadata,
 ) -> SourceDocument:
+    """Build one parsed source document from chapter metadata."""
     if metadata.file_path is None:
         raise FileNotFoundError(f"Missing source metadata for chapter {key}.")
 
@@ -66,6 +69,7 @@ def build_source_document(
 
 
 def load_source_lines(source_path: Path, subtitle: str | None) -> list[str]:
+    """Load and preprocess source Markdown lines for EPUB rendering."""
     file_content = source_path.read_text(encoding="utf-8").splitlines()
     processed_lines = remove_multiline_comments(file_content)
     processed_lines = remove_directives(processed_lines)
@@ -77,6 +81,7 @@ def load_source_lines(source_path: Path, subtitle: str | None) -> list[str]:
 def strip_title_and_subtitle(
     lines: list[str], subtitle: str | None
 ) -> list[str]:
+    """Remove leading title and optional subtitle lines from source Markdown."""
     remaining_lines = _drop_leading_blank_lines(list(lines))
 
     if remaining_lines and remaining_lines[0].startswith("# "):
@@ -91,6 +96,7 @@ def strip_title_and_subtitle(
 
 
 def extract_heading_map(lines: list[str]) -> dict[str, str]:
+    """Map generated heading anchors back to display heading text."""
     heading_map: dict[str, str] = {}
     seen_anchors: dict[str, int] = {}
     for raw_line in lines:
@@ -104,6 +110,7 @@ def extract_heading_map(lines: list[str]) -> dict[str, str]:
 
 
 def _drop_leading_blank_lines(lines: list[str]) -> list[str]:
+    """Return `lines` after removing leading blank lines in place."""
     while lines and not lines[0].strip():
         lines.pop(0)
     return lines

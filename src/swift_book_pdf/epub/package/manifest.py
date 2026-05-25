@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""OPF manifest item construction and rendering."""
+
 from __future__ import annotations
 
 import html
@@ -34,6 +36,15 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class ManifestItem:
+    """One OPF manifest item.
+
+    Attributes:
+        item_id: Manifest `id` value.
+        href: Package-relative item href.
+        media_type: Manifest media-type value.
+        properties: Optional OPF item properties.
+    """
+
     item_id: str
     href: str
     media_type: str
@@ -41,6 +52,7 @@ class ManifestItem:
 
 
 def build_manifest_items(package_input: OPFPackageInput) -> list[ManifestItem]:
+    """Build the full OPF manifest item list for an EPUB package."""
     manifest = [
         ManifestItem(
             item_id="ncx",
@@ -70,12 +82,14 @@ def build_manifest_items(package_input: OPFPackageInput) -> list[ManifestItem]:
 
 
 def render_manifest_items(items: list[ManifestItem]) -> str:
+    """Render OPF manifest items as XML lines."""
     return "\n".join(_format_manifest_item(item) for item in items)
 
 
 def _document_manifest_items(
     package_input: OPFPackageInput,
 ) -> list[ManifestItem]:
+    """Build manifest items for rendered XHTML documents."""
     return [
         ManifestItem(
             item_id=f"epub-doc-{index}",
@@ -92,6 +106,7 @@ def _document_manifest_items(
 def _image_manifest_items(
     package_input: OPFPackageInput,
 ) -> list[ManifestItem]:
+    """Build manifest items for copied source image assets."""
     return [
         ManifestItem(
             item_id=f"epub-image-{index}",
@@ -108,6 +123,7 @@ def _image_manifest_items(
 
 
 def _static_manifest_items() -> list[ManifestItem]:
+    """Build manifest items for bundled CSS and font assets."""
     manifest = [
         ManifestItem(
             item_id="epub-style",
@@ -132,6 +148,7 @@ def _static_manifest_items() -> list[ManifestItem]:
 
 
 def _format_manifest_item(item: ManifestItem) -> str:
+    """Render one OPF manifest item as XML."""
     properties = (
         f' properties="{html.escape(item.properties)}"'
         if item.properties is not None

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB publication identifier generation."""
+
 from __future__ import annotations
 
 import logging
@@ -25,6 +27,17 @@ def build_publication_identifier(
     source_revision: str | None,
     publication_identifier_seed: str | None = None,
 ) -> str:
+    """Build a stable UUID URN for the EPUB package.
+
+    Args:
+        version_info: Swift version string detected from source.
+        source_revision: Source repository revision when available.
+        publication_identifier_seed: Optional explicit pre-hash seed.
+
+    Returns:
+        Stable UUID5 URN when a seed is available, otherwise a random UUID4
+        URN.
+    """
     seed = publication_identifier_seed
     if seed is None:
         seed = source_revision

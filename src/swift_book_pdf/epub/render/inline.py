@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Inline Markdown-to-XHTML rendering for EPUB output."""
+
 from __future__ import annotations
 
 import html
@@ -35,6 +37,7 @@ INLINE_CODE_PADDING_LENGTH = 2
 def render_inline(
     text: str, current_href: str, link_resolver: LinkResolver
 ) -> str:
+    """Render inline Markdown, code spans, and document links."""
     placeholders: dict[str, str] = {}
     placeholder_index = 0
 
@@ -71,6 +74,7 @@ def render_inline(
 
 
 def render_inline_styles(text: str) -> str:
+    """Render inline emphasis, strong text, and code spans only."""
     placeholders: dict[str, str] = {}
     placeholder_index = 0
 
@@ -91,6 +95,7 @@ def render_inline_styles(text: str) -> str:
 
 
 def _render_inline_tail(text: str, placeholders: dict[str, str]) -> str:
+    """Escape text, apply simple inline styles, and restore placeholders."""
     text = normalize_prose_punctuation(text)
     text = html.escape(text)
     text = STRONG_PATTERN.sub(r"<strong>\1</strong>", text)
@@ -103,6 +108,7 @@ def _render_inline_tail(text: str, placeholders: dict[str, str]) -> str:
 
 
 def replace_inline_code_spans(text: str, render: Callable[[str], str]) -> str:
+    """Replace Markdown inline code spans using the supplied renderer."""
     output: list[str] = []
     index = 0
 
@@ -150,6 +156,7 @@ def replace_inline_code_spans(text: str, render: Callable[[str], str]) -> str:
 def _replace_markdown_links(
     text: str, render: Callable[[str, str], str]
 ) -> str:
+    """Replace Markdown links outside inline code spans."""
     output: list[str] = []
     index = 0
 
@@ -181,6 +188,7 @@ def _replace_markdown_links(
 def _consume_inline_code_fence(
     text: str, start_index: int
 ) -> tuple[str, int] | None:
+    """Return the inline code fence segment starting at `start_index`."""
     if text[start_index] != "`":
         return None
 
@@ -201,6 +209,7 @@ def _consume_inline_code_fence(
 def _parse_markdown_link(
     text: str, start_index: int
 ) -> tuple[str, str, int] | None:
+    """Parse a Markdown link starting at `start_index`."""
     label_end = text.find("]", start_index + 1)
     if label_end == -1 or label_end + 1 >= len(text):
         return None
@@ -220,6 +229,7 @@ def _parse_markdown_link(
 
 
 def _find_balanced_href_end(text: str, start_index: int) -> int | None:
+    """Return the closing parenthesis for a possibly nested link href."""
     href_end = start_index
     depth = 1
     while href_end < len(text):
@@ -235,5 +245,6 @@ def _find_balanced_href_end(text: str, start_index: int) -> int | None:
 
 
 def normalize_prose_punctuation(text: str) -> str:
+    """Normalize ASCII dash sequences to typographic dash characters."""
     text = re.sub(r"\s*---\s*", "\u2014", text)
     return re.sub(r"--", "\u2013", text)

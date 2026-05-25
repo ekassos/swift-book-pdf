@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Collect grammar term targets for EPUB cross-links."""
+
 from swift_book_pdf.core.blocks.models import NoteBlock
 from swift_book_pdf.core.document import PartEntry, SourceDocument
 from swift_book_pdf.epub.grammar_rules import (
@@ -25,6 +27,7 @@ def build_grammar_target_map(
     parts: list[PartEntry],
     source_documents: dict[str, SourceDocument],
 ) -> dict[str, str]:
+    """Build a map from grammar term text to target href."""
     grammar_targets: dict[str, str] = {}
     for part in parts:
         for document in part.children:

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB navigation document rendering."""
+
 from __future__ import annotations
 
 import html
@@ -30,6 +32,13 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class FrontBackMatter:
+    """Optional front and back matter documents.
+
+    Attributes:
+        cover: Optional generated cover document.
+        notices: Optional generated notices document.
+    """
+
     cover: DocumentEntry | None
     notices: DocumentEntry | None
 
@@ -39,6 +48,7 @@ def write_nav_file(
     front_back_matter: FrontBackMatter,
     parts: list[PartEntry],
 ) -> None:
+    """Write the EPUB 3 navigation document to the workspace."""
     cover = front_back_matter.cover
     notices = front_back_matter.notices
     reader_start_href = (

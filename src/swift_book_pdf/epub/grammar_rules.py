@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Helpers for parsing Swift grammar rules in source Markdown."""
+
 from __future__ import annotations
 
 import re
@@ -22,10 +24,12 @@ MIN_WRAPPED_MARKDOWN_TERM_LENGTH = 3
 
 
 def is_grammar_note_label(label: str) -> bool:
+    """Return whether an aside label introduces a grammar block."""
     return label.lower().startswith("grammar of ")
 
 
 def clean_grammar_line(line: str) -> str:
+    """Strip grammar line whitespace and trailing Markdown breaks."""
     clean_line = line.strip()
     if clean_line.endswith("\\"):
         return clean_line[:-1].rstrip()
@@ -33,6 +37,7 @@ def clean_grammar_line(line: str) -> str:
 
 
 def parse_grammar_rule(line: str) -> tuple[str, str] | None:
+    """Parse a grammar production into `(term, expression)`."""
     clean_line = clean_grammar_line(line)
     if "→" not in clean_line:
         return None
@@ -44,6 +49,7 @@ def parse_grammar_rule(line: str) -> tuple[str, str] | None:
 
 
 def extract_grammar_terms(block: NoteBlock) -> list[str]:
+    """Return grammar terms defined inside a parsed grammar aside."""
     terms: list[str] = []
     for sub_block in block.blocks:
         if not isinstance(sub_block, ParagraphBlock):
@@ -56,10 +62,12 @@ def extract_grammar_terms(block: NoteBlock) -> list[str]:
 
 
 def grammar_anchor_fragment(term: str) -> str:
+    """Normalize a grammar term for use in an EPUB anchor fragment."""
     return re.sub(r"[^A-Za-z0-9_-]+", "-", term.strip()).strip("-")
 
 
 def _is_wrapped_markdown_term(text: str) -> bool:
+    """Return whether text is an emphasized grammar term token."""
     return (
         text.startswith("*")
         and text.endswith("*")

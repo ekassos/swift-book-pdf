@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Resolve Swift Book document links for EPUB XHTML."""
+
 from __future__ import annotations
 
 import html
@@ -24,10 +26,14 @@ if TYPE_CHECKING:
 
 
 class LinkResolver:
+    """Resolve `<doc:...>` targets against generated document entries."""
+
     def __init__(self, documents: list[DocumentEntry]) -> None:
+        """Index generated documents by lowercase document key."""
         self.documents = {document.key: document for document in documents}
 
     def render_doc_link(self, current_href: str, target: str) -> str:
+        """Render one resolved document link or escaped unresolved target."""
         chapter_key, _, fragment = target.partition("#")
         document = self.documents.get(chapter_key.lower())
         if document is None:

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Image block rendering and EPUB image asset registration."""
+
 from __future__ import annotations
 
 import html
@@ -41,6 +43,7 @@ def render_image_block(
     image_assets: dict[str, ImageAsset],
     asset_catalog: AssetCatalog,
 ) -> str:
+    """Render an image block and register its package assets."""
     asset, dark_asset = asset_catalog.resolve(block.imgname)
     image_href = _register_asset(asset, image_assets)
     width = _image_display_width(asset, Path(image_href).name)
@@ -64,6 +67,7 @@ def render_image_block(
 
 
 def _register_asset(asset: Path, image_assets: dict[str, ImageAsset]) -> str:
+    """Add an image to the package asset collection and return its href."""
     href = f"_images/{image_destination_name(asset)}"
     if href not in image_assets:
         image_assets[href] = ImageAsset(
@@ -75,6 +79,7 @@ def _register_asset(asset: Path, image_assets: dict[str, ImageAsset]) -> str:
 
 
 def _image_display_width(path: Path, file_name: str) -> float | None:
+    """Return CSS display width, adjusting retina assets to logical size."""
     try:
         with Image.open(path) as image:
             width = image.width

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Parse Swift Book TOC sections for EPUB part grouping."""
+
 from swift_book_pdf.epub.patterns import (
     DOC_TAG_LINE_PATTERN,
     PART_HEADING_PATTERN,
@@ -19,6 +21,7 @@ from swift_book_pdf.epub.patterns import (
 
 
 def parse_toc_sections(toc_lines: list[str]) -> list[tuple[str, list[str]]]:
+    """Return TOC part titles with their ordered document tags."""
     sections: list[tuple[str, list[str]]] = []
     current_title: str | None = None
     current_tags: list[str] = []

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""OPF package document rendering."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -38,6 +40,17 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class OPFPackageInput:
+    """Inputs needed to render the OPF package document.
+
+    Attributes:
+        config: Resolved EPUB build configuration.
+        book_title: Effective book title.
+        documents: Rendered documents in spine order.
+        image_assets: Source image assets copied into the package.
+        publication_identifier: EPUB publication identifier.
+        has_cover_asset: Whether the package includes an outer cover image.
+    """
+
     config: EPUBConfig
     book_title: str
     documents: list[DocumentEntry]
@@ -50,6 +63,7 @@ def write_content_opf_file(
     workspace: Path,
     package_input: OPFPackageInput,
 ) -> None:
+    """Write `content.opf` to the EPUB workspace."""
     modified = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     manifest_xml = render_manifest_items(build_manifest_items(package_input))
     metadata_xml = render_metadata(package_input, modified)
@@ -75,6 +89,7 @@ def write_content_opf_file(
 
 
 def _render_spine_items(package_input: OPFPackageInput) -> str:
+    """Render OPF spine entries for package documents."""
     return "\n".join(
         f'    <itemref idref="epub-doc-{index}" />'
         for index, _ in enumerate(package_input.documents)

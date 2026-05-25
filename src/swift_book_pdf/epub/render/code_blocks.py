@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Swift code-block rendering for EPUB XHTML."""
+
 from __future__ import annotations
 
 import html
@@ -26,6 +28,7 @@ WRAPPING_PLACEHOLDER_MIN_LENGTH = 28
 
 
 def render_code_block(code_lines: list[str]) -> str:
+    """Render Swift code lines with syntax highlighting or outline markup."""
     has_placeholders = any(
         CODE_PLACEHOLDER_PATTERN.search(line) for line in code_lines
     )
@@ -54,6 +57,7 @@ def render_code_block(code_lines: list[str]) -> str:
 
 
 def _render_outline_code_line(line: str) -> str:
+    """Render one placeholder-bearing outline code line."""
     parts: list[str] = []
     last_index = 0
 
@@ -72,6 +76,7 @@ def _render_outline_code_line(line: str) -> str:
 
 
 def _render_outline_placeholder(text: str) -> str:
+    """Render an outline placeholder span."""
     class_name = "gi"
     if _needs_wrapping_placeholder(text):
         class_name = "gi gi-wrap"
@@ -79,6 +84,7 @@ def _render_outline_placeholder(text: str) -> str:
 
 
 def _needs_wrapping_placeholder(text: str) -> bool:
+    """Return whether a placeholder should allow wrapping."""
     normalized = text.strip()
     return (
         len(normalized) > WRAPPING_PLACEHOLDER_MIN_LENGTH and " " in normalized
@@ -86,6 +92,7 @@ def _needs_wrapping_placeholder(text: str) -> bool:
 
 
 def _highlight_swift_fragment(fragment: str) -> str:
+    """Syntax-highlight a Swift code fragment without wrapper markup."""
     return highlight(
         fragment, SwiftLexer(), HtmlFormatter(nowrap=True)
     ).rstrip("\n")

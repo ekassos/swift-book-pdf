@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""EPUB XHTML renderer exports."""
+
 from .inline import normalize_prose_punctuation, render_inline
 from .links import LinkResolver
 from .renderer import EPUBRenderer

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Cover edition variant selection and derived cover text."""
+
 from __future__ import annotations
 
 import re
@@ -35,6 +37,14 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class CoverVariant:
+    """Cover art, label, and color for one edition variant.
+
+    Attributes:
+        banner_text: Default inner-cover banner text.
+        color: Primary cover text and banner color.
+        template_path: Bundled PNG template for the outer cover.
+    """
+
     banner_text: str
     color: str
     template_path: Path
@@ -68,6 +78,7 @@ def cover_version_label(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str | None:
+    """Return the normalized version label shown on the cover."""
     if version_info is None:
         return None
     normalized_version = version_info.strip()
@@ -105,6 +116,7 @@ def resolve_cover_variant(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> CoverVariant:
+    """Return the cover variant selected by version text and overrides."""
     return COVER_VARIANTS[
         resolve_cover_variant_name(version_info, cover_variant)
     ]
@@ -114,6 +126,7 @@ def resolve_cover_variant_name(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str:
+    """Resolve a cover variant name and validate explicit overrides."""
     if cover_variant is not None:
         if cover_variant not in COVER_VARIANTS:
             known_variants = ", ".join(sorted(COVER_VARIANTS))
@@ -131,6 +144,7 @@ def cover_png_version_fill(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str:
+    """Return the PNG cover version-label fill color."""
     return resolve_cover_variant(version_info, cover_variant).color
 
 
@@ -138,6 +152,7 @@ def cover_png_version_text(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str | None:
+    """Return the PNG cover version-label text."""
     return cover_version_label(version_info, cover_variant)
 
 
@@ -147,6 +162,7 @@ def cover_template_path(
     cover_variant: str | None = None,
     cover_template_paths: dict[str, Path] | None = None,
 ) -> Path:
+    """Return the cover template path after overrides and variant fallback."""
     if base_cover_image is not None:
         return base_cover_image
     variant_name = resolve_cover_variant_name(version_info, cover_variant)
@@ -164,6 +180,7 @@ def resolve_cover_banner(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> tuple[str, str]:
+    """Return effective inner-cover banner text and color."""
     variant = resolve_cover_variant(version_info, cover_variant)
     text = banner_text.strip() if banner_text else ""
     color = banner_color or variant.color

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""PNG cover asset generation and export helpers."""
+
 from __future__ import annotations
 
 import logging
@@ -51,6 +53,14 @@ COVER_ASSET_HREF = "_static/cover.png"
 
 @dataclass(frozen=True)
 class _PNGTextStyle:
+    """Pillow text style for rendered PNG cover labels.
+
+    Attributes:
+        font: Pillow font used to draw text.
+        tracking: Extra pixels inserted between glyphs.
+        fill: Text fill color.
+    """
+
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont
     tracking: float
     fill: str
@@ -61,6 +71,7 @@ def write_cover_asset(
     workspace: Path,
     version_info: str | None,
 ) -> None:
+    """Write the outer cover PNG into the EPUB workspace."""
     template_path = cover_template_path(
         version_info,
         config.base_cover_image,
@@ -115,6 +126,7 @@ def write_cover_asset(
 
 
 def export_cover_asset(workspace: Path, output_path: Path) -> Path | None:
+    """Copy the generated cover PNG next to the output EPUB."""
     source = oebps_workspace_path(workspace, COVER_ASSET_HREF)
     if not source.exists():
         return None
@@ -125,6 +137,7 @@ def export_cover_asset(workspace: Path, output_path: Path) -> Path | None:
 
 
 def has_cover_asset(workspace: Path) -> bool:
+    """Return whether the EPUB workspace contains an outer cover PNG."""
     return oebps_workspace_path(workspace, COVER_ASSET_HREF).exists()
 
 
@@ -133,6 +146,7 @@ def _draw_cover_version_text(
     text: str,
     style: _PNGTextStyle,
 ) -> None:
+    """Draw baseline-aligned tracked version text onto a cover image."""
     text_width, text_height, bbox_left, bbox_top = _measure_tracked_text(
         text, style.font, style.tracking
     )
@@ -159,6 +173,7 @@ def _draw_cover_footer_line(
     text: str,
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
 ) -> None:
+    """Draw a centered footer line onto a cover image."""
     _draw_cover_centered_text(
         image,
         text,
@@ -173,6 +188,7 @@ def _measure_tracked_text(
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
     tracking: float = COVER_TEXT_TRACKING,
 ) -> tuple[float, int, int, int]:
+    """Measure text dimensions after applying manual glyph tracking."""
     dummy = Image.new("RGBA", (1, 1), (255, 255, 255, 0))
     draw = ImageDraw.Draw(dummy)
     left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
@@ -188,6 +204,7 @@ def _draw_tracked_text(
     text: str,
     style: _PNGTextStyle,
 ) -> None:
+    """Draw text one glyph at a time when tracking is nonzero."""
     if style.tracking == 0:
         draw.text(position, text, fill=style.fill, font=style.font)
         return
@@ -212,6 +229,7 @@ def _draw_cover_centered_text(
     top_y: float,
     fill: str,
 ) -> None:
+    """Draw untracked text centered horizontally on a cover image."""
     text_width, text_height, bbox_left, bbox_top = _measure_tracked_text(
         text,
         font,

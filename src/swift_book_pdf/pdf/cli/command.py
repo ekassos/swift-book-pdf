@@ -19,7 +19,6 @@ from functools import partial
 import click
 
 import swift_book_pdf.pdf.cli.config as pdf_config
-from swift_book_pdf.book import build_pdf
 from swift_book_pdf.cli.common import run_build
 from swift_book_pdf.cli.legal_notices import legal_notices_option
 from swift_book_pdf.cli.options import (
@@ -29,6 +28,7 @@ from swift_book_pdf.cli.options import (
     version_option,
 )
 from swift_book_pdf.core.output import OutputFormat
+from swift_book_pdf.pdf.builder import build_pdf
 from swift_book_pdf.pdf.cli.options import pdf_font_options, pdf_options
 
 

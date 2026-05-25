@@ -37,6 +37,7 @@ from swift_book_pdf.core.markdown import (
     remove_multiline_comments,
     resolve_version_info,
 )
+from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.core.source.repository import (
     get_swift_book_repository_revision,
 )
@@ -66,11 +67,25 @@ from .render import (
 )
 
 if TYPE_CHECKING:
-    from swift_book_pdf.core.navigation.toc import TableOfContents
     from swift_book_pdf.epub.config import EPUBConfig
     from swift_book_pdf.epub.models import ImageAsset
 
 logger = logging.getLogger(__name__)
+
+
+def build_epub(config: EPUBConfig) -> None:
+    """Build the EPUB artifact from resolved configuration.
+
+    Args:
+        config: Resolved EPUB build configuration.
+    """
+    toc = TableOfContents(
+        config.root_dir,
+        config.toc_file_path,
+        config.temp_dir,
+        include_notices=not config.dangerously_skip_legal_notices,
+    )
+    EPUBBuilder(config, toc).build()
 
 
 class EPUBBuilder:

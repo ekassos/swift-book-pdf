@@ -20,7 +20,6 @@ from pathlib import Path
 import click
 
 import swift_book_pdf.epub.cli.config as epub_config
-from swift_book_pdf.book import build_epub
 from swift_book_pdf.cli.common import run_build
 from swift_book_pdf.cli.legal_notices import legal_notices_option
 from swift_book_pdf.cli.options import (
@@ -30,6 +29,7 @@ from swift_book_pdf.cli.options import (
     version_option,
 )
 from swift_book_pdf.core.output import OutputFormat
+from swift_book_pdf.epub.builder import build_epub
 from swift_book_pdf.epub.cli.options import (
     epub_cover_options,
     epub_metadata_options,

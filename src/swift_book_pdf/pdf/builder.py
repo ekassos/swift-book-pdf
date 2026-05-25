@@ -31,6 +31,15 @@ from swift_book_pdf.pdf.latex.toc import generate_toc_latex
 logger = logging.getLogger(__name__)
 
 
+def build_pdf(config: PDFConfig) -> None:
+    """Build the PDF artifact from resolved configuration.
+
+    Args:
+        config: Resolved PDF build configuration.
+    """
+    PDFBookBuilder(config).build()
+
+
 class PDFBookBuilder:
     def __init__(self, config: PDFConfig) -> None:
         self.config = config

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import xml.etree.ElementTree as ET
+
 from swift_book_pdf.epub.render.notices import render_notices_xhtml
 
 
@@ -28,3 +30,11 @@ def test_render_notices_xhtml_uses_detected_year_range() -> None:
     assert "IBM Plex Font License" in xhtml
     assert "SIL OPEN FONT LICENSE Version 1.1" in xhtml
     assert "swift-docc-render project" not in xhtml
+
+
+def test_render_notices_xhtml_escapes_title_and_parses_as_xml() -> None:
+    xhtml = render_notices_xhtml("Acknowledgments & <Legal>", None)
+
+    ET.fromstring(f"<root>{xhtml}</root>")  # noqa: S314
+    assert "Acknowledgments &amp; &lt;Legal&gt;" in xhtml
+    assert "Copyright &#169; Apple Inc. and the Swift project authors" in xhtml

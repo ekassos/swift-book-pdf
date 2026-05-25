@@ -14,7 +14,9 @@
 
 """Render the generated notices chapter as EPUB XHTML."""
 
-import html
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from swift_book_pdf.core.generated.notices.content import (
     APACHE_LICENSE_V2_TEXT,
@@ -26,6 +28,39 @@ from swift_book_pdf.core.generated.notices.content import (
     format_copyright_year_range,
 )
 from swift_book_pdf.core.generated.notices.metadata import NOTICES_SECTION_ID
+from swift_book_pdf.epub.templating import render_epub_template
+
+
+@dataclass(frozen=True)
+class NoticesTemplateData:
+    """Structured data for the generated notices body template."""
+
+    title: str
+    """Notices page title."""
+
+    section_id: str
+    """Generated notices section anchor."""
+
+    swift_book_pdf_repo_url: str
+    """Repository URL for this generator."""
+
+    swift_book_repo_url: str
+    """Repository URL for the upstream Swift book."""
+
+    swift_license_url: str
+    """Swift project license URL."""
+
+    swift_contributors_url: str
+    """Swift project contributors URL."""
+
+    original_work_years: str
+    """Formatted original-work copyright years, or an empty string."""
+
+    apache_license_text: str
+    """Bundled Apache license text."""
+
+    ibm_plex_ofl_text: str
+    """Bundled IBM Plex font license text."""
 
 
 def render_notices_xhtml(
@@ -41,51 +76,19 @@ def render_notices_xhtml(
     Returns:
         XHTML body fragment for the generated legal notices page.
     """
-    return (
-        f'  <div class="section" id="{html.escape(NOTICES_SECTION_ID)}">\n'
-        f"<h1>{html.escape(title)}</h1>\n"
-        "<p>This edition of <em>The Swift Programming Language</em> was generated using "
-        f'<a href="{html.escape(SWIFT_BOOK_PDF_REPO_URL)}"><em>swift-book-pdf</em></a>. '
-        "This publication includes styling and supporting assets derived from <em>swift-book-pdf</em>. "
-        "These materials are Copyright &#169; 2026 Evangelos Kassos and are licensed under the Apache License, Version 2.0.</p>"
-        "<p>This edition is derived from the <em>swift-book</em> source and is a modified version "
-        "of the original work, converted and formatted for distribution.</p>\n"
-        "<p>The <em>swift-book</em> "
-        f'<a href="{html.escape(SWIFT_BOOK_REPO_URL)}">repository</a> '
-        "is part of the Swift.org open source project. The <em>swift-book</em> source is licensed under the Apache License, Version 2.0 with Runtime Library Exception. "
-        f'See <a href="{html.escape(SWIFT_LICENSE_URL)}">{html.escape(SWIFT_LICENSE_URL)}</a> for details. '
-        f"{_build_original_work_copyright_sentence(year_range)} The Swift project authors are credited at "
-        f'<a href="{html.escape(SWIFT_CONTRIBUTORS_URL)}">{html.escape(SWIFT_CONTRIBUTORS_URL)}</a>.</p>\n'
-        "<p>Swift is a trademark of Apple Inc. "
-        "This edition is not published by, endorsed by, or affiliated with Apple Inc. or the Swift.org open source project.</p>\n"
-        "<p>This edition uses IBM Plex Sans and IBM Plex Serif, Copyright &#169; 2017 IBM Corp. "
-        'with Reserved Font Name "Plex", licensed under the SIL Open Font License 1.1.</p>\n'
-        "<h2>Apache License 2.0</h2>\n"
-        f"<pre>{html.escape(APACHE_LICENSE_V2_TEXT)}</pre>\n"
-        "<h2>IBM Plex Font License</h2>\n"
-        f"<pre>{html.escape(IBM_PLEX_OFL_TEXT)}</pre>\n"
-        "</div>\n"
-    )
-
-
-def _build_original_work_copyright_sentence(
-    year_range: tuple[int, int] | None,
-) -> str:
-    """Build the original-work copyright sentence for notices.
-
-    Args:
-        year_range: Optional inclusive original-work year range.
-
-    Returns:
-        Copyright sentence with a concrete year range when available.
-    """
-    year_text = format_copyright_year_range(year_range)
-    if year_text:
-        return (
-            "The original work is Copyright &#169; "
-            f"{year_text} Apple Inc. and the Swift project authors."
-        )
-    return (
-        "The original work is Copyright &#169; Apple Inc. "
-        "and the Swift project authors."
+    return render_epub_template(
+        "notices-body.xhtml.j2",
+        {
+            "notices": NoticesTemplateData(
+                title=title,
+                section_id=NOTICES_SECTION_ID,
+                swift_book_pdf_repo_url=SWIFT_BOOK_PDF_REPO_URL,
+                swift_book_repo_url=SWIFT_BOOK_REPO_URL,
+                swift_license_url=SWIFT_LICENSE_URL,
+                swift_contributors_url=SWIFT_CONTRIBUTORS_URL,
+                original_work_years=format_copyright_year_range(year_range),
+                apache_license_text=APACHE_LICENSE_V2_TEXT,
+                ibm_plex_ofl_text=IBM_PLEX_OFL_TEXT,
+            )
+        },
     )

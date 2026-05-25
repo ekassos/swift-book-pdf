@@ -22,15 +22,15 @@ from swift_book_pdf.core.blocks.models import (
     ParagraphBlock,
     TableBlock,
 )
-from swift_book_pdf.pdf.latex.render.code_blocks import _convert_code_block
+from swift_book_pdf.pdf.latex.render.code_blocks import convert_code_block
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
 from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
-from swift_book_pdf.pdf.latex.render.headings import _convert_header_like_block
+from swift_book_pdf.pdf.latex.render.headings import convert_header_like_block
 from swift_book_pdf.pdf.latex.render.images import convert_image_block
-from swift_book_pdf.pdf.latex.render.lists import _convert_list_like_block
-from swift_book_pdf.pdf.latex.render.notes import _convert_note_block
+from swift_book_pdf.pdf.latex.render.lists import convert_list_like_block
+from swift_book_pdf.pdf.latex.render.notes import convert_note_block
 from swift_book_pdf.pdf.latex.render.paragraphs import (
-    _convert_paragraph_block,
+    convert_paragraph_block,
 )
 from swift_book_pdf.pdf.latex.render.tables import convert_table_block
 
@@ -51,23 +51,23 @@ def _convert_block_to_latex(  # noqa: PLR0911
     context: LaTeXRenderContext,
 ) -> list[str]:
     if isinstance(block, CodeBlock):
-        return _convert_code_block(block)
-    list_block = _convert_list_like_block(block, context.mode)
+        return convert_code_block(block)
+    list_block = convert_list_like_block(block, context.mode)
     if list_block is not None:
         return list_block
     if isinstance(block, ImageBlock):
         return convert_image_block(
             block, context.assets_dir, context.appearance
         )
-    header_block = _convert_header_like_block(
+    header_block = convert_header_like_block(
         block, context.file_name, context.mode
     )
     if header_block is not None:
         return header_block
     if isinstance(block, NoteBlock):
-        return _convert_note_block(block, context.mode)
+        return convert_note_block(block, context.mode)
     if isinstance(block, ParagraphBlock):
-        return [_convert_paragraph_block(block, context.mode)]
+        return [convert_paragraph_block(block, context.mode)]
     if isinstance(block, TableBlock):
         return convert_table_block(
             block,

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from swift_book_pdf.core.blocks.models import CodeBlock
-from swift_book_pdf.pdf.latex.render.code_blocks import _convert_code_block
+from swift_book_pdf.pdf.latex.render.code_blocks import convert_code_block
 from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
 from swift_book_pdf.pdf.options import RenderingMode
 
@@ -21,7 +21,7 @@ from swift_book_pdf.pdf.options import RenderingMode
 def test_convert_code_block_preserves_percent_for_minted() -> None:
     block = CodeBlock(lines=["-9 % 4 // equals -1"])
 
-    rendered = "\n".join(_convert_code_block(block))
+    rendered = "\n".join(convert_code_block(block))
 
     assert "-9 % 4 // equals -1" in rendered
     assert r"\%" not in rendered

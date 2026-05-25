@@ -26,7 +26,7 @@ from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
 from swift_book_pdf.pdf.options import RenderingMode
 
 
-def _convert_list_like_block(
+def convert_list_like_block(
     block: Block,
     mode: RenderingMode,
 ) -> list[str] | None:

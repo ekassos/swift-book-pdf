@@ -13,25 +13,17 @@
 # limitations under the License.
 
 import logging
-from dataclasses import dataclass
 
 from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.preamble.geometry import get_geometry_opts
-from swift_book_pdf.pdf.latex.templating import load_latex_template
-from swift_book_pdf.pdf.styling.colors import get_document_colors
-from swift_book_pdf.pdf.styling.typography import (
+from swift_book_pdf.pdf.latex.styling.colors import get_document_colors
+from swift_book_pdf.pdf.latex.styling.typography import (
     compute_font_sizes,
     compute_spacing,
 )
+from swift_book_pdf.pdf.latex.templating import load_latex_template
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass(frozen=True)
-class PreambleSubstitutions:
-    """Resolved template substitutions for the LaTeX preamble."""
-
-    values: dict[str, str]
 
 
 def generate_preamble(config: LaTeXPDFConfig) -> str:
@@ -41,7 +33,7 @@ def generate_preamble(config: LaTeXPDFConfig) -> str:
 
 def build_preamble_substitutions(
     config: LaTeXPDFConfig,
-) -> PreambleSubstitutions:
+) -> dict[str, str]:
     """Compute the LaTeX preamble template substitutions."""
     font_config = config.latex_config.font_config
     unicode_fallback = "\n".join(
@@ -63,44 +55,42 @@ def build_preamble_substitutions(
         logger.debug(f"{key}: {value}pt")
     for key, value in sorted(spacing.items()):
         logger.debug(f"{key}: {value}")
-    return PreambleSubstitutions(
-        {
-            "background": colors.background,
-            "text": colors.text,
-            "header_background": colors.header_background,
-            "header_text": colors.header_text,
-            "hero_background": colors.hero_background,
-            "hero_text": colors.hero_text,
-            "link": colors.link,
-            "aside_background": colors.aside_background,
-            "aside_text": colors.aside_text,
-            "aside_border": colors.aside_border,
-            "table_border": colors.table_border,
-            "code_border": colors.code_border,
-            "code_background": colors.code_background,
-            "code_style": colors.code_style,
-            "geometry_opts": get_geometry_opts(
-                config.doc_config.paper_size,
-                config.doc_config.gutter,
-            ),
-            "main_font": font_config.main_font,
-            "mono_font": font_config.mono_font,
-            "emoji_font": font_config.emoji_font,
-            "unicode_font": unicode_fallback,
-            "header_footer_font": font_config.header_footer_font,
-            "fancyhead_fancyfoot_hero": _render_header_footer_hero(
-                font_config.header_footer_font,
-                template_vars,
-                config.doc_config.gutter,
-            ),
-            **template_vars,
-        }
-    )
+    return {
+        "background": colors.background,
+        "text": colors.text,
+        "header_background": colors.header_background,
+        "header_text": colors.header_text,
+        "hero_background": colors.hero_background,
+        "hero_text": colors.hero_text,
+        "link": colors.link,
+        "aside_background": colors.aside_background,
+        "aside_text": colors.aside_text,
+        "aside_border": colors.aside_border,
+        "table_border": colors.table_border,
+        "code_border": colors.code_border,
+        "code_background": colors.code_background,
+        "code_style": colors.code_style,
+        "geometry_opts": get_geometry_opts(
+            config.doc_config.paper_size,
+            config.doc_config.gutter,
+        ),
+        "main_font": font_config.main_font,
+        "mono_font": font_config.mono_font,
+        "emoji_font": font_config.emoji_font,
+        "unicode_font": unicode_fallback,
+        "header_footer_font": font_config.header_footer_font,
+        "fancyhead_fancyfoot_hero": _render_header_footer_hero(
+            font_config.header_footer_font,
+            template_vars,
+            config.doc_config.gutter,
+        ),
+        **template_vars,
+    }
 
 
-def render_preamble(substitutions: PreambleSubstitutions) -> str:
+def render_preamble(substitutions: dict[str, str]) -> str:
     """Render the LaTeX preamble template from resolved substitutions."""
-    return PREAMBLE.substitute(**substitutions.values)
+    return PREAMBLE.substitute(**substitutions)
 
 
 def _render_header_footer_hero(

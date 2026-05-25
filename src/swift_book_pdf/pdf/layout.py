@@ -26,7 +26,7 @@ DEFAULT_APPEARANCE = Appearance.LIGHT
 
 
 @dataclass(frozen=True)
-class DocConfig:
+class PDFDocumentConfig:
     """Resolved PDF document layout options.
 
     Attributes:

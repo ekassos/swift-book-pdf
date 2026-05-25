@@ -12,18 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import TYPE_CHECKING, cast
+from typing import cast
 from unittest.mock import Mock
 
 import pytest
 
 from swift_book_pdf.core.config import ResolvedBuildSource
+from swift_book_pdf.pdf.fonts.config import FontConfig
 from swift_book_pdf.pdf.latex.config import LaTeXConfig, LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.fonts import config as font_config_module
-from swift_book_pdf.pdf.layout import DocConfig
-
-if TYPE_CHECKING:
-    from swift_book_pdf.pdf.latex.fonts.config import FontConfig
+from swift_book_pdf.pdf.layout import PDFDocumentConfig
 
 
 class _FontDiagnostics:
@@ -40,7 +38,7 @@ def test_font_config_construction_is_cheap(
         Mock(side_effect=AssertionError("font discovery should be explicit")),
     )
 
-    config = font_config_module.FontConfig(
+    config = FontConfig(
         main_font="New York",
         mono_font="Berkeley Mono",
         emoji_font="Apple Color Emoji",
@@ -71,7 +69,7 @@ def test_latex_pdf_config_formats_document_and_backend_diagnostics() -> None:
             original_work_copyright_year_range=(2014, 2026),
         ),
         output_path="book.pdf",
-        doc_config=DocConfig(),
+        doc_config=PDFDocumentConfig(),
         latex_config=LaTeXConfig(
             font_config=cast("FontConfig", _FontDiagnostics()),
             typesets=3,

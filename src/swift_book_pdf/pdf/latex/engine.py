@@ -18,7 +18,7 @@ from pathlib import Path
 
 from tqdm import trange
 
-from swift_book_pdf.pdf.engine import PDFBuildContext
+from swift_book_pdf.pdf.contracts import PDFBuildContext
 from swift_book_pdf.pdf.latex.build.compiler import LuaLaTeXCompiler
 from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.document import write_latex_document

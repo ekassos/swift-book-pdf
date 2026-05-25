@@ -12,16 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""LaTeX rendering for paragraph blocks."""
+"""Shared PDF font configuration models."""
 
-from swift_book_pdf.core.blocks.models import ParagraphBlock
-from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
-from swift_book_pdf.pdf.latex.render.inline import apply_formatting
-from swift_book_pdf.pdf.options import RenderingMode
+from swift_book_pdf.pdf.fonts.config import FontConfig, FontOverrides
 
-
-def convert_paragraph_block(block: ParagraphBlock, mode: RenderingMode) -> str:
-    para_conv = apply_formatting(
-        convert_inline_code(" ".join(block.lines)), mode
-    )
-    return f"\\ParagraphStyle{{{para_conv}}}\n"
+__all__ = ["FontConfig", "FontOverrides"]

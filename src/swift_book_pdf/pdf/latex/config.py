@@ -17,7 +17,8 @@
 from dataclasses import dataclass
 
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.latex.fonts.config import FontConfig
+from swift_book_pdf.pdf.fonts.config import FontConfig
+from swift_book_pdf.pdf.latex.fonts.config import format_for_latex
 from swift_book_pdf.pdf.options import EngineKind
 
 DEFAULT_TYPESETS = 4
@@ -37,10 +38,15 @@ class LaTeXConfig:
 
     def __str__(self) -> str:
         """Format the resolved LaTeX configuration for diagnostics."""
+        font_config = (
+            format_for_latex(self.font_config)
+            if isinstance(self.font_config, FontConfig)
+            else str(self.font_config)
+        )
         return "\n".join(
             [
                 f"Typesets: {self.typesets}",
-                str(self.font_config).rstrip(),
+                font_config.rstrip(),
             ]
         )
 

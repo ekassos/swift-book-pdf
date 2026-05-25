@@ -18,7 +18,7 @@ from swift_book_pdf.core.blocks.models import CodeBlock
 from swift_book_pdf.pdf.latex.render.escaping import override_characters
 
 
-def _convert_code_block(block: CodeBlock) -> list[str]:
+def convert_code_block(block: CodeBlock) -> list[str]:
     output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
     output.extend(override_characters(line, True) for line in block.lines)
     output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")

@@ -19,11 +19,11 @@ from typing import Any
 
 from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.engine import PDFBackend, PDFBackendConfigInput
+from swift_book_pdf.pdf.contracts import PDFBackend, PDFBackendConfigInput
 from swift_book_pdf.pdf.layout import (
     DEFAULT_BODY_FONT_SIZE,
     DEFAULT_GUTTER,
-    DocConfig,
+    PDFDocumentConfig,
 )
 from swift_book_pdf.pdf.options import Appearance, PaperSize, RenderingMode
 
@@ -35,7 +35,7 @@ def build_doc_config(
     dark: bool,
     gutter: bool | None,
     font_size: float | None,
-) -> DocConfig:
+) -> PDFDocumentConfig:
     """Build PDF document layout configuration from CLI options.
 
     Args:
@@ -48,7 +48,7 @@ def build_doc_config(
     Returns:
         PDF document layout configuration.
     """
-    return DocConfig(
+    return PDFDocumentConfig(
         mode=RenderingMode(mode),
         paper_size=PaperSize(paper),
         gutter=DEFAULT_GUTTER if gutter is None else gutter,
@@ -62,7 +62,7 @@ def build_pdf_config(  # noqa: PLR0913
     output_path: str,
     *,
     backend: PDFBackend,
-    doc_config: DocConfig,
+    doc_config: PDFDocumentConfig,
     backend_options: Mapping[str, Any],
     override_version: str | None,
     source_ref: str | None,

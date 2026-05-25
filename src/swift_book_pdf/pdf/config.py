@@ -19,7 +19,7 @@ from typing import ClassVar
 
 from swift_book_pdf.core.config.models import BaseBuildConfig
 from swift_book_pdf.core.output import OutputFormat
-from swift_book_pdf.pdf.layout import DocConfig
+from swift_book_pdf.pdf.layout import PDFDocumentConfig
 from swift_book_pdf.pdf.options import EngineKind
 
 
@@ -33,7 +33,7 @@ class PDFConfig(BaseBuildConfig):
         override_version: Optional Swift version override.
     """
 
-    doc_config: DocConfig
+    doc_config: PDFDocumentConfig
     engine_kind: EngineKind
     override_version: str | None = None
 

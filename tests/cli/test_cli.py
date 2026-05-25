@@ -101,7 +101,7 @@ def stub_resolve_cli_build_source(
                 "--main",
                 "--dangerously-skip-legal-notices",
             ),
-            ("--export-cover-image", "--cover-footer-line"),
+            ("--engine", "--export-cover-image", "--cover-footer-line"),
             id="pdf-help",
         ),
         pytest.param(
@@ -161,7 +161,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     build_pdf_config = Mock(return_value=fake_config)
     build_pdf = Mock()
     monkeypatch.setattr(
-        pdf_cli.DEFAULT_BACKEND,
+        pdf_cli.LATEX_BACKEND,
         "build_config",
         build_pdf_config,
     )
@@ -173,6 +173,8 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
         pdf_cli.pdf,
         [
             str(output_dir),
+            "--engine",
+            "latex",
             "--mode",
             "print",
             "--paper",
@@ -368,7 +370,7 @@ def test_directory_output_defaults_to_format_extension(
     stub_resolve_cli_build_source(config_module, monkeypatch)
     if scenario.module is pdf_cli:
         monkeypatch.setattr(
-            pdf_cli.DEFAULT_BACKEND,
+            pdf_cli.LATEX_BACKEND,
             "build_config",
             config_mock,
         )

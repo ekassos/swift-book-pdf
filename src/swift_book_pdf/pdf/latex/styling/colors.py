@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 from swift_book_pdf.pdf.options import Appearance, RenderingMode
 
 
-class DocumentColors(BaseModel):
+@dataclass(frozen=True)
+class DocumentColors:
     background: str
     text: str
     header_background: str

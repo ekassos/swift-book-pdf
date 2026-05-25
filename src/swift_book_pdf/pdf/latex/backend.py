@@ -21,13 +21,14 @@ import click
 
 from swift_book_pdf.cli.options import OptionTarget, apply_options
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.engine import PDFBackendConfigInput
+from swift_book_pdf.pdf.contracts import PDFBackendConfigInput
+from swift_book_pdf.pdf.fonts import FontOverrides
 from swift_book_pdf.pdf.latex.config import (
     DEFAULT_TYPESETS,
     LaTeXConfig,
     LaTeXPDFConfig,
 )
-from swift_book_pdf.pdf.latex.fonts.config import FontConfig
+from swift_book_pdf.pdf.latex.fonts.config import resolve_for_latex
 from swift_book_pdf.pdf.options import EngineKind
 
 OptionDecorator = Callable[[OptionTarget], OptionTarget]
@@ -49,13 +50,15 @@ class LaTeXBackend:
     def build_config(self, config_input: PDFBackendConfigInput) -> PDFConfig:
         """Build a LaTeX-backed PDF configuration."""
         backend_options = config_input.backend_options
-        font_config = FontConfig.resolve(
-            main_font_custom=_optional_str(backend_options, "main"),
-            mono_font_custom=_optional_str(backend_options, "mono"),
-            unicode_fonts_custom_list=list(backend_options.get("unicode", ())),
-            emoji_font_custom=_optional_str(backend_options, "emoji"),
-            header_footer_font_custom=_optional_str(
-                backend_options, "header_footer"
+        font_config = resolve_for_latex(
+            FontOverrides(
+                main_font=_optional_str(backend_options, "main"),
+                mono_font=_optional_str(backend_options, "mono"),
+                unicode_fonts=tuple(backend_options.get("unicode", ())),
+                emoji_font=_optional_str(backend_options, "emoji"),
+                header_footer_font=_optional_str(
+                    backend_options, "header_footer"
+                ),
             ),
         )
         latex_config = LaTeXConfig(

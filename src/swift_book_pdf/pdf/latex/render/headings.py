@@ -25,7 +25,7 @@ from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 from swift_book_pdf.pdf.options import RenderingMode
 
 
-def _convert_header_like_block(
+def convert_header_like_block(
     block: Block,
     file_name: str,
     mode: RenderingMode,

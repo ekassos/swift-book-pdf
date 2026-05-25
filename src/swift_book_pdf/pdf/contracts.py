@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""PDF engine selection and shared engine contract."""
-
-# ruff: noqa: PLC0415
+"""Shared PDF backend and engine contracts."""
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
@@ -24,7 +22,7 @@ from typing import Any, Protocol
 from swift_book_pdf.core.config import ResolvedBuildSource
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.layout import DocConfig
+from swift_book_pdf.pdf.layout import PDFDocumentConfig
 from swift_book_pdf.pdf.options import EngineKind
 
 OptionTarget = Callable[..., object]
@@ -36,7 +34,6 @@ class PDFBuildContext:
 
     config: PDFConfig
     toc: TableOfContents
-    version_info: str
 
 
 @dataclass(frozen=True)
@@ -45,7 +42,7 @@ class PDFBackendConfigInput:
 
     source: ResolvedBuildSource
     output_path: str
-    doc_config: DocConfig
+    doc_config: PDFDocumentConfig
     override_version: str | None
     dangerously_skip_legal_notices: bool
     backend_options: Mapping[str, Any]
@@ -71,37 +68,3 @@ class PDFBackend(Protocol):
 
     def build_config(self, config_input: PDFBackendConfigInput) -> PDFConfig:
         """Build the concrete backend config for a PDF build."""
-
-
-def select_backend(engine_kind: EngineKind) -> PDFBackend:
-    """Select the configured PDF backend."""
-    match engine_kind:
-        case EngineKind.LATEX:
-            from swift_book_pdf.pdf.latex.backend import LaTeXBackend
-
-            return LaTeXBackend()
-        case _:
-            raise ValueError(f"Unsupported PDF engine: {engine_kind}")
-
-
-def select_engine(config: PDFConfig) -> PDFEngine:
-    """Select the configured PDF engine.
-
-    Args:
-        config: Resolved PDF build configuration.
-
-    Returns:
-        The engine implementation for the configured engine kind.
-
-    Raises:
-        ValueError: If the configured engine is unsupported.
-    """
-    match config.engine_kind:
-        case EngineKind.LATEX:
-            from swift_book_pdf.pdf.latex.engine import (
-                LaTeXEngine,
-            )
-
-            return LaTeXEngine()
-        case _:
-            raise ValueError(f"Unsupported PDF engine: {config.engine_kind}")

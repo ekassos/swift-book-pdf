@@ -17,10 +17,10 @@
 import logging
 import shutil
 
-from swift_book_pdf.core.markdown import resolve_version_info
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.engine import PDFBuildContext, select_engine
+from swift_book_pdf.pdf.contracts import PDFBuildContext
+from swift_book_pdf.pdf.registry import select_engine
 
 logger = logging.getLogger(__name__)
 
@@ -37,40 +37,21 @@ def build_pdf(config: PDFConfig) -> None:
         config.temp_dir,
         include_notices=not config.dangerously_skip_legal_notices,
     )
-    PDFBookBuilder(config, toc).build()
+    doc_config = config.doc_config
+    logger.info(
+        f"Creating PDF in {doc_config.mode.value} "
+        f"({doc_config.appearance}) mode...",
+    )
+    logger.debug(f"\n{config.diagnostic_details()}")
+    temp_pdf_path = select_engine(config).build(
+        PDFBuildContext(config=config, toc=toc)
+    )
+    if not temp_pdf_path.exists():
+        logger.error(f"PDF file not found: {temp_pdf_path}")
+        return
 
-
-class PDFBookBuilder:
-    """Build a PDF by delegating engine-specific rendering and compilation."""
-
-    def __init__(self, config: PDFConfig, toc: TableOfContents) -> None:
-        self.config = config
-        self.toc = toc
-
-    def build(self) -> None:
-        """Render and compile the configured PDF artifact."""
-        doc_config = self.config.doc_config
-        logger.info(
-            f"Creating PDF in {doc_config.mode.value} "
-            f"({doc_config.appearance}) mode...",
-        )
-        logger.debug(f"\n{self.config.diagnostic_details()}")
-        context = PDFBuildContext(
-            config=self.config,
-            toc=self.toc,
-            version_info=resolve_version_info(
-                self.toc.file_content, self.config.override_version
-            ),
-        )
-        temp_pdf_path = select_engine(self.config).build(context)
-        if not temp_pdf_path.exists():
-            logger.error(f"PDF file not found: {temp_pdf_path}")
-            return
-
-        try:
-            shutil.move(str(temp_pdf_path), self.config.output_path)
-            logger.info(f"PDF saved to {self.config.output_path}")
-        except (OSError, shutil.Error) as e:
-            logger.error(
-                f"Failed to save PDF to {self.config.output_path}: {e}"
-            )
+    try:
+        shutil.move(str(temp_pdf_path), config.output_path)
+        logger.info(f"PDF saved to {config.output_path}")
+    except (OSError, shutil.Error) as e:
+        logger.error(f"Failed to save PDF to {config.output_path}: {e}")

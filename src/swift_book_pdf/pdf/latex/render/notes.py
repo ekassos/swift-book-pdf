@@ -19,7 +19,7 @@ from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
 from swift_book_pdf.pdf.options import RenderingMode
 
 
-def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
+def convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
     aside_content = "\n".join(
         convert_nested_block(sub_block, mode) for sub_block in block.blocks
     )

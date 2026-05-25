@@ -56,7 +56,7 @@ def write_latex_document(
             continue
 
         chapter_metadata = toc.chapter_metadata.get(tag.lower())
-        if chapter_metadata is None:
+        if chapter_metadata is None or chapter_metadata.file_path is None:
             logger.warning(
                 f"Warning: No file found for tag <doc:{tag}>, skipping...",
             )

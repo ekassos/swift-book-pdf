@@ -31,31 +31,36 @@ def build_pdf(config: PDFConfig) -> None:
     Args:
         config: Resolved PDF build configuration.
     """
-    PDFBookBuilder(config).build()
+    toc = TableOfContents(
+        config.root_dir,
+        config.toc_file_path,
+        config.temp_dir,
+        include_notices=not config.dangerously_skip_legal_notices,
+    )
+    PDFBookBuilder(config, toc).build()
 
 
 class PDFBookBuilder:
     """Build a PDF by delegating engine-specific rendering and compilation."""
 
-    def __init__(self, config: PDFConfig) -> None:
+    def __init__(self, config: PDFConfig, toc: TableOfContents) -> None:
         self.config = config
-        self.toc = TableOfContents(
-            config.root_dir,
-            config.toc_file_path,
-            config.temp_dir,
-            include_notices=not config.dangerously_skip_legal_notices,
-        )
+        self.toc = toc
 
     def build(self) -> None:
         """Render and compile the configured PDF artifact."""
+        doc_config = self.config.doc_config
         logger.info(
-            f"Creating PDF in {self.config.doc_config.mode.value} "
-            f"({self.config.doc_config.appearance}) mode...",
+            f"Creating PDF in {doc_config.mode.value} "
+            f"({doc_config.appearance}) mode...",
         )
+        logger.debug(f"\n{doc_config}")
         context = PDFBuildContext(
             config=self.config,
             toc=self.toc,
-            version_info=self._version_info(),
+            version_info=resolve_version_info(
+                self.toc.file_content, self.config.override_version
+            ),
         )
         temp_pdf_path = select_engine(self.config).build(context)
         if not temp_pdf_path.exists():
@@ -69,8 +74,3 @@ class PDFBookBuilder:
             logger.error(
                 f"Failed to save PDF to {self.config.output_path}: {e}"
             )
-
-    def _version_info(self) -> str:
-        return resolve_version_info(
-            self.toc.file_content, self.config.override_version
-        )

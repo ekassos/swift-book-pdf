@@ -24,13 +24,13 @@ from swift_book_pdf.core.assets import (
     ICON_ASSETS_DIR,
     SWIFT_LOGO_ASSETS_DIR,
 )
+from swift_book_pdf.core.process import run_process_with_logs
 from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.latex.dependencies import (
     check_for_missing_dependency_logs,
     check_minted_runtime_compatibility,
     check_required_latex_packages_installed,
 )
-from swift_book_pdf.pdf.process import run_process_with_logs
 
 logger = logging.getLogger(__name__)
 

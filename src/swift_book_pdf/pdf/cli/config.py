@@ -18,7 +18,7 @@ from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.latex.fonts import FontConfig
 from swift_book_pdf.pdf.layout import DocConfig
-from swift_book_pdf.pdf.options import PaperSize, RenderingMode
+from swift_book_pdf.pdf.options import Appearance, PaperSize, RenderingMode
 
 
 def build_font_config(
@@ -73,12 +73,12 @@ def build_doc_config(  # noqa: PLR0913
         PDF document layout configuration.
     """
     return DocConfig(
-        RenderingMode(mode),
-        PaperSize(paper),
-        typesets,
-        dark,
-        gutter,
-        font_size,
+        mode=RenderingMode(mode),
+        paper_size=PaperSize(paper),
+        typesets=typesets,
+        gutter=True if gutter is None else gutter,
+        font_size=font_size if font_size is not None else 9.0,
+        appearance=Appearance.DARK if dark else Appearance.LIGHT,
     )
 
 

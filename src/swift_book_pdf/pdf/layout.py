@@ -14,17 +14,14 @@
 
 """PDF document layout configuration."""
 
-import logging
 from dataclasses import dataclass
 
 from swift_book_pdf.pdf.options import Appearance, PaperSize, RenderingMode
 
-logger = logging.getLogger(__name__)
-
 
 @dataclass(frozen=True)
 class DocConfig:
-    """PDF document layout options resolved from CLI input.
+    """Resolved PDF document layout options.
 
     Attributes:
         mode: PDF rendering mode.
@@ -32,73 +29,45 @@ class DocConfig:
         typesets: Number of LaTeX typesetting passes.
         gutter: Whether the book gutter should be rendered.
         font_size: Base paragraph font size in points.
-        appearance: Light or dark rendering appearance derived from
-            `dark_mode`.
+        appearance: Light or dark rendering appearance.
     """
 
-    mode: RenderingMode
+    mode: RenderingMode = RenderingMode.DIGITAL
     """PDF rendering mode."""
 
-    paper_size: PaperSize
+    paper_size: PaperSize = PaperSize.LETTER
     """Output paper size."""
 
-    typesets: int
+    typesets: int = 4
     """Number of LaTeX typesetting passes."""
 
-    gutter: bool
+    gutter: bool = True
     """Whether the book gutter should be rendered."""
 
-    font_size: float
+    font_size: float = 9.0
     """Base paragraph font size in points."""
 
-    appearance: Appearance
+    appearance: Appearance = Appearance.LIGHT
     """Light or dark rendering appearance."""
 
-    def __init__(  # noqa: PLR0913
-        self,
-        mode: RenderingMode = RenderingMode.DIGITAL,
-        paper_size: PaperSize = PaperSize.LETTER,
-        typesets: int = 4,
-        dark_mode: bool = False,
-        gutter: bool | None = None,
-        font_size: float | None = None,
-    ) -> None:
-        """Create a normalized PDF document layout configuration.
-
-        Args:
-            mode: PDF rendering mode.
-            paper_size: Output paper size.
-            typesets: Number of LaTeX typesetting passes.
-            dark_mode: Whether dark appearance should be selected.
-            gutter: Optional gutter override. `None` keeps the default enabled
-                gutter.
-            font_size: Optional base paragraph font size in points.
+    def __post_init__(self) -> None:
+        """Validate the resolved layout configuration.
 
         Raises:
             ValueError: If `font_size` is not positive.
         """
-        normalized_font_size = font_size if font_size is not None else 9.0
-        if normalized_font_size <= 0:
+        if self.font_size <= 0:
             raise ValueError("Font size must be a positive number.")
 
-        object.__setattr__(self, "mode", mode)
-        object.__setattr__(self, "paper_size", paper_size)
-        object.__setattr__(self, "typesets", typesets)
-        object.__setattr__(
-            self,
-            "appearance",
-            Appearance.DARK if dark_mode else Appearance.LIGHT,
+    def __str__(self) -> str:
+        """Format the resolved layout configuration for diagnostics."""
+        return "\n".join(
+            [
+                f"Rendering mode: {self.mode}",
+                f"Paper size: {self.paper_size}",
+                f"Typesets: {self.typesets}",
+                f"Appearance: {self.appearance}",
+                f"Book Gutter: {self.gutter}",
+                f"Font size: {self.font_size}pt",
+            ]
         )
-        object.__setattr__(
-            self,
-            "gutter",
-            True if gutter is None else gutter,
-        )
-        object.__setattr__(self, "font_size", normalized_font_size)
-
-        logger.debug(f"Rendering mode: {self.mode}")
-        logger.debug(f"Paper size: {self.paper_size}")
-        logger.debug(f"Typesets: {self.typesets}")
-        logger.debug(f"Appearance: {self.appearance}")
-        logger.debug(f"Book Gutter: {self.gutter}")
-        logger.debug(f"Font size: {self.font_size}pt")

@@ -13,10 +13,8 @@
 # limitations under the License.
 
 from swift_book_pdf.core.blocks.models import TableBlock
-from swift_book_pdf.pdf.latex.inline import (
-    apply_formatting,
-    convert_inline_code,
-)
+from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
+from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 from swift_book_pdf.pdf.options import RenderingMode
 from swift_book_pdf.pdf.styling.typography import get_font_size, get_spacing
 

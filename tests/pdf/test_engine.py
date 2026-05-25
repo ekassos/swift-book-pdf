@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from swift_book_pdf.pdf.latex import compiler
+from swift_book_pdf.pdf.latex.build import compiler
 
 if TYPE_CHECKING:
     from swift_book_pdf.pdf.config import PDFConfig

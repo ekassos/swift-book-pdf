@@ -20,10 +20,10 @@ from pathlib import Path
 from swift_book_pdf.core.generated.notices.metadata import NOTICES_DOC_KEY
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.latex.notices import render_notices_latex
 from swift_book_pdf.pdf.latex.preamble import generate_preamble
+from swift_book_pdf.pdf.latex.render.notices import render_notices_latex
+from swift_book_pdf.pdf.latex.render.toc import generate_toc_latex
 from swift_book_pdf.pdf.latex.renderer import LaTeXRenderer
-from swift_book_pdf.pdf.latex.toc import generate_toc_latex
 
 logger = logging.getLogger(__name__)
 

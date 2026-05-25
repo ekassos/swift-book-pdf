@@ -12,25 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.core.blocks.models import CodeBlock
-from swift_book_pdf.pdf.latex.render.code_blocks import _convert_code_block
+"""LaTeX rendering for note blocks."""
+
+from swift_book_pdf.core.blocks.models import NoteBlock
 from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
 from swift_book_pdf.pdf.options import RenderingMode
 
 
-def test_convert_code_block_preserves_percent_for_minted() -> None:
-    block = CodeBlock(lines=["-9 % 4 // equals -1"])
-
-    rendered = "\n".join(_convert_code_block(block))
-
-    assert "-9 % 4 // equals -1" in rendered
-    assert r"\%" not in rendered
-
-
-def test_convert_nested_code_block_preserves_percent_for_minted() -> None:
-    block = CodeBlock(lines=["-9 % 4 // equals -1"])
-
-    rendered = convert_nested_block(block, RenderingMode.PRINT)
-
-    assert "-9 % 4 // equals -1" in rendered
-    assert r"\%" not in rendered
+def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
+    aside_content = "\n".join(
+        convert_nested_block(sub_block, mode) for sub_block in block.blocks
+    )
+    return [
+        "\\begin{flushleft}\\begin{asideNote}",
+        f" \\textbf{{{block.label}}} \\vspace*{{4pt}} \\\\",
+        aside_content,
+        "\\end{asideNote}\\end{flushleft}" + "\n",
+    ]

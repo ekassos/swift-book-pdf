@@ -19,7 +19,7 @@ from typing import ClassVar
 
 from swift_book_pdf.core.config.models import BaseBuildConfig
 from swift_book_pdf.core.output import OutputFormat
-from swift_book_pdf.pdf.latex.fonts import FontConfig
+from swift_book_pdf.pdf.latex.fonts.config import FontConfig
 from swift_book_pdf.pdf.layout import DocConfig
 from swift_book_pdf.pdf.options import EngineKind
 

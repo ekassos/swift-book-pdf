@@ -21,8 +21,8 @@ from swift_book_pdf.core.markdown import (
 )
 from swift_book_pdf.core.source.paths import get_file_name
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.latex.blocks import convert_blocks_to_latex
-from swift_book_pdf.pdf.latex.chapter import generate_chapter_title
+from swift_book_pdf.pdf.latex.render.blocks import convert_blocks_to_latex
+from swift_book_pdf.pdf.latex.render.chapter import generate_chapter_title
 
 
 class LaTeXRenderer:

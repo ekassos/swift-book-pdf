@@ -16,7 +16,7 @@
 
 from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.latex.fonts import FontConfig
+from swift_book_pdf.pdf.latex.fonts.config import FontConfig
 from swift_book_pdf.pdf.layout import (
     DEFAULT_BODY_FONT_SIZE,
     DEFAULT_GUTTER,

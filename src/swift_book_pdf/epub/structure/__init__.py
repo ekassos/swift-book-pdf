@@ -12,12 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from pathlib import Path
+from .collector import EPUBStructure, EPUBStructureCollector
 
-
-@dataclass(frozen=True)
-class ImageAsset:
-    source_path: Path
-    href: str
-    media_type: str
+__all__ = ["EPUBStructure", "EPUBStructureCollector"]

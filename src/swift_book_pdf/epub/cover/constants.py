@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.epub.constants import REFERENCE_STATIC_DIR
+from swift_book_pdf.epub.assets import REFERENCE_STATIC_DIR
 
 COVER_FONT_DIR = REFERENCE_STATIC_DIR / "fonts"
 COVER_SANS_FONT_PATH = COVER_FONT_DIR / "IBMPlexSans-Medium.ttf"

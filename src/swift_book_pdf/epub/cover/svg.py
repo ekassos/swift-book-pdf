@@ -49,7 +49,7 @@ class CoverPageOptions:
 
 
 @dataclass(frozen=True)
-class CoverTextStyle:
+class SVGTextStyle:
     font_family: str
     font_size: float
     fill: str
@@ -75,13 +75,24 @@ def render_cover_page(
 ) -> str:
     version_label = cover_version_label(version_info, options.cover_variant)
     css_href = html.escape(relative_href(document.href, "_static/epub.css"))
-
-    layers: list[str] = []
-
     banner_text, banner_color = options.cover_banner
-    banner_text = banner_text.upper()
     banner_color = html.escape(banner_color)
-    layers.append(
+
+    layers = [
+        _render_banner_layer(banner_text, banner_color),
+        *_render_title_layers(version_label, banner_color),
+    ]
+    footer_layer = _render_footer_layer(options)
+    if footer_layer is not None:
+        layers.append(footer_layer)
+
+    svg_body = "".join(layers)
+    accessible_title = _build_accessible_title(options, version_label)
+    return _wrap_cover_xhtml(options, css_href, accessible_title, svg_body)
+
+
+def _render_banner_layer(banner_text: str, banner_color: str) -> str:
+    return (
         f'        <rect x="0" y="1029" width="1440" height="153" '
         f'fill="{banner_color}"/>\n'
         f'        <text class="cover-banner-text" x="114.48" '
@@ -90,61 +101,13 @@ def render_cover_page(
         f'dominant-baseline="text-before-edge" '
         f'font-kerning="normal" text-rendering="optimizeLegibility" '
         f'fill="#ffffff">'
-        f"{html.escape(banner_text)}</text>\n"
+        f"{html.escape(banner_text.upper())}</text>\n"
     )
-    layers.append(
-        render_cover_text(
-            "The",
-            x=107.81,
-            y=57.67,
-            style=CoverTextStyle(
-                font_family=COVER_SERIF_FONT_FAMILY,
-                font_size=133.333,
-                fill="#1f1f1f",
-                font_style="italic",
-            ),
-        )
-    )
-    layers.append(
-        render_cover_text(
-            "Swift",
-            x=104.81,
-            y=176.69,
-            style=CoverTextStyle(
-                font_family=COVER_SERIF_FONT_FAMILY,
-                font_size=208.333,
-                fill=banner_color,
-                font_weight="500",
-                letter_spacing=-1.8,
-            ),
-        )
-    )
-    layers.append(
-        render_cover_text(
-            "Programming",
-            x=108.81,
-            y=383.77,
-            style=CoverTextStyle(
-                font_family=COVER_SERIF_FONT_FAMILY,
-                font_size=176,
-                fill="#1f1f1f",
-                letter_spacing=-3.5,
-            ),
-        )
-    )
-    layers.append(
-        render_cover_text(
-            "Language",
-            x=108.81,
-            y=556.77,
-            style=CoverTextStyle(
-                font_family=COVER_SERIF_FONT_FAMILY,
-                font_size=176,
-                fill="#1f1f1f",
-                letter_spacing=-3.8,
-            ),
-        )
-    )
+
+
+def _render_title_layers(
+    version_label: str | None, banner_color: str
+) -> list[str]:
     swift_version_text = [
         CoverTextSpan("S", letter_spacing=-5.0),
         CoverTextSpan("w", letter_spacing=-3.2),
@@ -156,22 +119,70 @@ def render_cover_page(
         swift_version_text.append(
             CoverTextSpan(version_label, letter_spacing=-2.5)
         )
-    layers.append(
+
+    return [
+        render_cover_text(
+            "The",
+            x=107.81,
+            y=57.67,
+            style=SVGTextStyle(
+                font_family=COVER_SERIF_FONT_FAMILY,
+                font_size=133.333,
+                fill="#1f1f1f",
+                font_style="italic",
+            ),
+        ),
+        render_cover_text(
+            "Swift",
+            x=104.81,
+            y=176.69,
+            style=SVGTextStyle(
+                font_family=COVER_SERIF_FONT_FAMILY,
+                font_size=208.333,
+                fill=banner_color,
+                font_weight="500",
+                letter_spacing=-1.8,
+            ),
+        ),
+        render_cover_text(
+            "Programming",
+            x=108.81,
+            y=383.77,
+            style=SVGTextStyle(
+                font_family=COVER_SERIF_FONT_FAMILY,
+                font_size=176,
+                fill="#1f1f1f",
+                letter_spacing=-3.5,
+            ),
+        ),
+        render_cover_text(
+            "Language",
+            x=108.81,
+            y=556.77,
+            style=SVGTextStyle(
+                font_family=COVER_SERIF_FONT_FAMILY,
+                font_size=176,
+                fill="#1f1f1f",
+                letter_spacing=-3.8,
+            ),
+        ),
         render_cover_text(
             swift_version_text,
             x=111.81,
             y=843.95,
-            style=CoverTextStyle(
+            style=SVGTextStyle(
                 font_family=COVER_SANS_FONT_FAMILY,
                 font_size=116.667,
                 fill=banner_color,
                 font_weight="500",
             ),
-        )
-    )
+        ),
+    ]
 
+
+def _render_footer_layer(options: CoverPageOptions) -> str | None:
     if options.cover_footer_line:
-        layers.append(
+        return (
             f'        <text class="cover-footer-text" x="720" y="2023" '
             f'text-anchor="middle" '
             f'font-family="{COVER_SERIF_FONT_FAMILY}" '
@@ -183,8 +194,8 @@ def render_cover_page(
             f'fill="{COVER_FOOTER_TEXT_FILL}">'
             f"{html.escape(options.cover_footer_line)}</text>\n"
         )
-    elif options.compiled_by_name:
-        layers.append(
+    if options.compiled_by_name:
+        return (
             f'        <text class="cover-compiler-label" x="115.81" '
             f'y="1991.09" font-family="{COVER_SERIF_FONT_FAMILY}" '
             f'font-weight="400" font-style="italic" '
@@ -203,7 +214,12 @@ def render_cover_page(
             f'fill="{COVER_FOOTER_TEXT_FILL}">'
             f"{html.escape(options.compiled_by_name)}</text>\n"
         )
+    return None
 
+
+def _build_accessible_title(
+    options: CoverPageOptions, version_label: str | None
+) -> str:
     accessible_parts: list[str] = [options.cover_banner[0]]
     accessible_parts.append("The Swift Programming Language")
     if version_label:
@@ -212,9 +228,15 @@ def render_cover_page(
         accessible_parts.append(options.cover_footer_line)
     elif options.compiled_by_name:
         accessible_parts.append(f"Compiled by: {options.compiled_by_name}")
-    accessible_title = " — ".join(accessible_parts)
+    return " — ".join(accessible_parts)
 
-    svg_body = "".join(layers)
+
+def _wrap_cover_xhtml(
+    options: CoverPageOptions,
+    css_href: str,
+    accessible_title: str,
+    svg_body: str,
+) -> str:
     return f"""<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
@@ -236,7 +258,7 @@ def render_cover_text(
     text: CoverTextContent,
     x: float,
     y: float,
-    style: CoverTextStyle,
+    style: SVGTextStyle,
 ) -> str:
     text_content = _render_cover_text_content(text)
     return (

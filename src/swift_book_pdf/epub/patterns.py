@@ -12,21 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import annotations
-
 import re
 
-
-def anchor_for_heading(title: str) -> str:
-    cleaned = re.sub(r"[*`]", "", title).strip()
-    cleaned = re.sub("[()/:,.!?'\\u2019]", "", cleaned)
-    cleaned = re.sub(r"\s+", "-", cleaned)
-    return re.sub(r"-{2,}", "-", cleaned)
-
-
-def make_unique_anchor(anchor: str, seen: dict[str, int]) -> str:
-    count = seen.get(anchor, 0)
-    seen[anchor] = count + 1
-    if count == 0:
-        return anchor
-    return f"{anchor}-{count + 1}"
+DOC_LINK_PATTERN = re.compile(r"<doc:([^>]+)>")
+STRONG_PATTERN = re.compile(r"\*\*(.+?)\*\*")
+EMPHASIS_PATTERN = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
+HEADING_PATTERN = re.compile(r"^(#{1,4})\s+(.*)$")
+DOC_TAG_LINE_PATTERN = re.compile(r"^-\s+<doc:(.*?)>\s*$")
+PART_HEADING_PATTERN = re.compile(r"^###\s+(.*)$")
+CODE_PLACEHOLDER_PATTERN = re.compile(r"<#(.*?)#>")

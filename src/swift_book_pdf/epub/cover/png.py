@@ -50,7 +50,7 @@ COVER_ASSET_HREF = "_static/cover.png"
 
 
 @dataclass(frozen=True)
-class _CoverTextStyle:
+class _PNGTextStyle:
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont
     tracking: float
     fill: str
@@ -86,8 +86,10 @@ def write_cover_asset(
 
     cover_image = Image.open(template_path).convert("RGBA")
     if version_text is not None:
-        style = _CoverTextStyle(
-            font=_load_cover_font(COVER_TEXT_SIZE),
+        style = _PNGTextStyle(
+            font=ImageFont.truetype(
+                str(COVER_SANS_FONT_PATH), COVER_TEXT_SIZE
+            ),
             tracking=COVER_TEXT_TRACKING,
             fill=cover_png_version_fill(
                 version_info,
@@ -100,7 +102,10 @@ def write_cover_asset(
             style,
         )
     if config.cover_footer_line:
-        footer_line_font = _load_cover_footer_font(COVER_FOOTER_TEXT_SIZE)
+        footer_line_font = ImageFont.truetype(
+            str(COVER_SERIF_ITALIC_FONT_PATH),
+            COVER_FOOTER_TEXT_SIZE,
+        )
         _draw_cover_footer_line(
             cover_image,
             config.cover_footer_line,
@@ -123,22 +128,10 @@ def has_cover_asset(workspace: Path) -> bool:
     return oebps_workspace_path(workspace, COVER_ASSET_HREF).exists()
 
 
-def _load_cover_font(
-    size: int,
-) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    return ImageFont.truetype(str(COVER_SANS_FONT_PATH), size)
-
-
-def _load_cover_footer_font(
-    size: int,
-) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    return ImageFont.truetype(str(COVER_SERIF_ITALIC_FONT_PATH), size)
-
-
 def _draw_cover_version_text(
     image: Image.Image,
     text: str,
-    style: _CoverTextStyle,
+    style: _PNGTextStyle,
 ) -> None:
     text_width, text_height, bbox_left, bbox_top = _measure_tracked_text(
         text, style.font, style.tracking
@@ -193,7 +186,7 @@ def _draw_tracked_text(
     draw: ImageDraw.ImageDraw,
     position: tuple[float, float],
     text: str,
-    style: _CoverTextStyle,
+    style: _PNGTextStyle,
 ) -> None:
     if style.tracking == 0:
         draw.text(position, text, fill=style.fill, font=style.font)

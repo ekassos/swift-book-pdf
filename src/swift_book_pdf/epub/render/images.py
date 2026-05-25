@@ -23,10 +23,10 @@ from PIL import Image
 
 from swift_book_pdf.epub.assets import (
     AssetCatalog,
+    ImageAsset,
     image_destination_name,
     media_type_for_path,
 )
-from swift_book_pdf.epub.models import ImageAsset
 from swift_book_pdf.epub.paths import relative_href
 
 if TYPE_CHECKING:

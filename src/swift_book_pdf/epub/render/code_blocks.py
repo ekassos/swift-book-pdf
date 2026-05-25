@@ -20,7 +20,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import SwiftLexer
 
-from swift_book_pdf.epub.constants import CODE_PLACEHOLDER_PATTERN
+from swift_book_pdf.epub.patterns import CODE_PLACEHOLDER_PATTERN
 
 WRAPPING_PLACEHOLDER_MIN_LENGTH = 28
 

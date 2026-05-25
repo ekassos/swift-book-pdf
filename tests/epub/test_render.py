@@ -15,10 +15,10 @@
 from pathlib import Path
 
 from swift_book_pdf.core.document import DocumentEntry
-from swift_book_pdf.epub.cover.xhtml import (
+from swift_book_pdf.epub.cover.svg import (
     CoverPageOptions,
     CoverTextSpan,
-    CoverTextStyle,
+    SVGTextStyle,
     render_cover_page,
     render_cover_text,
 )
@@ -85,7 +85,7 @@ def test_render_cover_text_emits_configured_letter_spacing() -> None:
         "Swift",
         x=104.81,
         y=335.69,
-        style=CoverTextStyle(
+        style=SVGTextStyle(
             font_family="IBM Plex Serif",
             font_size=208.333,
             fill="#33519e",
@@ -106,7 +106,7 @@ def test_render_cover_text_accepts_spans_with_letter_spacing() -> None:
         ],
         x=104.81,
         y=335.69,
-        style=CoverTextStyle(
+        style=SVGTextStyle(
             font_family="IBM Plex Serif",
             font_size=208.333,
             fill="#33519e",
@@ -132,7 +132,7 @@ def test_render_cover_text_accepts_spans_with_dx() -> None:
         ),
         x=104.81,
         y=335.69,
-        style=CoverTextStyle(
+        style=SVGTextStyle(
             font_family="IBM Plex Serif",
             font_size=208.333,
             fill="#33519e",

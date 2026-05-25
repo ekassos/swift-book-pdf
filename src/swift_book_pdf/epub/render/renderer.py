@@ -17,7 +17,7 @@ from __future__ import annotations
 import html
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.epub.anchors import part_section_id
+from swift_book_pdf.epub.anchors import anchor_for_heading
 from swift_book_pdf.epub.assets import AssetCatalog
 from swift_book_pdf.epub.paths import relative_href
 
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
         PartEntry,
         SourceDocument,
     )
-    from swift_book_pdf.epub.models import ImageAsset
+    from swift_book_pdf.epub.assets import ImageAsset
     from swift_book_pdf.epub.render.links import LinkResolver
 
 
@@ -50,7 +50,7 @@ class EPUBRenderer:
         )
 
     def render_part_page(self, part: PartEntry) -> str:
-        section_id = part_section_id(part.title)
+        section_id = anchor_for_heading(part.title).lower()
         body = (
             f'  <div class="section part-page" id="{html.escape(section_id)}">\n'
             f"<h1>{html.escape(part.title)}</h1>\n"
@@ -76,7 +76,7 @@ class EPUBRenderer:
             grammar_anchor_counts={},
         )
         body_parts = [
-            f'  <div class="section" id="{html.escape(part_section_id(document.title))}">',
+            f'  <div class="section" id="{html.escape(anchor_for_heading(document.title).lower())}">',
             f"<h1>{html.escape(document.title)}</h1>",
         ]
         body_parts.extend(

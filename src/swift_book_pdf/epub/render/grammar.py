@@ -18,13 +18,13 @@ import html
 import re
 
 from swift_book_pdf.core.blocks.models import NoteBlock, ParagraphBlock
-from swift_book_pdf.epub.constants import EMPHASIS_PATTERN
-from swift_book_pdf.epub.grammar import (
+from swift_book_pdf.epub.grammar_rules import (
     clean_grammar_line,
     grammar_anchor_fragment,
     parse_grammar_rule,
 )
 from swift_book_pdf.epub.paths import relative_href
+from swift_book_pdf.epub.patterns import EMPHASIS_PATTERN
 from swift_book_pdf.epub.render.inline import replace_inline_code_spans
 
 

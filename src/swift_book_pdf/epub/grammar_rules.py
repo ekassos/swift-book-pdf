@@ -18,7 +18,7 @@ import re
 
 from swift_book_pdf.core.blocks.models import NoteBlock, ParagraphBlock
 
-MARKDOWN_WRAPPED_TERM_LENGTH = 2
+MIN_WRAPPED_MARKDOWN_TERM_LENGTH = 3
 
 
 def is_grammar_note_label(label: str) -> bool:
@@ -63,5 +63,5 @@ def _is_wrapped_markdown_term(text: str) -> bool:
     return (
         text.startswith("*")
         and text.endswith("*")
-        and len(text) > MARKDOWN_WRAPPED_TERM_LENGTH
+        and len(text) >= MIN_WRAPPED_MARKDOWN_TERM_LENGTH
     )

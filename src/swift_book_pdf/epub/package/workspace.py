@@ -22,8 +22,8 @@ from typing import TYPE_CHECKING
 from swift_book_pdf.epub.paths import oebps_workspace_path
 
 if TYPE_CHECKING:
+    from swift_book_pdf.epub.assets import ImageAsset
     from swift_book_pdf.epub.config import EPUBConfig
-    from swift_book_pdf.epub.models import ImageAsset
 
 
 def prepare_workspace(config: EPUBConfig) -> Path:

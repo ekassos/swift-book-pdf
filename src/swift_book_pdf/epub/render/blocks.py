@@ -33,7 +33,7 @@ from swift_book_pdf.core.blocks.models import (
     UnorderedListBlock,
 )
 from swift_book_pdf.epub.anchors import anchor_for_heading
-from swift_book_pdf.epub.grammar import is_grammar_note_label
+from swift_book_pdf.epub.grammar_rules import is_grammar_note_label
 
 from .code_blocks import render_code_block
 from .grammar import render_grammar_block
@@ -41,8 +41,7 @@ from .images import render_image_block
 from .inline import render_inline
 
 if TYPE_CHECKING:
-    from swift_book_pdf.epub.assets import AssetCatalog
-    from swift_book_pdf.epub.models import ImageAsset
+    from swift_book_pdf.epub.assets import AssetCatalog, ImageAsset
     from swift_book_pdf.epub.render.links import LinkResolver
 
 

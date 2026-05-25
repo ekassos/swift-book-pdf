@@ -14,7 +14,20 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
+
+LOCAL_ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
+REFERENCE_STATIC_DIR = LOCAL_ASSETS_DIR / "epub_reference"
+REFERENCE_NOTICES_DIR = LOCAL_ASSETS_DIR / "notices"
+IBM_PLEX_OFL_PATH = REFERENCE_NOTICES_DIR / "IBM-Plex-OFL.txt"
+
+
+@dataclass(frozen=True)
+class ImageAsset:
+    source_path: Path
+    href: str
+    media_type: str
 
 
 class AssetCatalog:

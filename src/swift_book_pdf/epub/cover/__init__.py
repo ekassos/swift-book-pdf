@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .svg import (
+    CoverPageOptions,
+    CoverTextSpan,
+    SVGTextStyle,
+    render_cover_page,
+    render_cover_text,
+)
 from .variants import (
     COVER_VARIANTS,
     CoverVariant,
@@ -23,20 +30,13 @@ from .variants import (
     resolve_cover_variant,
     resolve_cover_variant_name,
 )
-from .xhtml import (
-    CoverPageOptions,
-    CoverTextSpan,
-    CoverTextStyle,
-    render_cover_page,
-    render_cover_text,
-)
 
 __all__ = [
     "COVER_VARIANTS",
     "CoverPageOptions",
     "CoverTextSpan",
-    "CoverTextStyle",
     "CoverVariant",
+    "SVGTextStyle",
     "cover_png_version_fill",
     "cover_png_version_text",
     "cover_template_path",

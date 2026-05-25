@@ -18,7 +18,7 @@ import html
 import re
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.epub.constants import (
+from swift_book_pdf.epub.patterns import (
     DOC_LINK_PATTERN,
     EMPHASIS_PATTERN,
     STRONG_PATTERN,

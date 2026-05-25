@@ -17,9 +17,7 @@ from __future__ import annotations
 import shutil
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.epub.constants import (
-    REFERENCE_STATIC_DIR,
-)
+from swift_book_pdf.epub.assets import REFERENCE_STATIC_DIR
 from swift_book_pdf.epub.paths import oebps_workspace_path
 
 if TYPE_CHECKING:

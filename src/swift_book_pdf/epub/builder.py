@@ -19,27 +19,26 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.blocks import parse_blocks
-from swift_book_pdf.contents import (
-    remove_directives,
-    resolve_version_info,
+from swift_book_pdf.core.blocks import parse_blocks
+from swift_book_pdf.core.blocks.model import NoteBlock
+from swift_book_pdf.core.document import (
+    DocumentEntry,
+    PartEntry,
+    SourceDocument,
 )
-from swift_book_pdf.files import get_swift_book_repository_revision
-from swift_book_pdf.markdown_helpers import (
-    convert_markdown_links,
-    remove_multiline_comments,
-)
-from swift_book_pdf.notices import (
+from swift_book_pdf.core.generated.notices import (
     NOTICES_DOC_FILE_NAME,
     NOTICES_DOC_KEY,
     NOTICES_DOC_TITLE,
 )
-from swift_book_pdf.schema import (
-    DocumentEntry,
-    ImageAsset,
-    NoteBlock,
-    PartEntry,
-    SourceDocument,
+from swift_book_pdf.core.markdown import (
+    convert_markdown_links,
+    remove_directives,
+    remove_multiline_comments,
+    resolve_version_info,
+)
+from swift_book_pdf.core.source.repository import (
+    get_swift_book_repository_revision,
 )
 
 from .constants import (
@@ -68,7 +67,8 @@ from .render import (
 
 if TYPE_CHECKING:
     from swift_book_pdf.config import EPUBConfig
-    from swift_book_pdf.toc import TableOfContents
+    from swift_book_pdf.core.navigation.toc import TableOfContents
+    from swift_book_pdf.epub.model import ImageAsset
 
 logger = logging.getLogger(__name__)
 

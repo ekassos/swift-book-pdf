@@ -26,25 +26,22 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import SwiftLexer
 
-from swift_book_pdf.notices import render_notices_xhtml
-from swift_book_pdf.schema import (
+from swift_book_pdf.core.blocks.model import (
     Block,
     CodeBlock,
-    DocumentEntry,
     Header2Block,
     Header3Block,
     Header4Block,
-    ImageAsset,
     ImageBlock,
     NoteBlock,
     OrderedListBlock,
     ParagraphBlock,
-    PartEntry,
-    SourceDocument,
     TableBlock,
     TermListBlock,
     UnorderedListBlock,
 )
+from swift_book_pdf.epub.model import ImageAsset
+from swift_book_pdf.notices import render_notices_xhtml
 
 from .constants import (
     CODE_PLACEHOLDER_PATTERN,
@@ -82,6 +79,12 @@ INLINE_CODE_PADDING_LENGTH = 2
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from swift_book_pdf.core.document import (
+        DocumentEntry,
+        PartEntry,
+        SourceDocument,
+    )
 
 
 class AssetCatalog:

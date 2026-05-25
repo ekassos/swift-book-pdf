@@ -17,20 +17,19 @@ from __future__ import annotations
 import html
 from pathlib import Path
 
-from swift_book_pdf.latex_helpers import (
+from swift_book_pdf.core.generated.notices import (
+    NOTICES_DOC_KEY,
+    NOTICES_DOC_SUBTITLE,
+    NOTICES_DOC_TITLE,
+    NOTICES_SECTION_ID,
+)
+from swift_book_pdf.pdf.latex.chapter import generate_chapter_title
+from swift_book_pdf.pdf.latex.inline import (
     apply_formatting,
     convert_inline_code,
-    generate_chapter_title,
 )
-from swift_book_pdf.schema import ChapterMetadata, RenderingMode
+from swift_book_pdf.pdf.options import RenderingMode
 
-NOTICES_DOC_TAG = "CopyrightAndNotices"
-NOTICES_DOC_KEY = NOTICES_DOC_TAG.lower()
-NOTICES_DOC_TITLE = "Acknowledgments"
-NOTICES_DOC_SUBTITLE = "Review notices about this edition."
-NOTICES_SECTION_TITLE = "About This Edition"
-NOTICES_DOC_FILE_NAME = "Trademarks.xhtml"
-NOTICES_SECTION_ID = "copyright-and-notices"
 COPYRIGHT_PLACEHOLDER = "[[COPYRIGHT]]"
 
 SWIFT_LICENSE_URL = "https://swift.org/LICENSE.txt"
@@ -345,24 +344,6 @@ This product depends on highlightjs-pkl.
   * HOMEPAGE:
     * https://github.com/apple/highlightjs-pkl
 """
-
-
-def build_notices_chapter_metadata() -> ChapterMetadata:
-    return ChapterMetadata(
-        file_path=None,
-        header_line=NOTICES_DOC_TITLE,
-        subtitle_line=NOTICES_DOC_SUBTITLE,
-    )
-
-
-def build_notices_toc_lines(
-    *, include_section_heading: bool = False
-) -> list[str]:
-    lines = ["\n"]
-    if include_section_heading:
-        lines.extend([f"### {NOTICES_SECTION_TITLE}\n", "\n"])
-    lines.append(f"- <doc:{NOTICES_DOC_TAG}>\n")
-    return lines
 
 
 def format_year_range(year_range: tuple[int, int] | None) -> str:

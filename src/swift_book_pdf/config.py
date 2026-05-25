@@ -16,13 +16,15 @@ import logging
 import shutil
 from pathlib import Path
 
-from swift_book_pdf.doc import DocConfig
-from swift_book_pdf.files import (
-    find_or_clone_swift_book_repo,
+from swift_book_pdf.cli.output import OutputFormat
+from swift_book_pdf.core.source.copyright import (
     find_swift_book_copyright_year_range,
 )
-from swift_book_pdf.fonts import FontConfig
-from swift_book_pdf.schema import OutputFormat
+from swift_book_pdf.core.source.repository import (
+    find_or_clone_swift_book_repo,
+)
+from swift_book_pdf.pdf.doc import DocConfig
+from swift_book_pdf.pdf.fonts import FontConfig
 
 logger = logging.getLogger(__name__)
 

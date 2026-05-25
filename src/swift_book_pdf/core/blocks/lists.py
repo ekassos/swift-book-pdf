@@ -16,7 +16,7 @@
 
 import re
 
-from swift_book_pdf.core.blocks.model import (
+from swift_book_pdf.core.blocks.models import (
     Block,
     CodeBlock,
     OrderedListBlock,

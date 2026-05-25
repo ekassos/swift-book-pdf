@@ -14,7 +14,7 @@
 
 """Public backend-neutral block models and parser entry point."""
 
-from swift_book_pdf.core.blocks.model import (
+from swift_book_pdf.core.blocks.models import (
     Block,
     CodeBlock,
     Header2Block,

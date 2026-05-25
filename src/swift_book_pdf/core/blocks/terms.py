@@ -14,7 +14,7 @@
 
 """Helpers that recognize Swift Book term-list bullets."""
 
-from swift_book_pdf.core.blocks.model import Block, TermListItem
+from swift_book_pdf.core.blocks.models import Block, TermListItem
 
 
 def extract_term_list_items(

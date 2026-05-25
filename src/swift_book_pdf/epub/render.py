@@ -26,7 +26,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import SwiftLexer
 
-from swift_book_pdf.core.blocks.model import (
+from swift_book_pdf.core.blocks.models import (
     Block,
     CodeBlock,
     Header2Block,
@@ -40,7 +40,7 @@ from swift_book_pdf.core.blocks.model import (
     TermListBlock,
     UnorderedListBlock,
 )
-from swift_book_pdf.epub.model import ImageAsset
+from swift_book_pdf.epub.models import ImageAsset
 from swift_book_pdf.notices import render_notices_xhtml
 
 from .constants import (

@@ -16,7 +16,7 @@
 
 from swift_book_pdf.core.blocks.leaf import LeafBlockParser
 from swift_book_pdf.core.blocks.lists import ListBlockParser
-from swift_book_pdf.core.blocks.model import Block
+from swift_book_pdf.core.blocks.models import Block
 from swift_book_pdf.core.blocks.notes import NoteBlockParser
 from swift_book_pdf.core.blocks.paragraphs import ParagraphBlockParser
 from swift_book_pdf.core.blocks.state import BlockParserState

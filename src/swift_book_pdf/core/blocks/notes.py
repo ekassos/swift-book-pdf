@@ -17,7 +17,7 @@
 import re
 from collections.abc import Callable
 
-from swift_book_pdf.core.blocks.model import Block, NoteBlock, ParagraphBlock
+from swift_book_pdf.core.blocks.models import Block, NoteBlock, ParagraphBlock
 from swift_book_pdf.core.blocks.patterns import (
     NOTE_LABEL_PATTERN,
     NOTE_PARAGRAPH_BOUNDARY_PATTERN,

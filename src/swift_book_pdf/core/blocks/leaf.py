@@ -14,7 +14,7 @@
 
 """Leaf block parsing for images, fenced Swift code, and headings."""
 
-from swift_book_pdf.core.blocks.model import (
+from swift_book_pdf.core.blocks.models import (
     CodeBlock,
     Header2Block,
     Header3Block,

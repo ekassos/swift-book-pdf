@@ -14,6 +14,6 @@
 
 """Public source-repository metadata models."""
 
-from .model import ChapterMetadata, SwiftBookRepoFilePaths
+from .models import ChapterMetadata, SwiftBookRepoFilePaths
 
 __all__ = ["ChapterMetadata", "SwiftBookRepoFilePaths"]

@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from swift_book_pdf.core.blocks import parse_blocks
-from swift_book_pdf.core.blocks.model import NoteBlock
+from swift_book_pdf.core.blocks.models import NoteBlock
 from swift_book_pdf.core.document import (
     DocumentEntry,
     PartEntry,
@@ -68,7 +68,7 @@ from .render import (
 if TYPE_CHECKING:
     from swift_book_pdf.config import EPUBConfig
     from swift_book_pdf.core.navigation.toc import TableOfContents
-    from swift_book_pdf.epub.model import ImageAsset
+    from swift_book_pdf.epub.models import ImageAsset
 
 logger = logging.getLogger(__name__)
 

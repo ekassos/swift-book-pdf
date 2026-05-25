@@ -14,7 +14,7 @@
 
 """Table parsing for the Swift Book Markdown subset."""
 
-from swift_book_pdf.core.blocks.model import TableBlock
+from swift_book_pdf.core.blocks.models import TableBlock
 from swift_book_pdf.core.blocks.patterns import TABLE_DIVIDER_PATTERN
 from swift_book_pdf.core.blocks.state import BlockParserState
 

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.core.blocks.model import CodeBlock
+from swift_book_pdf.core.blocks.models import CodeBlock
 from swift_book_pdf.pdf.latex.blocks import (
     _convert_code_block,
     convert_nested_block,

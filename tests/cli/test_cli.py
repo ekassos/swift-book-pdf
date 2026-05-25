@@ -24,9 +24,13 @@ import click
 import pytest
 from click.testing import CliRunner, Result
 
-from swift_book_pdf.cli import common as cli_common
+from swift_book_pdf.cli.legal_notices import LEGAL_NOTICES_WARNING
+from swift_book_pdf.cli.logging_config import configure_logging
+from swift_book_pdf.cli.output import validate_output_path
+from swift_book_pdf.core.output import OutputFormat
 from swift_book_pdf.epub.cli import command as epub_cli
 from swift_book_pdf.epub.cli import config as epub_cli_config
+from swift_book_pdf.epub.cli.validators import validate_hex_color
 from swift_book_pdf.pdf.cli import command as pdf_cli
 from swift_book_pdf.pdf.cli import config as pdf_cli_config
 
@@ -182,7 +186,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
             str(PDF_FONT_SIZE),
             "--dark",
             "--dangerously-skip-legal-notices",
-            "--no-gutter",
+            "-G",
             "--input-path",
             "./swift-book",
             "--source-ref",
@@ -208,7 +212,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert kwargs["dangerously_skip_legal_notices"] is True
     assert kwargs["source_ref"] == "swift-6.2-branch"
     assert kwargs["source_sha"] == "abc123"
-    assert cli_common.LEGAL_NOTICES_WARNING in result.output
+    assert LEGAL_NOTICES_WARNING in result.output
     build_pdf.assert_called_once_with(fake_config)
 
 
@@ -299,7 +303,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
     assert kwargs["dangerously_skip_legal_notices"] is True
     assert kwargs["source_ref"] == "swift-6.2-branch"
     assert kwargs["source_sha"] == "abc123"
-    assert cli_common.LEGAL_NOTICES_WARNING in result.output
+    assert LEGAL_NOTICES_WARNING in result.output
     build_epub.assert_called_once_with(fake_config)
 
 
@@ -403,3 +407,51 @@ def test_input_path_rejects_revision_selection(
         "--source-ref and --source-sha can't be used with --input-path"
         in result.output
     )
+
+
+def test_validate_output_path_handles_format_suffixes(tmp_path: Path) -> None:
+    assert validate_output_path(str(tmp_path), OutputFormat.EPUB) == str(
+        tmp_path / "swift_book.epub"
+    )
+
+    with pytest.raises(ValueError, match="not a PDF file"):
+        validate_output_path(str(tmp_path / "book.epub"), OutputFormat.PDF)
+
+
+def test_configure_logging_is_idempotent(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    root_logger = logging.getLogger()
+    try:
+        configure_logging(verbose=False)
+        configure_logging(verbose=False)
+        logging.getLogger("swift_book_pdf.tests.cli").info("hello")
+
+        assert capsys.readouterr().out.count("[INFO]: hello") == 1
+        assert len(root_logger.handlers) == 1
+    finally:
+        root_logger.handlers.clear()
+        root_logger.setLevel(logging.NOTSET)
+
+
+def test_epub_cli_validates_cover_option_values() -> None:
+    assert validate_hex_color(Mock(), Mock(), "#123") == "#123"
+    assert validate_hex_color(Mock(), Mock(), "#112233") == "#112233"
+    assert validate_hex_color(Mock(), Mock(), None) is None
+
+    with pytest.raises(click.BadParameter, match="not a valid hex color"):
+        validate_hex_color(Mock(), Mock(), "33519e")
+    with pytest.raises(
+        click.UsageError,
+        match="--current-edition and --nightly-edition",
+    ):
+        epub_cli_config.resolve_cli_cover_variant(
+            current_edition=True,
+            nightly_edition=True,
+        )
+
+
+def test_epub_cli_cover_variant_resolves_hidden_flags() -> None:
+    assert epub_cli_config.resolve_cli_cover_variant(True, False) == "current"
+    assert epub_cli_config.resolve_cli_cover_variant(False, True) == "nightly"
+    assert epub_cli_config.resolve_cli_cover_variant(False, False) is None

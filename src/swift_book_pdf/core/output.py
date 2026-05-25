@@ -1,4 +1,4 @@
-# Copyright 2025 Evangelos Kassos
+# Copyright 2026 Evangelos Kassos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-import sys
+"""Generated book artifact formats."""
+
+from enum import StrEnum
 
 
-def configure_logging(verbose: bool) -> None:
-    """Configure process-wide logging for CLI commands.
+class OutputFormat(StrEnum):
+    """Book artifact formats supported by builders and CLI commands."""
 
-    Args:
-        verbose: When true, enable debug logging; otherwise use info logging.
-    """
-    logging.basicConfig(
-        level=logging.DEBUG if verbose else logging.INFO,
-        format="[%(levelname)s]: %(message)s",
-        stream=sys.stdout,
-        force=True,
-    )
-    logging.getLogger().propagate = False
+    PDF = "pdf"
+    """Generate a PDF artifact."""
+
+    EPUB = "epub"
+    """Generate an EPUB artifact."""

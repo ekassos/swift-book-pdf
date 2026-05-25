@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.core.blocks.model import (
+from swift_book_pdf.core.blocks.models import (
     Block,
     CodeBlock,
     Header2Block,

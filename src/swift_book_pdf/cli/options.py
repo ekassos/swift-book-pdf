@@ -20,12 +20,6 @@ import click
 
 OptionTarget = Callable[..., object]
 
-LEGAL_NOTICES_OPTION_HELP = (
-    "Omit the generated legal notices chapter. This may remove attribution, "
-    "licensing, trademark, and non-affiliation disclaimers that can be "
-    "required for redistribution."
-)
-
 
 def output_path_argument(func: OptionTarget) -> OptionTarget:
     """Add the optional output path argument shared by PDF and EPUB commands.
@@ -97,22 +91,6 @@ def override_version_option(func: OptionTarget) -> OptionTarget:
         type=str,
         default=None,
         help='Override the version number. Include "beta" for beta versions.',
-    )(func)
-
-
-def legal_notices_option(func: OptionTarget) -> OptionTarget:
-    """Add the generated legal notices opt-out option.
-
-    Args:
-        func: Click command callback to decorate.
-
-    Returns:
-        Decorated command callback.
-    """
-    return click.option(
-        "--dangerously-skip-legal-notices",
-        is_flag=True,
-        help=LEGAL_NOTICES_OPTION_HELP,
     )(func)
 
 

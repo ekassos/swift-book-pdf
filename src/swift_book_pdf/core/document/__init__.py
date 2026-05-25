@@ -14,6 +14,6 @@
 
 """Public document navigation and parsed-source models."""
 
-from .model import DocumentEntry, PartEntry, SourceDocument
+from .models import DocumentEntry, PartEntry, SourceDocument
 
 __all__ = ["DocumentEntry", "PartEntry", "SourceDocument"]

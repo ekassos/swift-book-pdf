@@ -17,7 +17,7 @@ import os
 import struct
 from pathlib import Path, PureWindowsPath
 
-from swift_book_pdf.core.blocks.model import ImageBlock
+from swift_book_pdf.core.blocks.models import ImageBlock
 from swift_book_pdf.pdf.options import Appearance
 
 logger = logging.getLogger(__name__)

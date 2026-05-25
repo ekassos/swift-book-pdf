@@ -17,8 +17,10 @@ from collections.abc import Callable
 from tempfile import TemporaryDirectory
 from typing import Protocol, TypeVar
 
+from swift_book_pdf.cli.legal_notices import warn_if_legal_notices_skipped
 from swift_book_pdf.cli.logging_config import configure_logging
-from swift_book_pdf.cli.output import OutputFormat, validate_output_path
+from swift_book_pdf.cli.output import validate_output_path
+from swift_book_pdf.core.output import OutputFormat
 
 
 class BuildConfig(Protocol):
@@ -29,15 +31,6 @@ class BuildConfig(Protocol):
 
 
 ConfigT = TypeVar("ConfigT", bound=BuildConfig)
-LEGAL_NOTICES_WARNING = (
-    "Generated legal notices were omitted from this build because "
-    "--dangerously-skip-legal-notices was enabled. Omitting these notices "
-    "may result in missing attribution, licensing, trademark, and "
-    "non-affiliation disclosures that could be required for lawful "
-    "redistribution. Do not distribute or publish this output unless you "
-    "have independently verified that all applicable legal obligations "
-    "remain satisfied. Proceed at your own risk."
-)
 
 
 def run_build(  # noqa: PLR0913
@@ -76,8 +69,7 @@ def run_build(  # noqa: PLR0913
         config: ConfigT | None = None
         try:
             config = config_builder(temp, validated_output_path)
-            if config.dangerously_skip_legal_notices:
-                logger.warning(LEGAL_NOTICES_WARNING)
+            warn_if_legal_notices_skipped(config, logger)
             builder(config)
         except ValueError as e:
             logger.error(str(e))

@@ -14,20 +14,11 @@
 
 import logging
 import os
-from enum import StrEnum
 from pathlib import Path
 
+from swift_book_pdf.core.output import OutputFormat
+
 logger = logging.getLogger(__name__)
-
-
-class OutputFormat(StrEnum):
-    """Book artifact formats supported by the CLI."""
-
-    PDF = "pdf"
-    """Generate a PDF artifact."""
-
-    EPUB = "epub"
-    """Generate an EPUB artifact."""
 
 
 def validate_output_path(output_path: str, output_format: OutputFormat) -> str:

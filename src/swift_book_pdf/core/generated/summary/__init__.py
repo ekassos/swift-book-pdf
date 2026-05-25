@@ -14,6 +14,6 @@
 
 """Public generated Summary of the Grammar models."""
 
-from .model import GeneratedSummary, PublishBookSummaryConfig
+from .models import GeneratedSummary, PublishBookSummaryConfig
 
 __all__ = ["GeneratedSummary", "PublishBookSummaryConfig"]

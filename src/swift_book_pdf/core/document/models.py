@@ -16,7 +16,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from swift_book_pdf.core.blocks.model import Block
+from swift_book_pdf.core.blocks.models import Block
 
 
 class DocumentEntry(BaseModel):

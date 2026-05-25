@@ -22,14 +22,14 @@ import click
 import swift_book_pdf.epub.cli.config as epub_config
 from swift_book_pdf.book import build_epub
 from swift_book_pdf.cli.common import run_build
+from swift_book_pdf.cli.legal_notices import legal_notices_option
 from swift_book_pdf.cli.options import (
-    legal_notices_option,
     output_path_argument,
     override_version_option,
     source_options,
     version_option,
 )
-from swift_book_pdf.cli.output import OutputFormat
+from swift_book_pdf.core.output import OutputFormat
 from swift_book_pdf.epub.cli.options import (
     epub_cover_options,
     epub_metadata_options,
@@ -94,7 +94,7 @@ def epub(  # noqa: PLR0913
         source_sha: Optional Swift Book commit SHA.
         verbose: Whether debug logging should be enabled.
     """
-    cover_variant = epub_config.resolve_cover_variant(
+    cover_variant = epub_config.resolve_cli_cover_variant(
         current_edition, nightly_edition
     )
     cover_template_paths = epub_config.build_cover_template_paths(

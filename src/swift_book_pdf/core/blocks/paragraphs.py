@@ -14,7 +14,7 @@
 
 """Paragraph parsing and paragraph-boundary checks."""
 
-from swift_book_pdf.core.blocks.model import ParagraphBlock
+from swift_book_pdf.core.blocks.models import ParagraphBlock
 from swift_book_pdf.core.blocks.patterns import BULLET_PATTERN
 from swift_book_pdf.core.blocks.state import BlockParserState
 

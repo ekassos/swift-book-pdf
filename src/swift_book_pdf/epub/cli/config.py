@@ -21,7 +21,7 @@ import click
 from swift_book_pdf.config import EPUBConfig
 
 
-def resolve_cover_variant(
+def resolve_cli_cover_variant(
     current_edition: bool, nightly_edition: bool
 ) -> str | None:
     """Resolve the hidden edition flag pair into a cover variant.

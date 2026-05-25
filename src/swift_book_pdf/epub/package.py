@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 
 from PIL import Image, ImageDraw, ImageFont
 
-from swift_book_pdf.epub.model import ManifestItem
+from swift_book_pdf.epub.models import ManifestItem
 
 from .constants import (
     COVER_FOOTER_TEXT_FILL,
@@ -57,7 +57,7 @@ from .helpers import (
 if TYPE_CHECKING:
     from swift_book_pdf.config import EPUBConfig
     from swift_book_pdf.core.document import DocumentEntry, PartEntry
-    from swift_book_pdf.epub.model import ImageAsset
+    from swift_book_pdf.epub.models import ImageAsset
 
 logger = logging.getLogger(__name__)
 

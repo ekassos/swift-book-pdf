@@ -20,6 +20,7 @@ from swift_book_pdf.cli.options import OptionTarget, apply_options
 from swift_book_pdf.pdf.options import PaperSize, RenderingMode
 
 DEFAULT_TYPESETS = 4
+GUTTER_FLAG_OPTIONS = ("--gutter/--no-gutter", " /-G")
 
 
 def pdf_options(func: OptionTarget) -> OptionTarget:
@@ -54,7 +55,7 @@ def pdf_options(func: OptionTarget) -> OptionTarget:
         ),
         click.option(
             "--typesets",
-            type=int,
+            type=click.IntRange(min=1),
             default=DEFAULT_TYPESETS,
             help="Number of typeset passes to use",
             show_default=str(DEFAULT_TYPESETS),
@@ -63,15 +64,14 @@ def pdf_options(func: OptionTarget) -> OptionTarget:
             "--dark", is_flag=True, help="Render the book in dark mode"
         ),
         click.option(
-            "--gutter/--no-gutter",
-            " /-G",
+            *GUTTER_FLAG_OPTIONS,
             required=False,
             default=None,
             help="Enable or disable the book gutter",
         ),
         click.option(
             "--font-size",
-            type=float,
+            type=click.FloatRange(min=0, min_open=True),
             default=None,
             help="Base paragraph font size in points. All other font sizes scale proportionally",
             show_default="9",

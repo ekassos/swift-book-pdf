@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make the inner-cover banner unconditional and default its text to `RELEASE VERSION` or `BETA VERSION` based on the resolved edition; `--cover-banner-text` now overrides the label and `--cover-banner-color` defaults to the edition's accent color.
 - Refresh the trademark wording in the generated notices page and acknowledge the bundled IBM Plex fonts under the SIL Open Font License 1.1, including the full OFL text.
 
+### Fixed
+- Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.
+
 ### Removed
 - Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.
 - Remove the Swift logo from the header and footer of the generated PDF document, and remove the related `swift-logo` asset directory.

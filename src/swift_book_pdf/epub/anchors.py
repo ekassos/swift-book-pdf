@@ -1,0 +1,54 @@
+# Copyright 2026 Evangelos Kassos
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""EPUB anchor generation helpers."""
+
+from __future__ import annotations
+
+import re
+
+
+def anchor_for_heading(title: str) -> str:
+    """Build a stable EPUB fragment identifier from heading text.
+
+    Args:
+        title: Display heading text from a source document.
+
+    Returns:
+        EPUB fragment identifier matching the renderer's heading IDs. The
+        normalization intentionally mirrors existing generated output instead
+        of using a general-purpose slug library.
+    """
+    cleaned = re.sub(r"[*`]", "", title).strip()
+    cleaned = re.sub("[()/:,.!?'\\u2019]", "", cleaned)
+    cleaned = re.sub(r"\s+", "-", cleaned)
+    return re.sub(r"-{2,}", "-", cleaned)
+
+
+def make_unique_anchor(anchor: str, seen: dict[str, int]) -> str:
+    """Return `anchor` or a numbered variant unique within `seen`.
+
+    Args:
+        anchor: Candidate fragment identifier.
+        seen: Mutable per-document count of anchors already emitted.
+
+    Returns:
+        The first occurrence unchanged, then one-based numbered suffixes for
+        duplicate headings.
+    """
+    count = seen.get(anchor, 0)
+    seen[anchor] = count + 1
+    if count == 0:
+        return anchor
+    return f"{anchor}-{count + 1}"

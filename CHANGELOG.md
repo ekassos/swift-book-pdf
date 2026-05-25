@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.
 
+### Internal
+- Reorganize the package into shared `core`, `cli`, `pdf`, and `epub` modules, with PDF and EPUB builders owning their backend-specific CLI, config, rendering, packaging, and asset code.
+- Split the PDF LaTeX backend into focused modules for engine orchestration, dependency checks, font resolution, preamble templates, rendering, styling, and document assembly.
+- Split EPUB generation into focused cover, rendering, structure, package, and templating modules, including Jinja2-backed OPF, NCX, navigation, and notices templates.
+- Centralize bundled asset paths and move covers, fonts, icons, notices, and Swift logo assets into domain-specific asset directories.
+- Expand focused test coverage for CLI wiring, PDF config and engine behavior, LaTeX font handling, EPUB package generation, cover variants, notices, Markdown transforms, and rendered output.
+
 ## [2.6.0] - 2026-04-22
 ### Added
 - Add new `--base-cover-image` option to `swift-book-epub` to let EPUB builds use a provided cover template image instead of deriving one from the version string and the bundled assets.

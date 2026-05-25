@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="dtb:uid" content="{{ publication_identifier }}"/>
+    <meta name="dtb:depth" content="2"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle>
+    <text>{{ book_title }}</text>
+  </docTitle>
+  <navMap>
+{% for navpoint in navpoints recursive %}
+{% set indent = "    " + ("  " * loop.depth0) %}
+{{ indent }}<navPoint id="{{ navpoint.navpoint_id }}" playOrder="{{ navpoint.play_order }}">
+{{ indent }}  <navLabel>
+{{ indent }}    <text>{{ navpoint.title }}</text>
+{{ indent }}  </navLabel>
+{{ indent }}  <content src="{{ navpoint.href }}" />
+{% if navpoint.children %}
+{{ loop(navpoint.children) }}{% endif %}
+{{ indent }}</navPoint>
+{% endfor %}
+  </navMap>
+</ncx>

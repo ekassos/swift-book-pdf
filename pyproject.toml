@@ -15,6 +15,7 @@ dependencies = [
     "click>=8.3.1,<9.0.0",
     "latexminted>=0.6.0,<0.7.0; python_version < '3.14'",
     "latexminted>=0.7.1,<0.8.0; python_version >= '3.14'",
+    "jinja2>=3.1.6,<4.0.0",
 ]
 
 [project.urls]
@@ -25,14 +26,14 @@ documentation = "https://github.com/ekassos/swift-book-pdf/wiki"
 releasenotes = "https://github.com/ekassos/swift-book-pdf/releases"
 
 [project.scripts]
-swift_book_pdf = "swift_book_pdf.cli_pdf:pdf"
-swift-book-pdf = "swift_book_pdf.cli_pdf:pdf"
-swift-book-epub = "swift_book_pdf.cli_epub:epub"
-swift_book_epub = "swift_book_pdf.cli_epub:epub"
+swift_book_pdf = "swift_book_pdf.pdf.cli.command:pdf"
+swift-book-pdf = "swift_book_pdf.pdf.cli.command:pdf"
+swift-book-epub = "swift_book_pdf.epub.cli.command:epub"
+swift_book_epub = "swift_book_pdf.epub.cli.command:epub"
 
 [project.entry-points."pygments.styles"]
-swift_book_style = "swift_book_pdf.styles:CustomSwiftBookStyle"
-swift_book_dark_style = "swift_book_pdf.styles:CustomSwiftBookDarkStyle"
+swift_book_style = "swift_book_pdf.pdf.latex.preamble.styles:CustomSwiftBookStyle"
+swift_book_dark_style = "swift_book_pdf.pdf.latex.preamble.styles:CustomSwiftBookDarkStyle"
 
 [dependency-groups]
 dev = [
@@ -80,7 +81,7 @@ select = [
 ignore = ["E501"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*.py" = ["S101", "PLR2004"]
+"tests/**/*.py" = ["S101", "PLR2004"]
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]

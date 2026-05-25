@@ -1,2 +1,6 @@
 # 215ffe1: chore: add more ruff linting rules (#59)
 215ffe157175069d2e64540a147e4214be9efd88
+
+# 190415a: chore: refactor package into
+# core, cli, pdf, and epub modules
+190415a1e04ccc9f4c86f0891f4ea3d04367f52d

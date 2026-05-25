@@ -73,9 +73,7 @@ def render_cover_page(
     version_info: str | None,
     options: CoverPageOptions,
 ) -> str:
-    version_label = cover_version_label(
-        version_info, options.cover_variant
-    )
+    version_label = cover_version_label(version_info, options.cover_variant)
     css_href = html.escape(relative_href(document.href, "_static/epub.css"))
 
     layers: list[str] = []
@@ -95,7 +93,7 @@ def render_cover_page(
         f"{html.escape(banner_text)}</text>\n"
     )
     layers.append(
-            render_cover_text(
+        render_cover_text(
             "The",
             x=107.81,
             y=57.67,
@@ -108,7 +106,7 @@ def render_cover_page(
         )
     )
     layers.append(
-            render_cover_text(
+        render_cover_text(
             "Swift",
             x=104.81,
             y=176.69,
@@ -122,7 +120,7 @@ def render_cover_page(
         )
     )
     layers.append(
-            render_cover_text(
+        render_cover_text(
             "Programming",
             x=108.81,
             y=383.77,
@@ -135,7 +133,7 @@ def render_cover_page(
         )
     )
     layers.append(
-            render_cover_text(
+        render_cover_text(
             "Language",
             x=108.81,
             y=556.77,

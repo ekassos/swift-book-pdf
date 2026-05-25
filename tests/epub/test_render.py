@@ -213,8 +213,7 @@ def test_render_cover_page_uses_beta_cover_color() -> None:
     )
 
 
-def test_render_cover_page_keeps_lowercase_beta_for_nightly(
-) -> None:
+def test_render_cover_page_keeps_lowercase_beta_for_nightly() -> None:
     rendered = render_cover_page(
         DocumentEntry(
             key="cover",
@@ -238,8 +237,7 @@ def test_render_cover_page_keeps_lowercase_beta_for_nightly(
     )
 
 
-def test_render_cover_page_does_not_add_beta_for_nightly(
-) -> None:
+def test_render_cover_page_does_not_add_beta_for_nightly() -> None:
     rendered = render_cover_page(
         DocumentEntry(
             key="cover",

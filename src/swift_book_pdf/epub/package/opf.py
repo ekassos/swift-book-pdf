@@ -146,14 +146,10 @@ def write_content_opf_file(
         cover_meta = '<meta name="cover" content="epub-cover"/>\n    '
     publisher_xml = ""
     if config.publisher is not None:
-        publisher_xml = (
-            f"<dc:publisher>{html.escape(config.publisher)}</dc:publisher>\n    "
-        )
+        publisher_xml = f"<dc:publisher>{html.escape(config.publisher)}</dc:publisher>\n    "
     contributor_xml = ""
     if config.contributor is not None:
-        contributor_xml = (
-            f"<dc:contributor>{html.escape(config.contributor)}</dc:contributor>\n    "
-        )
+        contributor_xml = f"<dc:contributor>{html.escape(config.contributor)}</dc:contributor>\n    "
     ibooks_version_xml = ""
     if config.ibooks_version is not None:
         ibooks_version_xml = (

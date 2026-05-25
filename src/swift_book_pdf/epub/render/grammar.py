@@ -19,10 +19,13 @@ import re
 
 from swift_book_pdf.core.blocks.models import NoteBlock, ParagraphBlock
 from swift_book_pdf.epub.constants import EMPHASIS_PATTERN
+from swift_book_pdf.epub.grammar import (
+    clean_grammar_line,
+    grammar_anchor_fragment,
+    parse_grammar_rule,
+)
 from swift_book_pdf.epub.paths import relative_href
-from swift_book_pdf.epub.render.inline import _replace_inline_code_spans
-
-MARKDOWN_WRAPPED_TERM_LENGTH = 2
+from swift_book_pdf.epub.render.inline import replace_inline_code_spans
 
 
 def render_grammar_block(
@@ -63,19 +66,17 @@ def render_grammar_line(
     grammar_targets: dict[str, str],
     grammar_anchor_counts: dict[str, int],
 ) -> str:
-    clean_line = line.strip()
-    if clean_line.endswith("\\"):
-        clean_line = clean_line[:-1].rstrip()
-    if "→" not in clean_line:
+    rule = parse_grammar_rule(line)
+    if rule is None:
         return (
             "<p>"
-            + _render_grammar_fragment(clean_line, current_href, grammar_targets)
+            + _render_grammar_fragment(
+                clean_grammar_line(line), current_href, grammar_targets
+            )
             + "</p>"
         )
 
-    left, right = (part.strip() for part in clean_line.split("→", 1))
-    if _is_wrapped_markdown_term(left):
-        left = left[1:-1]
+    left, right = rule
     anchor_id = _next_grammar_anchor_id(left, grammar_anchor_counts)
     return (
         '<p class="grammar-rule">'
@@ -83,18 +84,6 @@ def render_grammar_line(
         '<span class="arrow"> → </span>'
         f"{_render_grammar_fragment(right, current_href, grammar_targets)}</p>"
     )
-
-
-def extract_grammar_terms(block: NoteBlock) -> list[str]:
-    terms: list[str] = []
-    for sub_block in block.blocks:
-        if not isinstance(sub_block, ParagraphBlock):
-            continue
-        for line in sub_block.lines:
-            term = _extract_grammar_term(line)
-            if term is not None:
-                terms.append(term)
-    return terms
 
 
 def _render_grammar_fragment(
@@ -122,7 +111,7 @@ def _render_grammar_fragment(
         lambda match: store(f"<code>{html.escape(match.group(1))}</code>"),
         text,
     )
-    text = _replace_inline_code_spans(
+    text = replace_inline_code_spans(
         text,
         lambda code: store(f"<code>{html.escape(code)}</code>"),
     )
@@ -164,23 +153,6 @@ def _render_grammar_category(
     )
 
 
-def _extract_grammar_term(line: str) -> str | None:
-    clean_line = line.strip()
-    if clean_line.endswith("\\"):
-        clean_line = clean_line[:-1].rstrip()
-    if "→" not in clean_line:
-        return None
-
-    left, _ = (part.strip() for part in clean_line.split("→", 1))
-    if _is_wrapped_markdown_term(left):
-        left = left[1:-1]
-    return left
-
-
-def grammar_anchor_fragment(term: str) -> str:
-    return re.sub(r"[^A-Za-z0-9_-]+", "-", term.strip()).strip("-")
-
-
 def _next_grammar_anchor_id(
     term: str, grammar_anchor_counts: dict[str, int]
 ) -> str:
@@ -190,11 +162,3 @@ def _next_grammar_anchor_id(
     if count == 1:
         return f"grammar_{fragment}"
     return f"grammar_{fragment}_{count}"
-
-
-def _is_wrapped_markdown_term(text: str) -> bool:
-    return (
-        text.startswith("*")
-        and text.endswith("*")
-        and len(text) > MARKDOWN_WRAPPED_TERM_LENGTH
-    )

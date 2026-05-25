@@ -12,18 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.epub.cover import CoverPageOptions
-
-from .grammar import extract_grammar_terms
 from .inline import normalize_prose_punctuation, render_inline
 from .links import LinkResolver
 from .renderer import EPUBRenderer
 
 __all__ = [
-    "CoverPageOptions",
     "EPUBRenderer",
     "LinkResolver",
-    "extract_grammar_terms",
     "normalize_prose_punctuation",
     "render_inline",
 ]

@@ -22,9 +22,9 @@ from typing import TYPE_CHECKING
 from PIL import Image
 
 from swift_book_pdf.epub.assets import (
+    AssetCatalog,
     image_destination_name,
     media_type_for_path,
-    normalize_asset_key,
 )
 from swift_book_pdf.epub.models import ImageAsset
 from swift_book_pdf.epub.paths import relative_href
@@ -33,35 +33,6 @@ if TYPE_CHECKING:
     from swift_book_pdf.core.blocks.models import ImageBlock
 
 logger = logging.getLogger(__name__)
-
-
-class AssetCatalog:
-    def __init__(self, asset_path: Path) -> None:
-        self._assets = self._build_asset_pairs(asset_path)
-
-    def resolve(self, image_name: str) -> tuple[Path, Path | None]:
-        key = normalize_asset_key(Path(image_name).stem)
-        asset_pair = self._assets.get(key)
-        if asset_pair is None:
-            raise FileNotFoundError(f"Missing image asset: {image_name}")
-        return asset_pair
-
-    def _build_asset_pairs(
-        self, asset_path: Path
-    ) -> dict[str, tuple[Path, Path | None]]:
-        asset_pairs: dict[str, tuple[Path, Path | None]] = {}
-        for asset in asset_path.iterdir():
-            if not asset.is_file():
-                continue
-            key = normalize_asset_key(asset.stem)
-            light_asset, dark_asset = asset_pairs.get(key, (None, None))
-            if "~dark" in asset.stem:
-                dark_asset = asset
-            else:
-                light_asset = asset
-            if light_asset is not None:
-                asset_pairs[key] = (light_asset, dark_asset)
-        return asset_pairs
 
 
 def render_image_block(

@@ -46,7 +46,11 @@ from .constants import (
     SUMMARY_DOC_FILE_NAME,
     SUMMARY_DOC_KEY,
 )
-from .render.grammar import extract_grammar_terms, grammar_anchor_fragment
+from .grammar import (
+    extract_grammar_terms,
+    grammar_anchor_fragment,
+    is_grammar_note_label,
+)
 
 if TYPE_CHECKING:
     from swift_book_pdf.core.navigation.toc import TableOfContents
@@ -231,7 +235,7 @@ class EPUBStructureCollector:
                 for block in source_document.blocks:
                     if not isinstance(block, NoteBlock):
                         continue
-                    if not block.label.lower().startswith("grammar of "):
+                    if not is_grammar_note_label(block.label):
                         continue
                     for term in extract_grammar_terms(block):
                         grammar_targets.setdefault(

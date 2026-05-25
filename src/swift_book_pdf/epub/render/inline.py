@@ -61,7 +61,7 @@ def render_inline(
             + "</a>"
         ),
     )
-    text = _replace_inline_code_spans(
+    text = replace_inline_code_spans(
         text,
         lambda code: store(
             '<code class="inline-code">' + html.escape(code) + "</code>"
@@ -81,7 +81,7 @@ def render_inline_styles(text: str) -> str:
         placeholder_index += 1
         return token
 
-    text = _replace_inline_code_spans(
+    text = replace_inline_code_spans(
         text,
         lambda code: store(
             '<code class="inline-code">' + html.escape(code) + "</code>"
@@ -102,7 +102,7 @@ def _render_inline_tail(text: str, placeholders: dict[str, str]) -> str:
     return text
 
 
-def _replace_inline_code_spans(text: str, render: Callable[[str], str]) -> str:
+def replace_inline_code_spans(text: str, render: Callable[[str], str]) -> str:
     output: list[str] = []
     index = 0
 

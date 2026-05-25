@@ -32,7 +32,14 @@ class LaTeXBackend:
     kind = EngineKind.LATEX
 
     def build_config(self, config_input: PDFBackendConfigInput) -> PDFConfig:
-        """Build a LaTeX-backed PDF configuration."""
+        """Build a LaTeX-backed PDF configuration.
+
+        Args:
+            config_input: Shared PDF config inputs and LaTeX CLI options.
+
+        Returns:
+            Resolved LaTeX-backed PDF configuration.
+        """
         backend_options = config_input.backend_options
         font_config = resolve_for_latex(backend_options)
         latex_config = LaTeXConfig(

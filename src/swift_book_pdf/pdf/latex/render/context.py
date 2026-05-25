@@ -24,8 +24,19 @@ class LaTeXRenderContext:
     """Backend state needed while rendering parsed blocks as LaTeX."""
 
     file_name: str
+    """Current document key used in labels."""
+
     assets_dir: str
+    """Directory containing Swift Book image assets."""
+
     mode: RenderingMode
+    """PDF rendering mode."""
+
     appearance: Appearance
+    """PDF color appearance."""
+
     main_font: str
+    """Resolved main text font."""
+
     body_font_size: float
+    """Base paragraph font size in points."""

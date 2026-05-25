@@ -27,10 +27,25 @@ MARKDOWN_LINK_PATTERN = re.compile(
 def extract_markdown_links(
     text: str,
 ) -> tuple[str, dict[str, tuple[str, str]]]:
-    """Replace Markdown links with placeholders and return link metadata."""
+    """Replace Markdown links with placeholders and return link metadata.
+
+    Args:
+        text: Markdown text that may contain links.
+
+    Returns:
+        Text with link placeholders and metadata keyed by placeholder token.
+    """
     markdown_links: dict[str, tuple[str, str]] = {}
 
     def replace_markdown_link(match: re.Match[str]) -> str:
+        """Store one Markdown link and return its placeholder token.
+
+        Args:
+            match: Regex match for one Markdown link.
+
+        Returns:
+            Placeholder token for the extracted link.
+        """
         token = f"%%MARKDOWN-LINK-{len(markdown_links)}%%"
         markdown_links[token] = (match.group(1), match.group(2))
         return token
@@ -46,7 +61,17 @@ def restore_markdown_links(
     mode: RenderingMode,
     format_label: Callable[[str], str],
 ) -> str:
-    """Render previously extracted Markdown links as LaTeX."""
+    """Render previously extracted Markdown links as LaTeX.
+
+    Args:
+        text: Text containing link placeholder tokens.
+        markdown_links: Link label and URL metadata keyed by placeholder token.
+        mode: PDF rendering mode.
+        format_label: Callback that formats link labels after extraction.
+
+    Returns:
+        Text with link placeholders replaced by LaTeX links.
+    """
     for token, (label, url) in markdown_links.items():
         formatted_label = format_label(label)
         replacement = (

@@ -24,11 +24,24 @@ from pathlib import Path
 
 
 def parse_version(version: str) -> tuple[int, ...]:
+    """Parse a version string into comparable numeric components.
+
+    Args:
+        version: Version text that may include nonnumeric separators.
+
+    Returns:
+        Numeric version components.
+    """
     return tuple(int(part) for part in re.findall(r"\d+", version))
 
 
 @cache
 def get_installed_latexminted_version() -> str | None:
+    """Return the installed `latexminted` Python package version.
+
+    Returns:
+        Installed package version, or `None` when `latexminted` is absent.
+    """
     try:
         return metadata.version("latexminted")
     except metadata.PackageNotFoundError:
@@ -37,6 +50,12 @@ def get_installed_latexminted_version() -> str | None:
 
 @cache
 def get_installed_minted_sty_version() -> str | None:
+    """Return the installed TeX `minted.sty` package version.
+
+    Returns:
+        Detected `minted.sty` version, or `None` when it cannot be found or
+        parsed.
+    """
     kpsewhich = shutil.which("kpsewhich")
     if kpsewhich is None:
         return None
@@ -58,6 +77,12 @@ def get_installed_minted_sty_version() -> str | None:
 
 @cache
 def check_minted_runtime_compatibility() -> None:
+    """Validate that the installed minted runtime can run with this Python.
+
+    Raises:
+        RuntimeError: If `latexminted` is missing or the installed
+            `latexminted` and `minted.sty` versions are incompatible.
+    """
     latexminted_executable = shutil.which("latexminted")
     latexminted_version = get_installed_latexminted_version()
     minted_sty_version = get_installed_minted_sty_version()

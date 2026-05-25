@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Inline Markdown formatting for LaTeX output."""
+
 import re
 
 from swift_book_pdf.pdf.config import RenderingMode
@@ -27,13 +29,32 @@ UNDERSCORE_EMPHASIS_PATTERN = re.compile(
 
 
 def apply_formatting(text: str, mode: RenderingMode) -> str:
-    """
-    Apply formatting to the given text.
+    """Apply Markdown inline formatting and source glyph overrides.
+
+    Notes:
+        Inline code and Markdown links are protected before formatting so
+        emphasis and escaping rules do not rewrite LaTeX that was already
+        produced by more specific renderers.
+
+    Args:
+        text: Markdown text after inline code conversion.
+        mode: PDF rendering mode.
+
+    Returns:
+        LaTeX-safe formatted text.
     """
     # Temporarily extract inline code segments produced by convert_inline_code
     inline_segments: dict[str, str] = {}
 
     def replace_inline(match: re.Match[str]) -> str:
+        """Replace rendered inline code with a temporary placeholder.
+
+        Args:
+            match: Regex match for already-rendered inline code.
+
+        Returns:
+            Placeholder token for the protected inline code.
+        """
         token = f"%%INLINE-CODE-{len(inline_segments)}%%"
         inline_segments[token] = match.group(0)
         return token
@@ -61,6 +82,15 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
 
 
 def _apply_text_formatting(text: str, mode: RenderingMode) -> str:
+    """Apply inline Markdown transforms that operate on plain text.
+
+    Args:
+        text: Markdown text with protected inline segments removed.
+        mode: PDF rendering mode.
+
+    Returns:
+        Text with inline Markdown converted to LaTeX snippets.
+    """
     text = text.replace("→", r"\scalebox{1.2}{$\rightarrow$}")
     text = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", text)
     text = re.sub(r"\*(.+?)\*", r"\\emph{\1}", text)
@@ -87,6 +117,15 @@ def _apply_text_formatting(text: str, mode: RenderingMode) -> str:
 
 
 def _format_doc_reference(mode: RenderingMode, key: str) -> str:
+    """Format a Swift Book doc reference for the active rendering mode.
+
+    Args:
+        mode: PDF rendering mode.
+        key: Normalized document reference key.
+
+    Returns:
+        LaTeX fallback reference command.
+    """
     command = (
         "\\fallbackrefbook"
         if mode == RenderingMode.PRINT

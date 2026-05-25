@@ -33,7 +33,10 @@ class PDFBuildContext:
     """Shared PDF build inputs passed to a concrete engine."""
 
     config: PDFConfig
+    """Resolved PDF build configuration."""
+
     toc: TableOfContents
+    """Loaded Swift Book table of contents."""
 
 
 @dataclass(frozen=True)
@@ -41,27 +44,53 @@ class PDFBackendConfigInput:
     """Shared inputs used to build a concrete backend config."""
 
     source: ResolvedBuildSource
+    """Resolved Swift Book source paths and metadata."""
+
     output_path: str
+    """Destination PDF path."""
+
     doc_config: PDFDocumentConfig
+    """Resolved PDF document layout options."""
+
     override_version: str | None
+    """Optional Swift version override."""
+
     dangerously_skip_legal_notices: bool
+    """Whether generated legal notices are intentionally omitted."""
+
     backend_options: Mapping[str, Any]
+    """Backend-specific CLI option values."""
 
 
 class PDFEngine(Protocol):
     """Engine interface for producing a temporary PDF artifact."""
 
     def build(self, context: PDFBuildContext) -> Path:
-        """Render and compile a PDF, returning the temporary PDF path."""
+        """Render and compile a PDF.
+
+        Args:
+            context: Shared PDF build inputs.
+
+        Returns:
+            Path to the temporary PDF artifact.
+        """
 
 
 class PDFBackend(Protocol):
     """Backend contract for engine-specific PDF config behavior."""
 
     kind: EngineKind
+    """PDF engine handled by this backend."""
 
     def build_config(self, config_input: PDFBackendConfigInput) -> PDFConfig:
-        """Build the concrete backend config for a PDF build."""
+        """Build the concrete backend config for a PDF build.
+
+        Args:
+            config_input: Shared and backend-specific configuration inputs.
+
+        Returns:
+            Resolved concrete PDF configuration.
+        """
 
 
 @dataclass(frozen=True)
@@ -69,7 +98,10 @@ class PDFBackendRegistration:
     """Factories for a registered PDF backend and its build engine."""
 
     backend_factory: Callable[[], PDFBackend]
+    """Factory that creates the backend adapter."""
+
     engine_factory: Callable[[], PDFEngine]
+    """Factory that creates the build engine."""
 
 
 PDF_BACKENDS: dict[EngineKind, PDFBackendRegistration] = {
@@ -81,12 +113,20 @@ PDF_BACKENDS: dict[EngineKind, PDFBackendRegistration] = {
 
 
 def registered_engine_kinds() -> tuple[EngineKind, ...]:
-    """Return all registered PDF engine kinds."""
+    """Return all registered PDF engine kinds.
+
+    Returns:
+        Registered PDF engine kinds.
+    """
     return tuple(PDF_BACKENDS)
 
 
 def registered_backends() -> tuple[PDFBackend, ...]:
-    """Return backend adapters for all registered PDF engines."""
+    """Return backend adapters for all registered PDF engines.
+
+    Returns:
+        Backend adapters for all registered PDF engines.
+    """
     return tuple(
         registration.backend_factory()
         for registration in PDF_BACKENDS.values()
@@ -94,7 +134,17 @@ def registered_backends() -> tuple[PDFBackend, ...]:
 
 
 def select_backend(engine_kind: EngineKind) -> PDFBackend:
-    """Select the configured PDF backend."""
+    """Select the configured PDF backend.
+
+    Args:
+        engine_kind: Requested PDF engine kind.
+
+    Returns:
+        Backend adapter for the requested engine.
+
+    Raises:
+        ValueError: If the engine kind is not registered.
+    """
     try:
         return PDF_BACKENDS[engine_kind].backend_factory()
     except KeyError as exc:
@@ -102,7 +152,17 @@ def select_backend(engine_kind: EngineKind) -> PDFBackend:
 
 
 def select_engine(config: PDFConfig) -> PDFEngine:
-    """Select the configured PDF engine."""
+    """Select the configured PDF engine.
+
+    Args:
+        config: Resolved PDF build configuration.
+
+    Returns:
+        Build engine for `config.engine_kind`.
+
+    Raises:
+        ValueError: If the engine kind is not registered.
+    """
     try:
         return PDF_BACKENDS[config.engine_kind].engine_factory()
     except KeyError as exc:

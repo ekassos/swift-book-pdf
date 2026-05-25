@@ -114,7 +114,15 @@ def render_notices_latex(
 def _build_original_work_copyright_sentence(
     year_range: tuple[int, int] | None,
 ) -> str:
-    """Build the LaTeX-ready copyright sentence for upstream Swift sources."""
+    """Build the LaTeX-ready copyright sentence for upstream Swift sources.
+
+    Args:
+        year_range: Optional inclusive copyright years detected from the
+            upstream Swift Book source.
+
+    Returns:
+        Copyright sentence formatted for the notices chapter.
+    """
     year_text = format_copyright_year_range(year_range)
     if year_text:
         return (
@@ -132,7 +140,14 @@ def _build_original_work_copyright_sentence(
 
 
 def _render_latex_preformatted_block(text: str) -> list[str]:
-    """Render preformatted notice text in the PDF plain-listing box."""
+    """Render preformatted notice text in the PDF plain-listing box.
+
+    Args:
+        text: Notice text to render verbatim.
+
+    Returns:
+        LaTeX lines for the plain-listing box.
+    """
     lines = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{plainlistingbox}"]
     lines.extend(text.splitlines())
     lines.append(r"\end{plainlistingbox}" + "\n\\end{flushleft}\n")

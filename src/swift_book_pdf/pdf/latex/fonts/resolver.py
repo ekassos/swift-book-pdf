@@ -72,16 +72,34 @@ class LaTeXFontConfig:
     """Resolved font names used by the LaTeX backend."""
 
     main_font: str
+    """Font used for body prose."""
+
     mono_font: str
+    """Font used for code spans and code blocks."""
+
     emoji_font: str
+    """Font used for emoji fallback glyphs."""
+
     unicode_fonts: tuple[str, ...]
+    """Fonts used for non-emoji Unicode fallback glyphs."""
+
     header_footer_font: str
+    """Font used for running headers and footers."""
 
     def __str__(self) -> str:
+        """Format this config as diagnostic text.
+
+        Returns:
+            Human-readable font diagnostic details.
+        """
         return self.diagnostic_details()
 
     def diagnostic_details(self) -> str:
-        """Format a resolved font config with LaTeX default-font context."""
+        """Format a resolved font config with LaTeX default-font context.
+
+        Returns:
+            Human-readable font diagnostic details.
+        """
         unicode_context = (
             "default font"
             if all(font in UNICODE_FONT_LIST for font in self.unicode_fonts)
@@ -105,7 +123,19 @@ class LaTeXFontConfig:
 def resolve_for_latex(
     options: Mapping[str, Any] | None = None,
 ) -> LaTeXFontConfig:
-    """Resolve a concrete font configuration for LuaLaTeX."""
+    """Resolve a concrete font configuration for LuaLaTeX.
+
+    Args:
+        options: Optional CLI option mapping containing font overrides.
+
+    Returns:
+        Font names verified as available to LuaLaTeX.
+
+    Raises:
+        RuntimeError: If LuaLaTeX is not installed.
+        ValueError: If no usable default or custom font can be found for a
+            required role.
+    """
     options = options or {}
     main_font_override = _optional_str(options, "main")
     mono_font_override = _optional_str(options, "mono")
@@ -187,11 +217,29 @@ def resolve_for_latex(
 
 
 def _optional_str(options: Mapping[str, Any], key: str) -> str | None:
+    """Read an optional string value from a loose option mapping.
+
+    Args:
+        options: CLI option mapping.
+        key: Option key to read.
+
+    Returns:
+        String value, or `None` when missing or not a string.
+    """
     value = options.get(key)
     return value if isinstance(value, str) else None
 
 
 def _string_tuple(options: Mapping[str, Any], key: str) -> tuple[str, ...]:
+    """Read a string or string sequence as a tuple.
+
+    Args:
+        options: CLI option mapping.
+        key: Option key to read.
+
+    Returns:
+        Tuple of string values.
+    """
     value = options.get(key, ())
     if value is None:
         return ()
@@ -204,6 +252,15 @@ def _gather_candidate_fonts(
     custom_fonts: tuple[str | None, ...],
     default_font_lists: tuple[list[str], ...],
 ) -> dict[str, bool]:
+    """Check all custom and default candidate fonts in one LuaLaTeX pass.
+
+    Args:
+        custom_fonts: Optional custom font overrides.
+        default_font_lists: Default font fallback lists for each role.
+
+    Returns:
+        Mapping from font name to LuaLaTeX availability.
+    """
     candidate_fonts: set[str] = set()
     for font in custom_fonts:
         if font:
@@ -214,6 +271,14 @@ def _gather_candidate_fonts(
 
 
 def _font_cache_for(font_names: set[str]) -> dict[str, bool]:
+    """Build an availability cache for candidate font names.
+
+    Args:
+        font_names: Candidate font names to check.
+
+    Returns:
+        Mapping from font name to LuaLaTeX availability.
+    """
     if not font_names:
         return {}
 
@@ -223,6 +288,17 @@ def _font_cache_for(font_names: set[str]) -> dict[str, bool]:
 
 @cache
 def _check_fonts(font_names: tuple[str, ...]) -> tuple[tuple[str, bool], ...]:
+    """Run the LuaLaTeX font availability probe.
+
+    Args:
+        font_names: Candidate font names to check.
+
+    Returns:
+        Pairs of font name and availability.
+
+    Raises:
+        RuntimeError: If LuaLaTeX is not installed.
+    """
     font_cache: dict[str, bool] = {}
     font_checks = "\n".join(
         rf"""\IfFontExistsTF{{{font}}}{{\typeout{{FONTCHECK:{font}:FOUND}}}}{{\typeout{{FONTCHECK:{font}:MISSING}}}}"""
@@ -279,6 +355,21 @@ def _resolve_font_config_value(
     latex_font_cache: dict[str, bool],
     custom_warning_label: str,
 ) -> str:
+    """Resolve one font role from optional custom and default candidates.
+
+    Args:
+        font_role: Human-readable role used in error messages.
+        custom_font: Optional custom font for this role.
+        default_font_list: Ordered fallback list for this role.
+        latex_font_cache: Font availability cache.
+        custom_warning_label: Warning label for a missing custom font.
+
+    Returns:
+        Selected font name.
+
+    Raises:
+        ValueError: If no candidate font is available.
+    """
     font = _first_available(default_font_list, latex_font_cache)
     if custom_font:
         font = _first_available([custom_font], latex_font_cache)
@@ -301,6 +392,19 @@ def _resolve_unicode_font_list(
     unicode_font_list: list[str],
     latex_font_cache: dict[str, bool],
 ) -> list[str]:
+    """Resolve Unicode fallback fonts.
+
+    Args:
+        unicode_fonts_custom_list: Custom Unicode fallback fonts.
+        unicode_font_list: Default Unicode fallback fonts.
+        latex_font_cache: Font availability cache.
+
+    Returns:
+        Selected Unicode fallback fonts.
+
+    Raises:
+        ValueError: If no usable Unicode fallback font is available.
+    """
     if unicode_fonts_custom_list:
         if all(
             latex_font_cache.get(font, False)
@@ -323,6 +427,15 @@ def _resolve_unicode_font_list(
 def _first_available(
     font_list: list[str], latex_font_cache: dict[str, bool]
 ) -> str | None:
+    """Return the first available font from an ordered candidate list.
+
+    Args:
+        font_list: Ordered candidate font names.
+        latex_font_cache: Font availability cache.
+
+    Returns:
+        First available font name, or `None`.
+    """
     for font in font_list:
         if latex_font_cache.get(font, False):
             logger.debug(f'Font "{font}" is accessible by LuaTeX.')
@@ -332,4 +445,13 @@ def _first_available(
 
 
 def _font_context(font: str, default_fonts: list[str]) -> str:
+    """Describe whether a selected font came from defaults or overrides.
+
+    Args:
+        font: Selected font name.
+        default_fonts: Default candidate list for the role.
+
+    Returns:
+        Human-readable context for diagnostics.
+    """
     return "default font" if font in default_fonts else "custom font"

@@ -22,7 +22,15 @@ FONT_TROUBLESHOOTING_URL = (
 
 
 def check_for_missing_font_logs(log_line: str) -> None:
-    """Raise a user-facing error when LuaTeX reports a missing glyph."""
+    """Raise a user-facing error when LuaTeX reports a missing glyph.
+
+    Args:
+        log_line: Raw line emitted by LuaLaTeX.
+
+    Raises:
+        ValueError: If the line reports an unsupported character for the
+            configured font.
+    """
     pattern = re.compile(
         r"Missing character: There is no (?P<char>\S+) "
         r"\((?P<code>U\+\w+)\) in font name:",

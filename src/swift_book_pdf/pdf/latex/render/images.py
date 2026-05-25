@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""LaTeX rendering for image blocks."""
+
 import logging
 import os
 import struct
@@ -29,6 +31,17 @@ def convert_image_block(
     assets_dir: str,
     appearance: Appearance,
 ) -> list[str]:
+    """Render an image block as a LaTeX figure.
+
+    Args:
+        block: Parsed image block.
+        assets_dir: Directory containing Swift Book image assets.
+        appearance: PDF appearance used to choose light or dark assets.
+
+    Returns:
+        Rendered LaTeX figure lines, or an empty list when the image cannot be
+        read.
+    """
     img_path = Path(assets_dir) / (
         f"{block.imgname}{'~dark' if appearance == Appearance.DARK else ''}@2x.png"
     )
@@ -52,6 +65,14 @@ def convert_image_block(
 
 
 def read_image_width(img_path: Path) -> float | None:
+    """Read a PNG image width and convert it to inches.
+
+    Args:
+        img_path: Path to a PNG image.
+
+    Returns:
+        Image width in inches, or `None` when the file cannot be read as PNG.
+    """
     try:
         with img_path.open("rb") as f:
             f.seek(16)

@@ -30,6 +30,16 @@ def convert_header_like_block(
     file_name: str,
     mode: RenderingMode,
 ) -> list[str] | None:
+    """Render a header block when the block is a supported heading level.
+
+    Args:
+        block: Candidate parsed block.
+        file_name: Current document key used for labels.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX heading line, or `None` for non-heading blocks.
+    """
     if isinstance(block, Header2Block):
         return [
             _convert_header_block(
@@ -57,6 +67,17 @@ def _convert_header_block(
     mode: RenderingMode,
     command: str,
 ) -> str:
+    """Render one heading as a labeled LaTeX command.
+
+    Args:
+        content: Heading text.
+        file_name: Current document key used for labels.
+        mode: PDF rendering mode.
+        command: LaTeX heading command name.
+
+    Returns:
+        Rendered LaTeX heading line.
+    """
     inline_content = convert_inline_code(content)
     label_name = (
         "-".join(inline_content.title().split()).lower().replace("'", "")

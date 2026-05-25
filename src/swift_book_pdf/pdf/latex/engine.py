@@ -34,7 +34,14 @@ class LaTeXEngine:
     """Render Swift Book Markdown to LaTeX and compile it to PDF."""
 
     def build(self, context: PDFBuildContext) -> Path:
-        """Build the temporary PDF for a LaTeX-backed PDF build."""
+        """Build the temporary PDF for a LaTeX-backed PDF build.
+
+        Args:
+            context: Shared PDF build inputs.
+
+        Returns:
+            Path to the generated temporary PDF.
+        """
         config = _require_latex_config(context.config)
         latex_file_path = Path(config.temp_dir) / "inner_content.tex"
         write_latex_document(
@@ -52,6 +59,17 @@ class LaTeXEngine:
 
 
 def _require_latex_config(config: object) -> LaTeXPDFConfig:
+    """Validate and narrow a generic PDF config to LaTeX config.
+
+    Args:
+        config: Candidate PDF configuration.
+
+    Returns:
+        The same config narrowed to `LaTeXPDFConfig`.
+
+    Raises:
+        TypeError: If `config` is not a LaTeX-backed PDF configuration.
+    """
     if isinstance(config, LaTeXPDFConfig):
         return config
     raise TypeError("LaTeXEngine requires a LaTeXPDFConfig.")

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""LaTeX rendering for table blocks."""
+
 from swift_book_pdf.core.blocks.models import TableBlock
 from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
@@ -28,6 +30,17 @@ def convert_table_block(
     main_font: str,
     body_font_size: float = 9.0,
 ) -> list[str]:
+    """Render a Markdown table block as a LaTeX table.
+
+    Args:
+        block: Parsed table block.
+        mode: PDF rendering mode.
+        main_font: Resolved main text font.
+        body_font_size: Base paragraph font size in points.
+
+    Returns:
+        Rendered LaTeX table lines.
+    """
     font_size = get_font_size("body", body_font_size)
     parskip = get_spacing("parskip", body_font_size)
     baselineskip = get_spacing("baselineskip_table", body_font_size)
@@ -65,6 +78,16 @@ def format_table_row(
     *,
     bold: bool = False,
 ) -> str:
+    """Format one table row as LaTeX cells.
+
+    Args:
+        row: Raw cell text values.
+        mode: PDF rendering mode.
+        bold: Whether every cell should be bold.
+
+    Returns:
+        LaTeX row content joined with column separators.
+    """
     cells = [apply_formatting(convert_inline_code(cell), mode) for cell in row]
     if bold:
         cells = [f"\\textbf{{{cell}}}" for cell in cells]

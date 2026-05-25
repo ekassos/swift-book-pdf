@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""LuaLaTeX process orchestration for PDF generation."""
+
 import logging
 import os
 import shutil
@@ -44,12 +46,32 @@ CHECK_MINTED_TEMPLATE = read_latex_template("check_minted.tex")
 
 
 def check_for_missing_dependency_logs(log_line: str) -> None:
+    """Check one LuaLaTeX log line for known missing dependencies.
+
+    Args:
+        log_line: Raw line emitted by LuaLaTeX.
+
+    Raises:
+        RuntimeError: If a required LaTeX package is missing.
+        ValueError: If configured fonts cannot render a required glyph.
+    """
     check_for_missing_font_logs(log_line)
     check_for_missing_latex_package_logs(log_line)
 
 
 class LuaLaTeXCompiler:
+    """Compile generated LaTeX source files into PDFs with LuaLaTeX."""
+
     def __init__(self, config: LaTeXPDFConfig) -> None:
+        """Initialize compiler paths and validate runtime dependencies.
+
+        Args:
+            config: Resolved LaTeX-backed PDF build configuration.
+
+        Raises:
+            RuntimeError: If LuaLaTeX, required LaTeX packages, or minted
+                runtime dependencies are unavailable.
+        """
         lualatex_executable = shutil.which("lualatex")
         if lualatex_executable is None:
             raise RuntimeError("lualatex is not installed or not in PATH.")
@@ -64,6 +86,12 @@ class LuaLaTeXCompiler:
         self.config = config
 
     def get_latex_command(self) -> list[str]:
+        """Build the LuaLaTeX command used for each typeset pass.
+
+        Returns:
+            Command argv including shell-escape flags when minted requires
+            them.
+        """
         command = [self.lualatex_executable, "--interaction=nonstopmode"]
 
         if _does_minted_need_shell_escape(self.lualatex_executable):
@@ -74,6 +102,14 @@ class LuaLaTeXCompiler:
         return command
 
     def convert_to_pdf(self, latex_file_path: str) -> None:
+        """Compile one LaTeX source file into a sibling PDF.
+
+        Args:
+            latex_file_path: Path to the generated `.tex` file.
+
+        Raises:
+            RuntimeError: If LuaLaTeX fails without producing the expected PDF.
+        """
         env = os.environ.copy()
         expected_pdf_path = Path(latex_file_path).with_suffix(".pdf")
 
@@ -110,6 +146,20 @@ class LuaLaTeXCompiler:
 
 @cache
 def _does_minted_need_shell_escape(lualatex_executable: str) -> bool:
+    """Detect whether the installed minted package requires shell escape.
+
+    Notes:
+        Newer minted/latexminted installations can avoid shell escape in some
+        environments, but older TeX installations still require it. The probe
+        runs an isolated template so the main build command can use the least
+        permissive flags that work locally.
+
+    Args:
+        lualatex_executable: Resolved LuaLaTeX executable path.
+
+    Returns:
+        Whether LuaLaTeX should be invoked with shell-escape flags.
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
         tex_filename = "check_minted.tex"
         tex_file_path = Path(tmpdir) / tex_filename

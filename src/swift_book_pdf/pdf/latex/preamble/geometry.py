@@ -18,6 +18,15 @@ from swift_book_pdf.pdf.config import PaperSize
 
 
 def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
+    """Return LaTeX geometry options for the requested page layout.
+
+    Args:
+        paper_size: Output paper size.
+        gutter: Whether to reserve extra inner margin for book binding.
+
+    Returns:
+        Comma-separated geometry package options.
+    """
     return {
         PaperSize.A4: f"a4paper,{'inner=1.67in,outer=0.9in' if gutter else 'hmargin=1.285in'}",
         PaperSize.LETTER: f"letterpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",

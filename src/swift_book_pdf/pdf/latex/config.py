@@ -27,15 +27,26 @@ class LaTeXConfig:
     """Resolved LaTeX backend configuration."""
 
     font_config: LaTeXFontConfig
+    """Resolved font names used by LuaLaTeX."""
+
     typesets: int = DEFAULT_TYPESETS
+    """Number of LuaLaTeX typeset passes to run."""
 
     def __post_init__(self) -> None:
-        """Validate the resolved LaTeX configuration."""
+        """Validate the resolved LaTeX configuration.
+
+        Raises:
+            ValueError: If `typesets` is not positive.
+        """
         if self.typesets <= 0:
             raise ValueError("Typesets must be a positive integer.")
 
     def diagnostic_details(self) -> str:
-        """Format resolved LaTeX backend details for diagnostics."""
+        """Format resolved LaTeX backend details for diagnostics.
+
+        Returns:
+            Human-readable LaTeX backend details.
+        """
         return "\n".join(
             [
                 f"Typesets: {self.typesets}",
@@ -49,10 +60,17 @@ class LaTeXPDFConfig(PDFConfig):
     """Resolved configuration for LaTeX-backed PDF builds."""
 
     latex_config: LaTeXConfig
+    """Resolved LaTeX backend configuration."""
+
     engine_kind: EngineKind = EngineKind.LATEX
+    """PDF engine implementation."""
 
     def diagnostic_details(self) -> str:
-        """Format resolved LaTeX PDF build details for debug diagnostics."""
+        """Format resolved LaTeX PDF build details for debug diagnostics.
+
+        Returns:
+            Human-readable PDF and LaTeX details.
+        """
         return "\n".join(
             [
                 super().diagnostic_details(),
@@ -61,5 +79,9 @@ class LaTeXPDFConfig(PDFConfig):
         )
 
     def build_error_details(self) -> str:
-        """Format LaTeX-specific details for unexpected build errors."""
+        """Format LaTeX-specific details for unexpected build errors.
+
+        Returns:
+            Human-readable LaTeX backend details.
+        """
         return self.latex_config.diagnostic_details()

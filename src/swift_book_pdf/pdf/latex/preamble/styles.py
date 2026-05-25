@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Pygments styles that mirror Swift Book syntax colors."""
+
 from typing import ClassVar
 
 from pygments.style import Style
@@ -29,6 +31,8 @@ from pygments.token import (
 
 
 class CustomSwiftBookStyle(Style):
+    """Light-mode Pygments token colors for Swift code blocks."""
+
     styles: ClassVar[dict[object, str]] = {
         Text: "#000",
         Error: "#000",
@@ -54,6 +58,8 @@ class CustomSwiftBookStyle(Style):
 
 
 class CustomSwiftBookDarkStyle(Style):
+    """Dark-mode Pygments token colors for Swift code blocks."""
+
     styles: ClassVar[dict[object, str]] = {
         Text: "#fff",
         Error: "#fff",

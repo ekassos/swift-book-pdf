@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Typography scale and spacing helpers for LaTeX PDFs."""
+
 from swift_book_pdf.pdf.config import DEFAULT_BODY_FONT_SIZE
 
 # Default font sizes in points (at body font size = 9pt).
@@ -123,11 +125,26 @@ DEFAULT_SPACING: dict[str, tuple[float, str]] = {
 
 
 def _scale_factor(body_font_size: float) -> float:
+    """Compute the proportional scale for a body font size.
+
+    Args:
+        body_font_size: Base paragraph font size in points.
+
+    Returns:
+        Scale relative to the default body font size.
+    """
     return body_font_size / DEFAULT_BODY_FONT_SIZE
 
 
 def format_pt(value: float) -> str:
-    """Format a font size value for LaTeX, removing unnecessary trailing zeros."""
+    """Format a font size value for LaTeX.
+
+    Args:
+        value: Font size in points.
+
+    Returns:
+        Point value without unnecessary trailing zeros.
+    """
     rounded = round(value, 2)
     if rounded == int(rounded):
         return str(int(rounded))
@@ -135,7 +152,15 @@ def format_pt(value: float) -> str:
 
 
 def format_dimension(value: float, unit: str) -> str:
-    """Format a dimension value with its unit for LaTeX."""
+    """Format a dimension value with its unit for LaTeX.
+
+    Args:
+        value: Numeric dimension value.
+        unit: LaTeX dimension unit.
+
+    Returns:
+        Dimension string without unnecessary trailing zeros.
+    """
     rounded = round(value, 4)
     if rounded == int(rounded):
         return f"{int(rounded)}{unit}"
@@ -144,16 +169,41 @@ def format_dimension(value: float, unit: str) -> str:
 
 
 def get_font_size(name: str, body_font_size: float) -> str:
+    """Return a scaled font size by typography token name.
+
+    Args:
+        name: Font-size token name.
+        body_font_size: Base paragraph font size in points.
+
+    Returns:
+        Scaled point value formatted for LaTeX.
+    """
     return format_pt(DEFAULT_FONT_SIZES[name] * _scale_factor(body_font_size))
 
 
 def get_spacing(name: str, body_font_size: float) -> str:
+    """Return a scaled spacing value by typography token name.
+
+    Args:
+        name: Spacing token name.
+        body_font_size: Base paragraph font size in points.
+
+    Returns:
+        Scaled dimension formatted for LaTeX.
+    """
     value, unit = DEFAULT_SPACING[name]
     return format_dimension(value * _scale_factor(body_font_size), unit)
 
 
 def compute_font_sizes(body_font_size: float) -> dict[str, str]:
-    """Compute all font sizes scaled proportionally from the body font size."""
+    """Compute all font sizes scaled proportionally from the body font size.
+
+    Args:
+        body_font_size: Base paragraph font size in points.
+
+    Returns:
+        Preamble template variables for scaled font sizes.
+    """
     return {
         f"font_size_{key}": get_font_size(key, body_font_size)
         for key in DEFAULT_FONT_SIZES
@@ -161,7 +211,14 @@ def compute_font_sizes(body_font_size: float) -> dict[str, str]:
 
 
 def compute_spacing(body_font_size: float) -> dict[str, str]:
-    """Compute all spacing values scaled proportionally from the body font size."""
+    """Compute all spacing values scaled proportionally from the body font size.
+
+    Args:
+        body_font_size: Base paragraph font size in points.
+
+    Returns:
+        Preamble template variables for scaled spacing values.
+    """
     return {
         f"spacing_{key}": get_spacing(key, body_font_size)
         for key in DEFAULT_SPACING

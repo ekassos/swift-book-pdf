@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""LaTeX rendering for the Swift Book table of contents."""
+
 import re
 from typing import TYPE_CHECKING
 
@@ -37,6 +39,15 @@ def generate_toc_latex(
     toc: TableOfContents,
     converter: "LaTeXRenderer",
 ) -> str:
+    """Render the source table of contents as LaTeX.
+
+    Args:
+        toc: Loaded Swift Book table of contents.
+        converter: LaTeX renderer used for parsed Markdown content.
+
+    Returns:
+        Rendered table-of-contents LaTeX.
+    """
     notices_lines = (
         build_notices_toc_lines(include_section_heading=True)
         if toc.include_notices
@@ -63,6 +74,17 @@ def apply_toc_latex_overrides(
     mode: RenderingMode,
     appearance: Appearance,
 ) -> list[str]:
+    """Apply PDF-specific table-of-contents LaTeX overrides.
+
+    Args:
+        latex_lines: Initial LaTeX lines rendered from the Markdown TOC.
+        chapter_metadata: Chapter metadata keyed by normalized document key.
+        mode: PDF rendering mode.
+        appearance: PDF color appearance.
+
+    Returns:
+        Adjusted LaTeX lines for the PDF table of contents.
+    """
     latex_text = "\n".join(latex_lines)
     latex_text = latex_text.replace(r"\SectionHeader", r"\SectionHeaderTOC")
     latex_text = latex_text.replace(
@@ -82,13 +104,19 @@ def replace_chapter_href_with_toc_item(
     mode: RenderingMode,
     appearance: Appearance,
 ) -> list[str]:
-    """
-    Replace chapter references with LaTeX table-of-contents items.
+    """Replace chapter references with LaTeX table-of-contents items.
 
-    :param file_content: The content of the file to replace the chapter references
-    :param chapter_metadata: The metadata of the chapter to replace the references with
-    :param mode: The rendering mode for the replacement
-    :return: A list of lines with the chapter references replaced
+    Args:
+        file_content: LaTeX lines containing fallback chapter references.
+        chapter_metadata: Chapter metadata keyed by normalized document key.
+        mode: PDF rendering mode.
+        appearance: PDF color appearance.
+
+    Returns:
+        Lines with chapter references replaced by table-of-contents items.
+
+    Raises:
+        ValueError: If `mode` is not a supported rendering mode.
     """
     updated_lines: list[str] = []
     icon_name = (
@@ -105,6 +133,14 @@ def replace_chapter_href_with_toc_item(
             )
 
             def replacement(match: re.Match[str]) -> str:
+                """Render a digital-mode table-of-contents item.
+
+                Args:
+                    match: Regex match for one fallback chapter reference.
+
+                Returns:
+                    Rendered LaTeX table-of-contents item.
+                """
                 key = match.group(1)
                 subtitle = (
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line
@@ -118,6 +154,14 @@ def replace_chapter_href_with_toc_item(
             )
 
             def replacement(match: re.Match[str]) -> str:
+                """Render a print-mode table-of-contents item.
+
+                Args:
+                    match: Regex match for one fallback chapter reference.
+
+                Returns:
+                    Rendered LaTeX table-of-contents item.
+                """
                 key = match.group(1)
                 subtitle = (
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Markdown-to-LaTeX renderer for Swift Book source documents."""
+
 from pathlib import Path
 
 from swift_book_pdf.core.blocks.parser import parse_blocks
@@ -27,10 +29,28 @@ from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 
 
 class LaTeXRenderer:
+    """Render Swift Book Markdown files into LaTeX body content."""
+
     def __init__(self, config: LaTeXPDFConfig) -> None:
+        """Initialize a renderer for one resolved PDF build.
+
+        Args:
+            config: Resolved LaTeX-backed PDF build configuration.
+        """
         self.config = config
 
     def render_file(self, file_path: str) -> str:
+        """Render a Markdown source file as LaTeX.
+
+        Args:
+            file_path: Path to the Markdown source file.
+
+        Returns:
+            Rendered LaTeX content.
+
+        Raises:
+            FileNotFoundError: If `file_path` does not exist.
+        """
         file_name = get_file_name(file_path)
         path = Path(file_path)
         if not path.exists():
@@ -51,8 +71,14 @@ class LaTeXRenderer:
         file_content: list[str],
         file_name: str,
     ) -> list[str]:
-        """
-        Convert the markdown content to LaTeX.
+        """Convert Markdown file content to LaTeX lines.
+
+        Args:
+            file_content: Source Markdown lines.
+            file_name: Lowercase document key used for labels.
+
+        Returns:
+            Rendered LaTeX lines.
         """
         file_content = remove_multiline_comments(file_content)
         file_content = convert_markdown_links(file_content)

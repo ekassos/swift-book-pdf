@@ -20,10 +20,25 @@ from swift_book_pdf.pdf.latex.render.escaping import escape_texttt
 
 
 def convert_inline_code(text: str) -> str:
-    """Render Markdown inline code spans as ``\\CodeStyle`` text."""
+    """Render Markdown inline code spans as `\\CodeStyle` text.
+
+    Args:
+        text: Markdown text that may contain inline code spans.
+
+    Returns:
+        Text with Markdown inline code converted to LaTeX.
+    """
     double_placeholder: dict[str, str] = {}
 
     def repl_double(match: re.Match[str]) -> str:
+        """Protect and render a double-backtick code span.
+
+        Args:
+            match: Regex match for the Markdown code span.
+
+        Returns:
+            Placeholder token for the rendered code span.
+        """
         inner = match.group(1)
         processed = (
             r"{\CodeStyle \texttt{" + escape_texttt(inner).strip() + "}}"
@@ -35,6 +50,14 @@ def convert_inline_code(text: str) -> str:
     text = re.sub(r"(?<!\\)``(.*?)``", repl_double, text)
 
     def repl_single(match: re.Match[str]) -> str:
+        """Render a single-backtick code span.
+
+        Args:
+            match: Regex match for the Markdown code span.
+
+        Returns:
+            Rendered LaTeX inline code span.
+        """
         inner = match.group(1)
         return r"{\CodeStyle \texttt{" + escape_texttt(inner).strip() + "}}"
 

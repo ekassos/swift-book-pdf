@@ -24,23 +24,43 @@ from swift_book_pdf.core.output import OutputFormat
 
 
 class RenderingMode(StrEnum):
+    """PDF layout modes optimized for digital or printed reading."""
+
     DIGITAL = "digital"
+    """Render hyperlinks and navigation for screen reading."""
+
     PRINT = "print"
+    """Render references and navigation for printed output."""
 
 
 class Appearance(StrEnum):
+    """PDF color appearances."""
+
     LIGHT = "light"
+    """Render the light color palette."""
+
     DARK = "dark"
+    """Render the dark color palette."""
 
 
 class PaperSize(StrEnum):
+    """Paper sizes supported by the PDF backend."""
+
     A4 = "a4"
+    """A4 paper."""
+
     LETTER = "letter"
+    """US Letter paper."""
+
     LEGAL = "legal"
+    """US Legal paper."""
 
 
 class EngineKind(StrEnum):
+    """PDF rendering engine identifiers."""
+
     LATEX = "latex"
+    """Render PDFs through the LaTeX backend."""
 
 
 DEFAULT_RENDERING_MODE = RenderingMode.DIGITAL
@@ -98,13 +118,23 @@ class PDFConfig(BaseBuildConfig, ABC):
     """
 
     doc_config: PDFDocumentConfig
+    """PDF document layout configuration."""
+
     engine_kind: EngineKind
+    """PDF engine implementation."""
+
     override_version: str | None = None
+    """Optional Swift version override."""
 
     output_format: ClassVar[OutputFormat] = OutputFormat.PDF
+    """Artifact format produced by PDF builders."""
 
     def diagnostic_details(self) -> str:
-        """Format resolved PDF build details for debug diagnostics."""
+        """Format resolved PDF build details for debug diagnostics.
+
+        Returns:
+            Human-readable diagnostic details.
+        """
         doc_config = self.doc_config
         return "\n".join(
             [
@@ -118,4 +148,8 @@ class PDFConfig(BaseBuildConfig, ABC):
 
     @abstractmethod
     def build_error_details(self) -> str:
-        """Format backend-specific details for unexpected build errors."""
+        """Format backend-specific details for unexpected build errors.
+
+        Returns:
+            Human-readable backend details.
+        """

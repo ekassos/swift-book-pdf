@@ -22,6 +22,18 @@ from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 
 
 def convert_nested_block(block: Block, mode: RenderingMode) -> str:
+    """Render a block nested inside another block.
+
+    Args:
+        block: Parsed nested block.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX for the nested block.
+
+    Raises:
+        TypeError: If the nested block type is unsupported.
+    """
     if isinstance(block, ParagraphBlock):
         para = " ".join(block.lines)
         return apply_formatting(convert_inline_code(para), mode)

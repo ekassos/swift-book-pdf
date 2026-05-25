@@ -44,7 +44,15 @@ def convert_blocks_to_latex(
     blocks: list[Block],
     context: LaTeXRenderContext,
 ) -> list[str]:
-    """Convert parsed blocks into corresponding LaTeX lines."""
+    """Convert parsed blocks into corresponding LaTeX lines.
+
+    Args:
+        blocks: Parsed backend-neutral block tree.
+        context: LaTeX rendering state for the current document.
+
+    Returns:
+        Rendered LaTeX lines.
+    """
     output: list[str] = []
     for block in blocks:
         output.extend(_convert_block_to_latex(block, context))
@@ -55,6 +63,18 @@ def _convert_block_to_latex(  # noqa: PLR0911
     block: Block,
     context: LaTeXRenderContext,
 ) -> list[str]:
+    """Dispatch one parsed block to the matching LaTeX renderer.
+
+    Args:
+        block: Parsed backend-neutral block.
+        context: LaTeX rendering state for the current document.
+
+    Returns:
+        Rendered LaTeX lines.
+
+    Raises:
+        TypeError: If the block type is not supported by the LaTeX backend.
+    """
     match block:
         case CodeBlock():
             return _convert_code_block(block)
@@ -88,6 +108,14 @@ def _convert_block_to_latex(  # noqa: PLR0911
 
 
 def _convert_code_block(block: CodeBlock) -> list[str]:
+    """Render a fenced code block as a styled LaTeX box.
+
+    Args:
+        block: Parsed code block.
+
+    Returns:
+        Rendered LaTeX lines.
+    """
     output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
     output.extend(override_characters(line, True) for line in block.lines)
     output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
@@ -95,6 +123,15 @@ def _convert_code_block(block: CodeBlock) -> list[str]:
 
 
 def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
+    """Render a note block as an aside box.
+
+    Args:
+        block: Parsed note block.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX lines.
+    """
     aside_content = "\n".join(
         convert_nested_block(sub_block, mode) for sub_block in block.blocks
     )
@@ -109,6 +146,15 @@ def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
 def _convert_paragraph_block(
     block: ParagraphBlock, mode: RenderingMode
 ) -> str:
+    """Render a paragraph block with inline Markdown formatting.
+
+    Args:
+        block: Parsed paragraph block.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX paragraph line.
+    """
     paragraph = apply_formatting(
         convert_inline_code(" ".join(block.lines)), mode
     )

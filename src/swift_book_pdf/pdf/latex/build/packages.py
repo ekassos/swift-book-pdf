@@ -50,6 +50,14 @@ MISSING_TEX_FILE_PATTERN = re.compile(
 
 
 def check_for_missing_latex_package_logs(log_line: str) -> None:
+    """Raise a package-install hint when LuaLaTeX reports a missing file.
+
+    Args:
+        log_line: Raw line emitted by LuaLaTeX.
+
+    Raises:
+        RuntimeError: If the log line reports a missing LaTeX package file.
+    """
     package_name = _extract_missing_latex_package_name(log_line)
     if package_name:
         raise RuntimeError(
@@ -61,6 +69,11 @@ def check_for_missing_latex_package_logs(log_line: str) -> None:
 
 @cache
 def check_required_latex_packages_installed() -> None:
+    """Preflight required LaTeX packages when `kpsewhich` is available.
+
+    Raises:
+        RuntimeError: If one or more required packages are missing.
+    """
     kpsewhich = shutil.which("kpsewhich")
     if kpsewhich is None:
         logger.debug(
@@ -88,6 +101,16 @@ def check_required_latex_packages_installed() -> None:
 def _format_missing_latex_packages_error(
     package_names: list[str], *, from_logs: bool = False
 ) -> str:
+    """Format a user-facing missing-package error.
+
+    Args:
+        package_names: Missing LaTeX package names.
+        from_logs: Whether the missing package came from LuaLaTeX output rather
+            than the preflight check.
+
+    Returns:
+        Error message with TeX Live and MiKTeX installation hints.
+    """
     unique_package_names = list(dict.fromkeys(package_names))
     if len(unique_package_names) == 1:
         package_list = (
@@ -117,6 +140,14 @@ def _format_missing_latex_packages_error(
 
 
 def _extract_missing_latex_package_name(log_line: str) -> str | None:
+    """Extract a missing package name from one LuaLaTeX log line.
+
+    Args:
+        log_line: Raw line emitted by LuaLaTeX.
+
+    Returns:
+        Missing package name, or `None` when the line is unrelated.
+    """
     match = MISSING_TEX_FILE_PATTERN.search(log_line)
     if not match:
         return None

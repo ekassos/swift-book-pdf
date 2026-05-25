@@ -30,6 +30,15 @@ def convert_list_like_block(
     block: Block,
     mode: RenderingMode,
 ) -> list[str] | None:
+    """Render a list block when the block is a supported list type.
+
+    Args:
+        block: Candidate parsed block.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX list lines, or `None` for non-list blocks.
+    """
     if isinstance(block, UnorderedListBlock):
         return _convert_unordered_list_block(block, mode)
     if isinstance(block, OrderedListBlock):
@@ -43,6 +52,15 @@ def _convert_unordered_list_block(
     block: UnorderedListBlock,
     mode: RenderingMode,
 ) -> list[str]:
+    """Render a parsed unordered list as an itemize environment.
+
+    Args:
+        block: Parsed unordered list block.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX lines.
+    """
     output = [r"\begin{itemize}"]
     for item in block.items:
         if item:
@@ -54,6 +72,15 @@ def _convert_unordered_list_block(
 def _convert_unordered_list_item(
     item: list[Block], mode: RenderingMode
 ) -> list[str]:
+    """Render nested blocks that make up one unordered-list item.
+
+    Args:
+        item: Parsed nested blocks for one list item.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX lines for the item.
+    """
     output: list[str] = []
     for index, sub_block in enumerate(item):
         latex_sub = convert_nested_block(sub_block, mode)
@@ -70,6 +97,15 @@ def _convert_ordered_list_block(
     block: OrderedListBlock,
     mode: RenderingMode,
 ) -> list[str]:
+    """Render a parsed ordered list as an enumerate environment.
+
+    Args:
+        block: Parsed ordered list block.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX lines.
+    """
     output = [r"\begin{enumerate}"]
     output.extend(
         f"\\item {apply_formatting(convert_inline_code(item), mode)}"
@@ -82,6 +118,15 @@ def _convert_ordered_list_block(
 def _convert_term_list_block(
     block: TermListBlock, mode: RenderingMode
 ) -> list[str]:
+    """Render a term list as labeled prose blocks.
+
+    Args:
+        block: Parsed term list block.
+        mode: PDF rendering mode.
+
+    Returns:
+        Rendered LaTeX lines.
+    """
     output = ["\\ParagraphStyle{"]
     for term in block.items:
         label_conv = apply_formatting(convert_inline_code(term.label), mode)

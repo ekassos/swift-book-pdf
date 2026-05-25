@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""LaTeX preamble template rendering."""
+
 import logging
 
 from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
@@ -27,14 +29,28 @@ logger = logging.getLogger(__name__)
 
 
 def generate_preamble(config: LaTeXPDFConfig) -> str:
-    """Generate the LaTeX preamble for a resolved build configuration."""
+    """Generate the LaTeX preamble for a resolved build configuration.
+
+    Args:
+        config: Resolved LaTeX-backed PDF build configuration.
+
+    Returns:
+        Rendered LaTeX preamble.
+    """
     return PREAMBLE.substitute(**build_preamble_substitutions(config))
 
 
 def build_preamble_substitutions(
     config: LaTeXPDFConfig,
 ) -> dict[str, str]:
-    """Compute the LaTeX preamble template substitutions."""
+    """Compute the LaTeX preamble template substitutions.
+
+    Args:
+        config: Resolved LaTeX-backed PDF build configuration.
+
+    Returns:
+        Template substitution values for the preamble.
+    """
     font_config = config.latex_config.font_config
     unicode_fallback = "\n".join(
         [f'      "{font}:mode=node;",' for font in font_config.unicode_fonts],
@@ -91,6 +107,16 @@ def _render_header_footer_hero(
     template_vars: dict[str, str],
     gutter: bool,
 ) -> str:
+    """Render the header/footer hero template variant.
+
+    Args:
+        header_footer_font: Font family used in headers and footers.
+        template_vars: Shared preamble typography substitutions.
+        gutter: Whether the gutter-aware header/footer template should be used.
+
+    Returns:
+        Rendered header/footer hero LaTeX.
+    """
     if gutter:
         return HEADER_FOOTER_HERO_WITH_GUTTER.substitute(
             header_footer_font=header_footer_font,

@@ -29,6 +29,12 @@ def build_pdf(config: PDFConfig) -> None:
 
     Args:
         config: Resolved PDF build configuration.
+
+    Raises:
+        FileNotFoundError: If the selected engine does not produce the
+            expected temporary PDF.
+        RuntimeError: If the generated PDF cannot be moved to the requested
+            output path.
     """
     toc = TableOfContents(
         config.root_dir,

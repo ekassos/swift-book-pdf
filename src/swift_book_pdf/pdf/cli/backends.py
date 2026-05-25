@@ -35,27 +35,59 @@ BACKENDS_BY_KIND = {backend.kind: backend for backend in BACKENDS}
 
 
 def engine_choices() -> list[str]:
-    """Return registered engine choices for Click."""
+    """Return registered engine choices for Click.
+
+    Returns:
+        Registered engine values accepted by Click.
+    """
     return [engine.value for engine in registered_engine_kinds()]
 
 
 def default_engine_value() -> str:
-    """Return the default PDF engine value for Click."""
+    """Return the default PDF engine value for Click.
+
+    Returns:
+        Default engine value accepted by Click.
+    """
     return DEFAULT_ENGINE.value
 
 
 def apply_backend_build_options(func: OptionTarget) -> OptionTarget:
-    """Add build options for every registered PDF backend."""
+    """Add build options for every registered PDF backend.
+
+    Args:
+        func: Click command callback to decorate.
+
+    Returns:
+        Decorated command callback.
+    """
     return apply_options(func, _backend_build_options())
 
 
 def apply_backend_command_options(func: OptionTarget) -> OptionTarget:
-    """Add command options for every registered PDF backend."""
+    """Add command options for every registered PDF backend.
+
+    Args:
+        func: Click command callback to decorate.
+
+    Returns:
+        Decorated command callback.
+    """
     return apply_options(func, _backend_command_options())
 
 
 def select_backend_for_cli(engine: EngineKind) -> PDFBackend:
-    """Select a backend and convert registry misses into Click errors."""
+    """Select a backend and convert registry misses into Click errors.
+
+    Args:
+        engine: Requested PDF engine.
+
+    Returns:
+        Backend adapter for the requested engine.
+
+    Raises:
+        click.ClickException: If the engine is not registered.
+    """
     try:
         return BACKENDS_BY_KIND[engine]
     except KeyError as exc:
@@ -65,7 +97,11 @@ def select_backend_for_cli(engine: EngineKind) -> PDFBackend:
 
 
 def _backend_build_options() -> tuple[OptionDecorator, ...]:
-    """Return CLI build options for registered PDF engines."""
+    """Return CLI build options for registered PDF engines.
+
+    Returns:
+        Build option decorators for all registered engines.
+    """
     decorators: list[OptionDecorator] = []
     for engine in registered_engine_kinds():
         if engine is EngineKind.LATEX:
@@ -74,7 +110,11 @@ def _backend_build_options() -> tuple[OptionDecorator, ...]:
 
 
 def _backend_command_options() -> tuple[OptionDecorator, ...]:
-    """Return CLI command options for registered PDF engines."""
+    """Return CLI command options for registered PDF engines.
+
+    Returns:
+        Command option decorators for all registered engines.
+    """
     decorators: list[OptionDecorator] = []
     for engine in registered_engine_kinds():
         if engine is EngineKind.LATEX:
@@ -83,6 +123,11 @@ def _backend_command_options() -> tuple[OptionDecorator, ...]:
 
 
 def _latex_build_options() -> tuple[OptionDecorator, ...]:
+    """Return LaTeX-specific build options for the Click command.
+
+    Returns:
+        LaTeX build option decorators.
+    """
     return (
         click.option(
             "--typesets",
@@ -95,6 +140,11 @@ def _latex_build_options() -> tuple[OptionDecorator, ...]:
 
 
 def _latex_command_options() -> tuple[OptionDecorator, ...]:
+    """Return LaTeX-specific command options for the Click command.
+
+    Returns:
+        LaTeX command option decorators.
+    """
     return (
         click.option(
             "--main",

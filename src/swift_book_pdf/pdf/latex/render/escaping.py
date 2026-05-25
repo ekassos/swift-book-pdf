@@ -45,7 +45,14 @@ TEXTTT_TRANSLATION = str.maketrans(
 
 
 def escape_texttt(text: str) -> str:
-    """Escape characters that cause issues inside ``\\texttt``."""
+    """Escape characters that cause issues inside `\\texttt`.
+
+    Args:
+        text: Raw inline-code text.
+
+    Returns:
+        LaTeX-safe text for `\\texttt`.
+    """
     text = text.translate(TEXTTT_TRANSLATION)
     text = re.sub(r"(?<!\\)#", r"\#", text)
     text = text.replace("->", r"{->}")
@@ -53,7 +60,16 @@ def escape_texttt(text: str) -> str:
 
 
 def override_characters(text: str, in_code_block: bool = False) -> str:
-    """Replace source glyphs that require custom LaTeX markup."""
+    """Replace source glyphs that require custom LaTeX markup.
+
+    Args:
+        text: Text to postprocess.
+        in_code_block: Whether replacements should be wrapped for minted
+            escape handling.
+
+    Returns:
+        Text with special glyph overrides applied.
+    """
     override_set = {"é⃝": "\\textcircled{é}"}
 
     if in_code_block:

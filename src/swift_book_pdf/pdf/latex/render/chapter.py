@@ -12,15 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""LaTeX rendering for chapter title hero blocks."""
+
 
 def generate_chapter_title(
     lines: list[str], file_name: str
 ) -> tuple[str, list[str]]:
-    """
-    Generate the chapter title LaTeX from the provided lines.
+    """Generate the chapter title LaTeX from source lines.
 
-    :param lines: The lines to generate the title from
-    :return: A tuple containing the title and the remaining lines
+    Args:
+        lines: Source lines for one chapter.
+        file_name: Lowercase document key used for labels.
+
+    Returns:
+        Rendered title hero LaTeX and the remaining body lines.
     """
     header_line = None
     subtitle_line = None

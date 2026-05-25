@@ -26,10 +26,10 @@ from swift_book_pdf.core.assets import (
     SWIFT_LOGO_ASSETS_DIR,
 )
 from swift_book_pdf.core.process import run_process_with_logs
-from swift_book_pdf.pdf.latex.build.deps.minted import (
+from swift_book_pdf.pdf.latex.build.minted import (
     check_minted_runtime_compatibility,
 )
-from swift_book_pdf.pdf.latex.build.deps.packages import (
+from swift_book_pdf.pdf.latex.build.packages import (
     check_for_missing_latex_package_logs,
     check_required_latex_packages_installed,
 )

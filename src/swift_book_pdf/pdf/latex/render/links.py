@@ -17,7 +17,7 @@
 import re
 from collections.abc import Callable
 
-from swift_book_pdf.pdf.options import RenderingMode
+from swift_book_pdf.pdf.config import RenderingMode
 
 MARKDOWN_LINK_PATTERN = re.compile(
     r"\[([^\]]+)\]\((https?:\/\/[^\s()]+(?:\([^()]*\)[^\s()]*)*)\)"

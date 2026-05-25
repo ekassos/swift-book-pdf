@@ -17,14 +17,14 @@
 from __future__ import annotations
 
 import html
+import re
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import SwiftLexer
 
-from swift_book_pdf.epub.patterns import CODE_PLACEHOLDER_PATTERN
-
 WRAPPING_PLACEHOLDER_MIN_LENGTH = 28
+CODE_PLACEHOLDER_PATTERN = re.compile(r"<#(.*?)#>")
 
 
 def render_code_block(code_lines: list[str]) -> str:

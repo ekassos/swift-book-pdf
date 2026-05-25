@@ -34,7 +34,7 @@ from .cover.png import (
     has_cover_asset,
     write_cover_asset,
 )
-from .identifiers import build_publication_identifier
+from .package.metadata import build_publication_identifier
 from .package.nav import FrontBackMatter, write_nav_file
 from .package.ncx import write_toc_ncx_file
 from .package.opf import OPFPackageInput, write_content_opf_file

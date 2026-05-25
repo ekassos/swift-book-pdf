@@ -16,9 +16,8 @@
 
 from dataclasses import dataclass
 
-from swift_book_pdf.pdf.config import PDFConfig
+from swift_book_pdf.pdf.config import EngineKind, PDFConfig
 from swift_book_pdf.pdf.latex.fonts.resolver import LaTeXFontConfig
-from swift_book_pdf.pdf.options import EngineKind
 
 DEFAULT_TYPESETS = 4
 

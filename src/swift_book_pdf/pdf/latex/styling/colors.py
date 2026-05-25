@@ -14,7 +14,7 @@
 
 from dataclasses import dataclass
 
-from swift_book_pdf.pdf.options import Appearance, RenderingMode
+from swift_book_pdf.pdf.config import Appearance, RenderingMode
 
 
 @dataclass(frozen=True)

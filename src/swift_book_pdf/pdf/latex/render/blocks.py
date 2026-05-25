@@ -28,6 +28,7 @@ from swift_book_pdf.core.blocks.models import (
     TermListBlock,
     UnorderedListBlock,
 )
+from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
 from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 from swift_book_pdf.pdf.latex.render.escaping import override_characters
@@ -37,7 +38,6 @@ from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 from swift_book_pdf.pdf.latex.render.lists import convert_list_like_block
 from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
 from swift_book_pdf.pdf.latex.render.tables import convert_table_block
-from swift_book_pdf.pdf.options import RenderingMode
 
 
 def convert_blocks_to_latex(

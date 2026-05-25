@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Shared PDF backend and engine contracts."""
+"""PDF backend contracts and registry."""
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
@@ -21,11 +21,11 @@ from typing import Any, Protocol
 
 from swift_book_pdf.core.config import ResolvedBuildSource
 from swift_book_pdf.core.navigation.toc import TableOfContents
-from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.layout import PDFDocumentConfig
-from swift_book_pdf.pdf.options import EngineKind
+from swift_book_pdf.pdf.config import EngineKind, PDFConfig, PDFDocumentConfig
+from swift_book_pdf.pdf.latex.backend import LaTeXBackend
+from swift_book_pdf.pdf.latex.engine import LaTeXEngine
 
-OptionTarget = Callable[..., object]
+DEFAULT_ENGINE = EngineKind.LATEX
 
 
 @dataclass(frozen=True)
@@ -56,15 +56,56 @@ class PDFEngine(Protocol):
 
 
 class PDFBackend(Protocol):
-    """Backend contract for engine-specific PDF CLI and config behavior."""
+    """Backend contract for engine-specific PDF config behavior."""
 
     kind: EngineKind
 
-    def build_options(self, func: OptionTarget) -> OptionTarget:
-        """Decorate the PDF command with backend build options."""
-
-    def command_options(self, func: OptionTarget) -> OptionTarget:
-        """Decorate the PDF command with backend-specific CLI options."""
-
     def build_config(self, config_input: PDFBackendConfigInput) -> PDFConfig:
         """Build the concrete backend config for a PDF build."""
+
+
+@dataclass(frozen=True)
+class PDFBackendRegistration:
+    """Factories for a registered PDF backend and its build engine."""
+
+    backend_factory: Callable[[], PDFBackend]
+    engine_factory: Callable[[], PDFEngine]
+
+
+PDF_BACKENDS: dict[EngineKind, PDFBackendRegistration] = {
+    EngineKind.LATEX: PDFBackendRegistration(
+        backend_factory=LaTeXBackend,
+        engine_factory=LaTeXEngine,
+    ),
+}
+
+
+def registered_engine_kinds() -> tuple[EngineKind, ...]:
+    """Return all registered PDF engine kinds."""
+    return tuple(PDF_BACKENDS)
+
+
+def registered_backends() -> tuple[PDFBackend, ...]:
+    """Return backend adapters for all registered PDF engines."""
+    return tuple(
+        registration.backend_factory()
+        for registration in PDF_BACKENDS.values()
+    )
+
+
+def select_backend(engine_kind: EngineKind) -> PDFBackend:
+    """Select the configured PDF backend."""
+    try:
+        return PDF_BACKENDS[engine_kind].backend_factory()
+    except KeyError as exc:
+        raise ValueError(f"Unsupported PDF engine: {engine_kind}") from exc
+
+
+def select_engine(config: PDFConfig) -> PDFEngine:
+    """Select the configured PDF engine."""
+    try:
+        return PDF_BACKENDS[config.engine_kind].engine_factory()
+    except KeyError as exc:
+        raise ValueError(
+            f"Unsupported PDF engine: {config.engine_kind}"
+        ) from exc

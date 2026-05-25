@@ -29,10 +29,10 @@ from swift_book_pdf.core.generated.notices.metadata import (
     NOTICES_DOC_SUBTITLE,
     NOTICES_DOC_TITLE,
 )
+from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.chapter import generate_chapter_title
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
 from swift_book_pdf.pdf.latex.render.inline import apply_formatting
-from swift_book_pdf.pdf.options import RenderingMode
 
 
 def render_notices_latex(

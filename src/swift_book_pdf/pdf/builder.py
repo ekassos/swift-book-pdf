@@ -18,9 +18,8 @@ import logging
 import shutil
 
 from swift_book_pdf.core.navigation.toc import TableOfContents
+from swift_book_pdf.pdf.backend import PDFBuildContext, select_engine
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.contracts import PDFBuildContext
-from swift_book_pdf.pdf.registry import select_engine
 
 logger = logging.getLogger(__name__)
 
@@ -47,11 +46,12 @@ def build_pdf(config: PDFConfig) -> None:
         PDFBuildContext(config=config, toc=toc)
     )
     if not temp_pdf_path.exists():
-        logger.error(f"PDF file not found: {temp_pdf_path}")
-        return
+        raise FileNotFoundError(f"PDF file not found: {temp_pdf_path}")
 
     try:
         shutil.move(str(temp_pdf_path), config.output_path)
         logger.info(f"PDF saved to {config.output_path}")
     except (OSError, shutil.Error) as e:
-        logger.error(f"Failed to save PDF to {config.output_path}: {e}")
+        raise RuntimeError(
+            f"Failed to save PDF to {config.output_path}"
+        ) from e

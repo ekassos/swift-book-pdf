@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -31,10 +32,11 @@ from swift_book_pdf.epub.constants import (
     SUMMARY_DOC_FILE_NAME,
     SUMMARY_DOC_KEY,
 )
-from swift_book_pdf.epub.patterns import HEADING_PATTERN
 
 if TYPE_CHECKING:
     from swift_book_pdf.core.source import ChapterMetadata
+
+HEADING_PATTERN = re.compile(r"^(#{1,4})\s+(.*)$")
 
 
 def build_source_document(

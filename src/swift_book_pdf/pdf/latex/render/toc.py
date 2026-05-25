@@ -25,7 +25,7 @@ from swift_book_pdf.core.markdown import (
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.core.source import ChapterMetadata
 from swift_book_pdf.core.source.paths import get_file_name
-from swift_book_pdf.pdf.options import Appearance, RenderingMode
+from swift_book_pdf.pdf.config import Appearance, RenderingMode
 
 if TYPE_CHECKING:
     from swift_book_pdf.pdf.latex.renderer import LaTeXRenderer

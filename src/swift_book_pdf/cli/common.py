@@ -17,6 +17,8 @@ from collections.abc import Callable
 from tempfile import TemporaryDirectory
 from typing import Protocol, TypeVar
 
+import click
+
 from swift_book_pdf.cli.legal_notices import warn_if_legal_notices_skipped
 from swift_book_pdf.cli.logging_config import configure_logging
 from swift_book_pdf.cli.output import validate_output_path
@@ -64,8 +66,7 @@ def run_build(  # noqa: PLR0913
             output_path, output_format
         )
     except ValueError as e:
-        logger.error(str(e))
-        return
+        raise click.ClickException(str(e)) from e
 
     with TemporaryDirectory() as temp:
         config: ConfigT | None = None
@@ -74,9 +75,9 @@ def run_build(  # noqa: PLR0913
             warn_if_legal_notices_skipped(config, logger)
             builder(config)
         except ValueError as e:
-            logger.error(str(e))
+            raise click.ClickException(str(e)) from e
         except Exception as e:
             details = error_details(config) if error_details else ""
-            logger.error(
-                f"Couldn't build The Swift Programming Language book: {e}{details}",
-            )
+            raise click.ClickException(
+                f"Couldn't build The Swift Programming Language book: {e}{details}"
+            ) from e

@@ -14,10 +14,10 @@
 
 """Parse Swift Book TOC sections for EPUB part grouping."""
 
-from swift_book_pdf.epub.patterns import (
-    DOC_TAG_LINE_PATTERN,
-    PART_HEADING_PATTERN,
-)
+import re
+
+DOC_TAG_LINE_PATTERN = re.compile(r"^-\s+<doc:(.*?)>\s*$")
+PART_HEADING_PATTERN = re.compile(r"^###\s+(.*)$")
 
 
 def parse_toc_sections(toc_lines: list[str]) -> list[tuple[str, list[str]]]:

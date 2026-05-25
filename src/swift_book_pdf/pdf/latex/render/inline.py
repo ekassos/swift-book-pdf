@@ -14,12 +14,12 @@
 
 import re
 
+from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.escaping import override_characters
 from swift_book_pdf.pdf.latex.render.links import (
     extract_markdown_links,
     restore_markdown_links,
 )
-from swift_book_pdf.pdf.options import RenderingMode
 
 UNDERSCORE_EMPHASIS_PATTERN = re.compile(
     r"(?<!\\)(?<!\w)_(?![\s_])(.+?)(?<![\s_])_(?!\w)"

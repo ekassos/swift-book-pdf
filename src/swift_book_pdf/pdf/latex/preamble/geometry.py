@@ -14,7 +14,7 @@
 
 """LaTeX page geometry helpers."""
 
-from swift_book_pdf.pdf.options import PaperSize
+from swift_book_pdf.pdf.config import PaperSize
 
 
 def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:

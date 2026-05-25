@@ -15,10 +15,10 @@
 """Nested block rendering used by list and aside renderers."""
 
 from swift_book_pdf.core.blocks.models import Block, CodeBlock, ParagraphBlock
+from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
 from swift_book_pdf.pdf.latex.render.escaping import override_characters
 from swift_book_pdf.pdf.latex.render.inline import apply_formatting
-from swift_book_pdf.pdf.options import RenderingMode
 
 
 def convert_nested_block(block: Block, mode: RenderingMode) -> str:

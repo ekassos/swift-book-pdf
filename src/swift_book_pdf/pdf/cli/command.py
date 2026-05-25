@@ -42,7 +42,7 @@ from swift_book_pdf.pdf.cli.options import (
     pdf_gutter_option,
     pdf_typography_options,
 )
-from swift_book_pdf.pdf.options import EngineKind
+from swift_book_pdf.pdf.config import EngineKind
 
 
 @click.command(name="swift-book-pdf", help="")

@@ -26,8 +26,9 @@ from swift_book_pdf.epub.grammar_rules import (
     parse_grammar_rule,
 )
 from swift_book_pdf.epub.paths import relative_href
-from swift_book_pdf.epub.patterns import EMPHASIS_PATTERN
 from swift_book_pdf.epub.render.inline import replace_inline_code_spans
+
+EMPHASIS_PATTERN = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
 
 
 def render_grammar_block(

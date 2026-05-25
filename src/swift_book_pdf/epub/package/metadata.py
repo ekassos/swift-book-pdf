@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+import logging
+import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -23,6 +25,8 @@ from swift_book_pdf.epub.constants import EPUB_IDENTIFIER_ID
 
 if TYPE_CHECKING:
     from swift_book_pdf.epub.package.opf import OPFPackageInput
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -86,3 +90,37 @@ def build_metadata(
         modified=modified,
         has_cover_asset=package_input.has_cover_asset,
     )
+
+
+def build_publication_identifier(
+    version_info: str | None,
+    source_revision: str | None,
+    publication_identifier_seed: str | None = None,
+) -> str:
+    """Build a stable UUID URN for the EPUB package.
+
+    Args:
+        version_info: Swift version string detected from source.
+        source_revision: Source repository revision when available.
+        publication_identifier_seed: Optional explicit pre-hash seed.
+
+    Returns:
+        Stable UUID5 URN when a seed is available, otherwise a random UUID4
+        URN.
+    """
+    seed = publication_identifier_seed
+    if seed is None:
+        seed = source_revision
+    if seed is None and version_info is not None:
+        normalized_version = " ".join(version_info.split())
+        if normalized_version:
+            seed = f"version:{normalized_version}"
+    if seed is None:
+        logger.debug(
+            "EPUB publication identifier seed unavailable; generating random UUID4"
+        )
+        return f"urn:uuid:{uuid.uuid4()}"
+    logger.debug(
+        f"EPUB publication identifier pre-hash seed: swift-book:{seed}"
+    )
+    return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, f'swift-book:{seed}')}"

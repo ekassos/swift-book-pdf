@@ -20,8 +20,8 @@ from swift_book_pdf.core.generated.notices.content import (
     SWIFT_LICENSE_URL,
 )
 from swift_book_pdf.core.generated.notices.metadata import NOTICES_DOC_KEY
+from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.notices import render_notices_latex
-from swift_book_pdf.pdf.options import RenderingMode
 
 
 def test_render_notices_latex_uses_detected_year_range() -> None:

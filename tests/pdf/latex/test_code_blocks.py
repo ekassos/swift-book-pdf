@@ -13,10 +13,10 @@
 # limitations under the License.
 
 from swift_book_pdf.core.blocks.models import CodeBlock
+from swift_book_pdf.pdf.config import Appearance, RenderingMode
 from swift_book_pdf.pdf.latex.render.blocks import convert_blocks_to_latex
 from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
-from swift_book_pdf.pdf.options import Appearance, RenderingMode
 
 
 def test_convert_code_block_preserves_percent_for_minted() -> None:

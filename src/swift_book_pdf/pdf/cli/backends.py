@@ -14,16 +14,21 @@
 
 """PDF backend helpers for the Click command surface."""
 
+from collections.abc import Callable
+
 import click
 
 from swift_book_pdf.cli.options import OptionTarget, apply_options
-from swift_book_pdf.pdf.contracts import PDFBackend
-from swift_book_pdf.pdf.options import EngineKind
-from swift_book_pdf.pdf.registry import (
+from swift_book_pdf.pdf.backend import (
     DEFAULT_ENGINE,
+    PDFBackend,
     registered_backends,
     registered_engine_kinds,
 )
+from swift_book_pdf.pdf.config import EngineKind
+from swift_book_pdf.pdf.latex.config import DEFAULT_TYPESETS
+
+OptionDecorator = Callable[[OptionTarget], OptionTarget]
 
 BACKENDS = registered_backends()
 BACKENDS_BY_KIND = {backend.kind: backend for backend in BACKENDS}
@@ -41,18 +46,12 @@ def default_engine_value() -> str:
 
 def apply_backend_build_options(func: OptionTarget) -> OptionTarget:
     """Add build options for every registered PDF backend."""
-    return apply_options(
-        func,
-        tuple(backend.build_options for backend in BACKENDS),
-    )
+    return apply_options(func, _backend_build_options())
 
 
 def apply_backend_command_options(func: OptionTarget) -> OptionTarget:
     """Add command options for every registered PDF backend."""
-    return apply_options(
-        func,
-        tuple(backend.command_options for backend in BACKENDS),
-    )
+    return apply_options(func, _backend_command_options())
 
 
 def select_backend_for_cli(engine: EngineKind) -> PDFBackend:
@@ -63,3 +62,69 @@ def select_backend_for_cli(engine: EngineKind) -> PDFBackend:
         raise click.ClickException(
             f"Unsupported PDF engine: {engine.value}"
         ) from exc
+
+
+def _backend_build_options() -> tuple[OptionDecorator, ...]:
+    """Return CLI build options for registered PDF engines."""
+    decorators: list[OptionDecorator] = []
+    for engine in registered_engine_kinds():
+        if engine is EngineKind.LATEX:
+            decorators.extend(_latex_build_options())
+    return tuple(decorators)
+
+
+def _backend_command_options() -> tuple[OptionDecorator, ...]:
+    """Return CLI command options for registered PDF engines."""
+    decorators: list[OptionDecorator] = []
+    for engine in registered_engine_kinds():
+        if engine is EngineKind.LATEX:
+            decorators.extend(_latex_command_options())
+    return tuple(decorators)
+
+
+def _latex_build_options() -> tuple[OptionDecorator, ...]:
+    return (
+        click.option(
+            "--typesets",
+            type=int,
+            default=DEFAULT_TYPESETS,
+            help="Number of typeset passes to use",
+            show_default=str(DEFAULT_TYPESETS),
+        ),
+    )
+
+
+def _latex_command_options() -> tuple[OptionDecorator, ...]:
+    return (
+        click.option(
+            "--main",
+            type=str,
+            default=None,
+            help="Font for the main text",
+        ),
+        click.option(
+            "--mono",
+            type=str,
+            default=None,
+            help="Font for code blocks",
+        ),
+        click.option(
+            "--unicode",
+            type=str,
+            default=None,
+            help="Font(s) for characters not supported by the main font",
+            multiple=True,
+        ),
+        click.option(
+            "--emoji",
+            type=str,
+            default=None,
+            help="Font for emoji",
+        ),
+        click.option(
+            "--header-footer",
+            type=str,
+            default=None,
+            help="Font for text in the header and footer",
+        ),
+    )

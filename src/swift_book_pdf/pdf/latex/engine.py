@@ -14,15 +14,20 @@
 
 """LaTeX PDF engine orchestration."""
 
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from tqdm import trange
 
-from swift_book_pdf.pdf.contracts import PDFBuildContext
 from swift_book_pdf.pdf.latex.build.compiler import LuaLaTeXCompiler
 from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.document import write_latex_document
 from swift_book_pdf.pdf.latex.renderer import LaTeXRenderer
+
+if TYPE_CHECKING:
+    from swift_book_pdf.pdf.backend import PDFBuildContext
 
 
 class LaTeXEngine:

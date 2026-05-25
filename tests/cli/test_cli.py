@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import logging
+import sys
 from collections.abc import Iterator
 from dataclasses import dataclass
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
@@ -34,7 +36,7 @@ from swift_book_pdf.epub.cli.validators import validate_hex_color
 from swift_book_pdf.pdf.cli import backends as pdf_cli_backends
 from swift_book_pdf.pdf.cli import command as pdf_cli
 from swift_book_pdf.pdf.cli import config as pdf_cli_config
-from swift_book_pdf.pdf.options import EngineKind
+from swift_book_pdf.pdf.config import EngineKind
 
 PDF_TYPESSETS = 2
 PDF_FONT_SIZE = 10.5
@@ -80,6 +82,10 @@ def runner(
 
 def assert_success(result: Result) -> None:
     assert result.exit_code == 0, result.output
+
+
+def assert_failure(result: Result) -> None:
+    assert result.exit_code != 0, result.output
 
 
 def stub_resolve_cli_build_source(
@@ -151,6 +157,23 @@ def test_command_help_exposes_only_relevant_options(
     assert "--input-path" in result.output
     assert "--source-ref" in result.output
     assert "--source-sha" in result.output
+
+
+def test_pygments_style_entry_points_load() -> None:
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        tomllib = pytest.importorskip("tomli")
+
+    pyproject = Path(__file__).parents[2] / "pyproject.toml"
+    project_config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    entry_points = project_config["project"]["entry-points"]["pygments.styles"]
+
+    for entry_point in entry_points.values():
+        module_name, attribute_name = entry_point.split(":", maxsplit=1)
+        module = import_module(module_name)
+
+        assert getattr(module, attribute_name) is not None
 
 
 def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
@@ -233,6 +256,34 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert config_input.dangerously_skip_legal_notices is True
     assert LEGAL_NOTICES_WARNING in result.output
     build_pdf.assert_called_once_with(fake_config)
+
+
+def test_pdf_command_returns_nonzero_on_builder_failure(
+    runner: CliRunner,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_config = SimpleNamespace(
+        dangerously_skip_legal_notices=False,
+        build_error_details=lambda: "",
+    )
+    stub_resolve_cli_build_source(pdf_cli_config, monkeypatch)
+    monkeypatch.setattr(
+        pdf_cli_backends.select_backend_for_cli(EngineKind.LATEX),
+        "build_config",
+        Mock(return_value=fake_config),
+    )
+    monkeypatch.setattr(
+        pdf_cli,
+        "build_pdf",
+        Mock(side_effect=RuntimeError("boom")),
+    )
+
+    result = runner.invoke(pdf_cli.pdf, ["book.pdf"])
+
+    assert_failure(result)
+    assert "Couldn't build The Swift Programming Language book: boom" in (
+        result.output
+    )
 
 
 def test_epub_command_builds_epub_config_and_calls_epub_builder(
@@ -434,7 +485,7 @@ def test_input_path_rejects_revision_selection(
         ],
     )
 
-    assert_success(result)
+    assert_failure(result)
     assert (
         "--source-ref and --source-sha can't be used with --input-path"
         in result.output

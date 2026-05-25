@@ -12,38 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""LaTeX PDF backend CLI and configuration adapter."""
+"""LaTeX PDF backend configuration adapter."""
 
-from collections.abc import Callable
+from __future__ import annotations
 
-import click
+from typing import TYPE_CHECKING
 
-from swift_book_pdf.cli.options import OptionTarget, apply_options
-from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.contracts import PDFBackendConfigInput
-from swift_book_pdf.pdf.latex.config import (
-    DEFAULT_TYPESETS,
-    LaTeXConfig,
-    LaTeXPDFConfig,
-)
+from swift_book_pdf.pdf.config import EngineKind, PDFConfig
+from swift_book_pdf.pdf.latex.config import LaTeXConfig, LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.fonts.resolver import resolve_for_latex
-from swift_book_pdf.pdf.options import EngineKind
 
-OptionDecorator = Callable[[OptionTarget], OptionTarget]
+if TYPE_CHECKING:
+    from swift_book_pdf.pdf.backend import PDFBackendConfigInput
 
 
 class LaTeXBackend:
-    """LaTeX backend adapter for the generic PDF command."""
+    """LaTeX backend adapter for resolved PDF config construction."""
 
     kind = EngineKind.LATEX
-
-    def build_options(self, func: OptionTarget) -> OptionTarget:
-        """Add LaTeX build options."""
-        return apply_options(func, _latex_options())
-
-    def command_options(self, func: OptionTarget) -> OptionTarget:
-        """Add LaTeX font options."""
-        return apply_options(func, _font_options())
 
     def build_config(self, config_input: PDFBackendConfigInput) -> PDFConfig:
         """Build a LaTeX-backed PDF configuration."""
@@ -63,51 +49,3 @@ class LaTeXBackend:
             latex_config=latex_config,
             override_version=config_input.override_version,
         )
-
-
-def _latex_options() -> tuple[OptionDecorator, ...]:
-    return (
-        click.option(
-            "--typesets",
-            type=int,
-            default=DEFAULT_TYPESETS,
-            help="Number of typeset passes to use",
-            show_default=str(DEFAULT_TYPESETS),
-        ),
-    )
-
-
-def _font_options() -> tuple[OptionDecorator, ...]:
-    return (
-        click.option(
-            "--main",
-            type=str,
-            default=None,
-            help="Font for the main text",
-        ),
-        click.option(
-            "--mono",
-            type=str,
-            default=None,
-            help="Font for code blocks",
-        ),
-        click.option(
-            "--unicode",
-            type=str,
-            default=None,
-            help="Font(s) for characters not supported by the main font",
-            multiple=True,
-        ),
-        click.option(
-            "--emoji",
-            type=str,
-            default=None,
-            help="Font for emoji",
-        ),
-        click.option(
-            "--header-footer",
-            type=str,
-            default=None,
-            help="Font for text in the header and footer",
-        ),
-    )

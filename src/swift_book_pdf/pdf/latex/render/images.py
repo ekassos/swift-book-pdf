@@ -18,7 +18,7 @@ import struct
 from pathlib import Path, PureWindowsPath
 
 from swift_book_pdf.core.blocks.models import ImageBlock
-from swift_book_pdf.pdf.options import Appearance
+from swift_book_pdf.pdf.config import Appearance
 
 logger = logging.getLogger(__name__)
 MAX_IMAGE_WIDTH_IN = 6.5

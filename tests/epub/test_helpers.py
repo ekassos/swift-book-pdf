@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections.abc import Iterator
 from pathlib import Path
 
+from swift_book_pdf.epub.assets import AssetCatalog
 from swift_book_pdf.epub.cover import (
     cover_png_version_fill,
     cover_png_version_text,
@@ -25,9 +27,17 @@ from swift_book_pdf.epub.cover.constants import (
     COVER_CURRENT_TEMPLATE_PATH,
     COVER_NIGHTLY_TEMPLATE_PATH,
 )
-from swift_book_pdf.epub.identifiers import (
+from swift_book_pdf.epub.package.metadata import (
     build_publication_identifier,
 )
+
+
+class _OrderedAssetDir:
+    def __init__(self, assets: tuple[Path, ...]) -> None:
+        self._assets = assets
+
+    def iterdir(self) -> Iterator[Path]:
+        return iter(self._assets)
 
 
 def test_cover_template_path_prefers_explicit_base_cover_image(
@@ -161,3 +171,18 @@ def test_build_publication_identifier_prefers_explicit_seed_override() -> None:
         )
         == expected
     )
+
+
+def test_asset_catalog_preserves_dark_variant_seen_before_light(
+    tmp_path: Path,
+) -> None:
+    light_asset = tmp_path / "diagram.png"
+    dark_asset = tmp_path / "diagram~dark.png"
+    light_asset.write_bytes(b"light")
+    dark_asset.write_bytes(b"dark")
+    asset_dir = _OrderedAssetDir((dark_asset, light_asset))
+
+    catalog = object.__new__(AssetCatalog)
+    catalog._assets = catalog._build_asset_pairs(asset_dir)
+
+    assert catalog.resolve("diagram.png") == (light_asset, dark_asset)

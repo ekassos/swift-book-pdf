@@ -32,8 +32,8 @@ swift-book-epub = "swift_book_pdf.epub.cli.command:epub"
 swift_book_epub = "swift_book_pdf.epub.cli.command:epub"
 
 [project.entry-points."pygments.styles"]
-swift_book_style = "swift_book_pdf.pdf.latex.styles:CustomSwiftBookStyle"
-swift_book_dark_style = "swift_book_pdf.pdf.latex.styles:CustomSwiftBookDarkStyle"
+swift_book_style = "swift_book_pdf.pdf.latex.preamble.styles:CustomSwiftBookStyle"
+swift_book_dark_style = "swift_book_pdf.pdf.latex.preamble.styles:CustomSwiftBookDarkStyle"
 
 [dependency-groups]
 dev = [

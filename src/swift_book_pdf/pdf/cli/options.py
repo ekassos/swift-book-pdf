@@ -17,12 +17,13 @@
 import click
 
 from swift_book_pdf.cli.options import OptionTarget, apply_options
-from swift_book_pdf.pdf.layout import (
+from swift_book_pdf.pdf.config import (
     DEFAULT_BODY_FONT_SIZE,
     DEFAULT_PAPER_SIZE,
     DEFAULT_RENDERING_MODE,
+    PaperSize,
+    RenderingMode,
 )
-from swift_book_pdf.pdf.options import PaperSize, RenderingMode
 
 GUTTER_FLAG_OPTIONS = ("--gutter/--no-gutter", " /-G")
 

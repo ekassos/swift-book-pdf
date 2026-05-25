@@ -18,6 +18,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING, Protocol
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+
+class _AssetDirectory(Protocol):
+    def iterdir(self) -> Iterable[Path]: ...
 
 
 @dataclass(frozen=True)
@@ -68,11 +76,14 @@ class AssetCatalog:
         asset_pair = self._assets.get(key)
         if asset_pair is None:
             raise FileNotFoundError(f"Missing image asset: {image_name}")
-        return asset_pair
+        light_asset, dark_asset = asset_pair
+        if light_asset is None:
+            raise FileNotFoundError(f"Missing image asset: {image_name}")
+        return light_asset, dark_asset
 
     def _build_asset_pairs(
-        self, asset_path: Path
-    ) -> dict[str, tuple[Path, Path | None]]:
+        self, asset_path: _AssetDirectory
+    ) -> dict[str, tuple[Path | None, Path | None]]:
         """Index light/dark image variants by normalized asset key.
 
         Args:
@@ -81,7 +92,7 @@ class AssetCatalog:
         Returns:
             Mapping from normalized image stem to light and dark asset paths.
         """
-        asset_pairs: dict[str, tuple[Path, Path | None]] = {}
+        asset_pairs: dict[str, tuple[Path | None, Path | None]] = {}
         for asset in asset_path.iterdir():
             if not asset.is_file():
                 continue
@@ -91,8 +102,7 @@ class AssetCatalog:
                 dark_asset = asset
             else:
                 light_asset = asset
-            if light_asset is not None:
-                asset_pairs[key] = (light_asset, dark_asset)
+            asset_pairs[key] = (light_asset, dark_asset)
         return asset_pairs
 
 

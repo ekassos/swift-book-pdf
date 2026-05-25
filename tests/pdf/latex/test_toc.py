@@ -13,10 +13,10 @@
 # limitations under the License.
 
 from swift_book_pdf.core.source import ChapterMetadata
+from swift_book_pdf.pdf.config import Appearance, RenderingMode
 from swift_book_pdf.pdf.latex.render.toc import (
     replace_chapter_href_with_toc_item,
 )
-from swift_book_pdf.pdf.options import Appearance, RenderingMode
 
 
 def test_toc_chapter_icon_uses_em_based_width_in_digital_mode() -> None:

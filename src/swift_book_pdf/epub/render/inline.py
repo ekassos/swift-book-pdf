@@ -20,18 +20,15 @@ import html
 import re
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.epub.patterns import (
-    DOC_LINK_PATTERN,
-    EMPHASIS_PATTERN,
-    STRONG_PATTERN,
-)
-
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from swift_book_pdf.epub.render.links import LinkResolver
 
 INLINE_CODE_PADDING_LENGTH = 2
+DOC_LINK_PATTERN = re.compile(r"<doc:([^>]+)>")
+STRONG_PATTERN = re.compile(r"\*\*(.+?)\*\*")
+EMPHASIS_PATTERN = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
 
 
 def render_inline(

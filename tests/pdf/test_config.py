@@ -13,9 +13,9 @@
 # limitations under the License.
 
 from swift_book_pdf.core.config import ResolvedBuildSource
+from swift_book_pdf.pdf.config import PDFDocumentConfig
 from swift_book_pdf.pdf.latex.config import LaTeXConfig, LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.fonts.resolver import LaTeXFontConfig
-from swift_book_pdf.pdf.layout import PDFDocumentConfig
 
 
 def _font_config() -> LaTeXFontConfig:

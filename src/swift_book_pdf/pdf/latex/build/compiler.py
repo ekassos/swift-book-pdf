@@ -25,7 +25,6 @@ from pathlib import Path
 from swift_book_pdf.core.assets import (
     IBM_PLEX_FONT_DIR,
     ICON_ASSETS_DIR,
-    SWIFT_LOGO_ASSETS_DIR,
 )
 from swift_book_pdf.core.process import run_process_with_logs
 from swift_book_pdf.pdf.latex.build.minted import (
@@ -79,7 +78,6 @@ class LuaLaTeXCompiler:
         check_required_latex_packages_installed()
         check_minted_runtime_compatibility()
         self.local_asset_dirs = (
-            str(SWIFT_LOGO_ASSETS_DIR),
             str(ICON_ASSETS_DIR),
             str(IBM_PLEX_FONT_DIR),
         )

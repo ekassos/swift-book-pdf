@@ -20,6 +20,11 @@ import textwrap
 from collections.abc import Callable
 from subprocess import Popen
 
+_GRAY_TEXT = "\033[37m"
+_RESET_TEXT = "\033[0m"
+_CURSOR_UP = "\033[F"
+_CLEAR_LINE = "\033[2K"
+
 
 def run_process_with_logs(
     process: Popen[str],
@@ -42,39 +47,33 @@ def run_process_with_logs(
     """
     last_lines: list[str] = []
     printed_lines = 0
-    gray = "\033[37m"
-    reset = "\033[0m"
 
     is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
     max_lines = None if is_debug else max_lines_default
 
     try:
-        while True:
-            if process.stdout is None:
-                break
-            line = process.stdout.readline()
-            if not line:
-                break
+        stdout = process.stdout
+        if stdout is not None:
+            for line in iter(stdout.readline, ""):
+                if log_check_func is not None:
+                    log_check_func(line)
 
-            if log_check_func is not None:
-                log_check_func(line)
+                _append_wrapped_line(last_lines, line, max_line_length)
+                last_lines = _trim_output_buffer(last_lines, max_lines)
 
-            _append_wrapped_line(last_lines, line, max_line_length)
-            last_lines = _trim_output_buffer(last_lines, max_lines)
+                if not is_debug:
+                    _clear_printed_lines(printed_lines)
 
-            if not is_debug:
-                _clear_printed_lines(printed_lines)
-
-            out = "\n".join(last_lines)
-            sys.stdout.write(gray + out + reset + "\n")
-            sys.stdout.flush()
-            printed_lines = len(last_lines)
+                output = "\n".join(last_lines)
+                sys.stdout.write(f"{_GRAY_TEXT}{output}{_RESET_TEXT}\n")
+                sys.stdout.flush()
+                printed_lines = len(last_lines)
 
         process.wait()
 
         if not is_debug:
             _clear_printed_lines(printed_lines)
-            sys.stdout.write("\033[F")
+            sys.stdout.write(_CURSOR_UP)
 
         sys.stdout.flush()
     except Exception:
@@ -125,5 +124,5 @@ def _clear_printed_lines(printed_lines: int) -> None:
         printed_lines: Number of terminal lines to erase.
     """
     for _ in range(printed_lines):
-        sys.stdout.write("\033[F")
-        sys.stdout.write("\033[2K")
+        sys.stdout.write(_CURSOR_UP)
+        sys.stdout.write(_CLEAR_LINE)

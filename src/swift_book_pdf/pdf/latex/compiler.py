@@ -31,8 +31,10 @@ from swift_book_pdf.pdf.latex.dependencies import (
     check_minted_runtime_compatibility,
     check_required_latex_packages_installed,
 )
+from swift_book_pdf.pdf.latex.templating import read_latex_template
 
 logger = logging.getLogger(__name__)
+CHECK_MINTED_TEMPLATE = read_latex_template("check_minted.tex")
 
 
 class LuaLaTeXCompiler:
@@ -56,25 +58,11 @@ class LuaLaTeXCompiler:
         Check if minted package needs shell escape by running a test LaTeX document.
         Returns True if shell escape is needed, False otherwise.
         """
-        tex_code = r"""
-        \documentclass{article}
-        \usepackage{minted}
-        \usepackage[svgnames]{xcolor}
-        \begin{document}
-        \begin{minted}[bgcolor=Beige, bgcolorpadding=0.5em]{c}
-        int main() {
-        printf("hello, world");
-        return 0;
-        }
-        \end{minted}
-        \end{document}
-        """
-
         with tempfile.TemporaryDirectory() as tmpdir:
             tex_filename = "check_minted.tex"
             tex_file_path = Path(tmpdir) / tex_filename
             with tex_file_path.open("w", encoding="utf-8") as tex_file:
-                tex_file.write(tex_code)
+                tex_file.write(CHECK_MINTED_TEMPLATE)
             try:
                 result = subprocess.run(  # noqa: S603
                     [

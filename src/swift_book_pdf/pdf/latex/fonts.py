@@ -19,6 +19,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from swift_book_pdf.pdf.latex.templating import load_latex_template
+
 logger = logging.getLogger(__name__)
 
 MAIN_FONT_LIST = [
@@ -57,6 +59,7 @@ FONT_TROUBLESHOOTING_URL = (
     "https://github.com/ekassos/swift-book-pdf/wiki/Troubleshooting"
 )
 NOTO_SANS_DOWNLOAD_URL = "https://fonts.google.com/noto"
+CHECK_FONTS_TEMPLATE = load_latex_template("check_fonts.tex")
 
 
 def batch_check_fonts(font_names: list[str]) -> dict[str, bool]:
@@ -77,13 +80,7 @@ def batch_check_fonts(font_names: list[str]) -> dict[str, bool]:
         for font in font_names
     )
 
-    tex_code = rf"""
-    \documentclass{{article}}
-    \usepackage{{fontspec}}
-    \begin{{document}}
-    {font_checks}
-    \end{{document}}
-    """
+    tex_code = CHECK_FONTS_TEMPLATE.substitute(font_checks=font_checks)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         tex_filename = "check_fonts.tex"

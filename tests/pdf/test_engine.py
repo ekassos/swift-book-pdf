@@ -41,7 +41,7 @@ def test_pdf_converter_uses_package_assets_dir(
 
     asset_dirs = tuple(Path(path) for path in converter.local_asset_dirs)
     assert [path.name for path in asset_dirs] == [
-        "brand",
+        "swift-logo",
         "icons",
         "ibm-plex",
     ]

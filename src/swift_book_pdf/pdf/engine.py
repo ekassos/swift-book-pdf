@@ -23,9 +23,9 @@ from importlib import metadata
 from pathlib import Path
 
 from swift_book_pdf.assets import (
-    BRAND_ASSETS_DIR,
     IBM_PLEX_FONT_DIR,
     ICON_ASSETS_DIR,
+    SWIFT_LOGO_ASSETS_DIR,
 )
 from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.fonts import check_for_missing_font_logs
@@ -218,7 +218,7 @@ class PDFConverter:
         check_required_latex_packages_installed()
         check_minted_runtime_compatibility()
         self.local_asset_dirs = (
-            str(BRAND_ASSETS_DIR),
+            str(SWIFT_LOGO_ASSETS_DIR),
             str(ICON_ASSETS_DIR),
             str(IBM_PLEX_FONT_DIR),
         )

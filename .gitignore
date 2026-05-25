@@ -25,11 +25,12 @@ Thumbs.db
 # Bundled assets.
 src/swift_book_pdf/assets/*
 
-# Shared brand artwork used by PDF output.
-!src/swift_book_pdf/assets/brand/
-src/swift_book_pdf/assets/brand/*
-!src/swift_book_pdf/assets/brand/Swift_logo_color.png
-!src/swift_book_pdf/assets/brand/Swift_logo_white.png
+# Shared Swift logo artwork used by PDF output.
+# The Swift logo is a trademark of Apple Inc.
+!src/swift_book_pdf/assets/swift-logo/
+src/swift_book_pdf/assets/swift-logo/*
+!src/swift_book_pdf/assets/swift-logo/Swift_logo_color.png
+!src/swift_book_pdf/assets/swift-logo/Swift_logo_white.png
 
 # Shared icons used by PDF output.
 !src/swift_book_pdf/assets/icons/

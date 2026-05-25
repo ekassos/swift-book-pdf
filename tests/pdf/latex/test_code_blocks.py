@@ -13,15 +13,16 @@
 # limitations under the License.
 
 from swift_book_pdf.core.blocks.models import CodeBlock
-from swift_book_pdf.pdf.latex.render.code_blocks import convert_code_block
+from swift_book_pdf.pdf.latex.render.blocks import convert_blocks_to_latex
+from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
-from swift_book_pdf.pdf.options import RenderingMode
+from swift_book_pdf.pdf.options import Appearance, RenderingMode
 
 
 def test_convert_code_block_preserves_percent_for_minted() -> None:
     block = CodeBlock(lines=["-9 % 4 // equals -1"])
 
-    rendered = "\n".join(convert_code_block(block))
+    rendered = "\n".join(convert_blocks_to_latex([block], _render_context()))
 
     assert "-9 % 4 // equals -1" in rendered
     assert r"\%" not in rendered
@@ -34,3 +35,14 @@ def test_convert_nested_code_block_preserves_percent_for_minted() -> None:
 
     assert "-9 % 4 // equals -1" in rendered
     assert r"\%" not in rendered
+
+
+def _render_context() -> LaTeXRenderContext:
+    return LaTeXRenderContext(
+        file_name="chapter",
+        assets_dir="",
+        mode=RenderingMode.PRINT,
+        appearance=Appearance.LIGHT,
+        main_font="IBM Plex Serif",
+        body_font_size=10,
+    )

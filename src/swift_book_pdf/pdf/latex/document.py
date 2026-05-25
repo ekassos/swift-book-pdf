@@ -43,7 +43,7 @@ def write_latex_document(
         output_path: Destination ``.tex`` file path.
     """
     latex = generate_preamble(config)
-    toc_latex, _ = generate_toc_latex(toc, renderer)
+    toc_latex = generate_toc_latex(toc, renderer)
     latex += toc_latex + "\n"
 
     for tag in toc.doc_tags:

@@ -16,8 +16,8 @@
 
 import re
 
-from swift_book_pdf.pdf.latex.fonts.candidates import (
-    FONT_TROUBLESHOOTING_URL,
+FONT_TROUBLESHOOTING_URL = (
+    "https://github.com/ekassos/swift-book-pdf/wiki/Troubleshooting"
 )
 
 

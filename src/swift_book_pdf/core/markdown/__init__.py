@@ -21,15 +21,17 @@ from swift_book_pdf.core.markdown.links import (
     convert_reference_links_in_line,
 )
 from swift_book_pdf.core.markdown.title import (
-    replace_and_extract_version,
+    extract_version_info,
+    normalize_versioned_title,
     resolve_version_info,
 )
 
 __all__ = [
     "convert_markdown_links",
     "convert_reference_links_in_line",
+    "extract_version_info",
+    "normalize_versioned_title",
     "remove_directives",
     "remove_multiline_comments",
-    "replace_and_extract_version",
     "resolve_version_info",
 ]

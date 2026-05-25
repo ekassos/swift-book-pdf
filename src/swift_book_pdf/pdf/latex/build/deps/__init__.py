@@ -12,8 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Shared PDF font configuration models."""
-
-from swift_book_pdf.pdf.fonts.config import FontConfig, FontOverrides
-
-__all__ = ["FontConfig", "FontOverrides"]
+"""LaTeX runtime dependency checks."""

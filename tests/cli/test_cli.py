@@ -31,8 +31,10 @@ from swift_book_pdf.core.output import OutputFormat
 from swift_book_pdf.epub.cli import command as epub_cli
 from swift_book_pdf.epub.cli import config as epub_cli_config
 from swift_book_pdf.epub.cli.validators import validate_hex_color
+from swift_book_pdf.pdf.cli import backends as pdf_cli_backends
 from swift_book_pdf.pdf.cli import command as pdf_cli
 from swift_book_pdf.pdf.cli import config as pdf_cli_config
+from swift_book_pdf.pdf.options import EngineKind
 
 PDF_TYPESSETS = 2
 PDF_FONT_SIZE = 10.5
@@ -161,7 +163,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     build_pdf_config = Mock(return_value=fake_config)
     build_pdf = Mock()
     monkeypatch.setattr(
-        pdf_cli.LATEX_BACKEND,
+        pdf_cli_backends.select_backend_for_cli(EngineKind.LATEX),
         "build_config",
         build_pdf_config,
     )
@@ -370,7 +372,7 @@ def test_directory_output_defaults_to_format_extension(
     stub_resolve_cli_build_source(config_module, monkeypatch)
     if scenario.module is pdf_cli:
         monkeypatch.setattr(
-            pdf_cli.LATEX_BACKEND,
+            pdf_cli_backends.select_backend_for_cli(EngineKind.LATEX),
             "build_config",
             config_mock,
         )

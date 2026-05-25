@@ -17,22 +17,27 @@
 from swift_book_pdf.core.blocks.models import (
     Block,
     CodeBlock,
+    Header2Block,
+    Header3Block,
+    Header4Block,
     ImageBlock,
     NoteBlock,
+    OrderedListBlock,
     ParagraphBlock,
     TableBlock,
+    TermListBlock,
+    UnorderedListBlock,
 )
-from swift_book_pdf.pdf.latex.render.code_blocks import convert_code_block
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
 from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
+from swift_book_pdf.pdf.latex.render.escaping import override_characters
 from swift_book_pdf.pdf.latex.render.headings import convert_header_like_block
 from swift_book_pdf.pdf.latex.render.images import convert_image_block
+from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 from swift_book_pdf.pdf.latex.render.lists import convert_list_like_block
-from swift_book_pdf.pdf.latex.render.notes import convert_note_block
-from swift_book_pdf.pdf.latex.render.paragraphs import (
-    convert_paragraph_block,
-)
+from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
 from swift_book_pdf.pdf.latex.render.tables import convert_table_block
+from swift_book_pdf.pdf.options import RenderingMode
 
 
 def convert_blocks_to_latex(
@@ -50,30 +55,61 @@ def _convert_block_to_latex(  # noqa: PLR0911
     block: Block,
     context: LaTeXRenderContext,
 ) -> list[str]:
-    if isinstance(block, CodeBlock):
-        return convert_code_block(block)
-    list_block = convert_list_like_block(block, context.mode)
-    if list_block is not None:
-        return list_block
-    if isinstance(block, ImageBlock):
-        return convert_image_block(
-            block, context.assets_dir, context.appearance
-        )
-    header_block = convert_header_like_block(
-        block, context.file_name, context.mode
+    match block:
+        case CodeBlock():
+            return _convert_code_block(block)
+        case ImageBlock():
+            return convert_image_block(
+                block, context.assets_dir, context.appearance
+            )
+        case NoteBlock():
+            return _convert_note_block(block, context.mode)
+        case ParagraphBlock():
+            return [_convert_paragraph_block(block, context.mode)]
+        case TableBlock():
+            return convert_table_block(
+                block,
+                context.mode,
+                context.main_font,
+                context.body_font_size,
+            )
+        case UnorderedListBlock() | OrderedListBlock() | TermListBlock():
+            list_block = convert_list_like_block(block, context.mode)
+            if list_block is not None:
+                return list_block
+        case Header2Block() | Header3Block() | Header4Block():
+            header_block = convert_header_like_block(
+                block, context.file_name, context.mode
+            )
+            if header_block is not None:
+                return header_block
+
+    raise TypeError(f"Unsupported LaTeX block type: {type(block).__name__}")
+
+
+def _convert_code_block(block: CodeBlock) -> list[str]:
+    output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
+    output.extend(override_characters(line, True) for line in block.lines)
+    output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
+    return output
+
+
+def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
+    aside_content = "\n".join(
+        convert_nested_block(sub_block, mode) for sub_block in block.blocks
     )
-    if header_block is not None:
-        return header_block
-    if isinstance(block, NoteBlock):
-        return convert_note_block(block, context.mode)
-    if isinstance(block, ParagraphBlock):
-        return [convert_paragraph_block(block, context.mode)]
-    if isinstance(block, TableBlock):
-        return convert_table_block(
-            block,
-            context.mode,
-            context.main_font,
-            context.body_font_size,
-        )
-    text = " ".join(block.get("lines", []))
-    return [f"\\ParagraphStyle{{{convert_inline_code(text)}}}\n"]
+    return [
+        "\\begin{flushleft}\\begin{asideNote}",
+        f" \\textbf{{{block.label}}} \\vspace*{{4pt}} \\\\",
+        aside_content,
+        "\\end{asideNote}\\end{flushleft}" + "\n",
+    ]
+
+
+def _convert_paragraph_block(
+    block: ParagraphBlock, mode: RenderingMode
+) -> str:
+    paragraph = apply_formatting(
+        convert_inline_code(" ".join(block.lines)), mode
+    )
+    return f"\\ParagraphStyle{{{paragraph}}}\n"

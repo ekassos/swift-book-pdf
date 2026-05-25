@@ -13,3 +13,10 @@
 # limitations under the License.
 
 """LaTeX font discovery, configuration, and diagnostics."""
+
+from swift_book_pdf.pdf.latex.fonts.resolver import (
+    LaTeXFontConfig,
+    resolve_for_latex,
+)
+
+__all__ = ["LaTeXFontConfig", "resolve_for_latex"]

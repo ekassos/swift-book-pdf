@@ -16,39 +16,41 @@
 
 import re
 
+VERSIONED_TITLE_PATTERN = re.compile(
+    r"# The Swift Programming Language \((.*?)\)"
+)
 
-def replace_and_extract_version(
-    file_content: list[str],
-) -> tuple[list[str], str | None]:
-    """Normalize the TSPL title heading and extract the Swift version.
+
+def normalize_versioned_title(file_content: list[str]) -> list[str]:
+    """Normalize the TSPL title heading into title and version lines.
 
     Args:
         file_content: Markdown lines that may contain a title in the form
             `# The Swift Programming Language (...)`.
 
     Returns:
-        A tuple containing the updated lines and the extracted version string.
-        When no versioned title is present, the original lines are returned
-        with `None` for the version.
+        Markdown lines with any versioned TSPL title split across two lines.
     """
-
-    version_info = None
     updated_lines: list[str] = []
 
     for line in file_content:
-        match = re.search(r"# The Swift Programming Language \((.*?)\)", line)
-
+        match = VERSIONED_TITLE_PATTERN.search(line)
         if match:
-            # Extract version information
-            version_info = match.group(1)
-            # Use a two-line format for the version information
             updated_lines.append("# The Swift Programming Language\n")
-            updated_lines.append(f"Version {version_info}\n")
+            updated_lines.append(f"Version {match.group(1)}\n")
         else:
-            # If no match, keep the line unchanged
             updated_lines.append(line)
 
-    return updated_lines, version_info
+    return updated_lines
+
+
+def extract_version_info(file_content: list[str]) -> str | None:
+    """Extract the Swift version from a TSPL title heading."""
+    for line in file_content:
+        match = VERSIONED_TITLE_PATTERN.search(line)
+        if match:
+            return match.group(1)
+    return None
 
 
 def resolve_version_info(
@@ -75,7 +77,7 @@ def resolve_version_info(
         if normalized_override_version:
             return normalized_override_version
 
-    _, version_info = replace_and_extract_version(file_content)
+    version_info = extract_version_info(file_content)
     if version_info is not None:
         return version_info
 

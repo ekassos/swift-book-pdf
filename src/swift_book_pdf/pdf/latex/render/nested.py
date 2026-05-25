@@ -31,5 +31,6 @@ def convert_nested_block(block: Block, mode: RenderingMode) -> str:
             out += override_characters(line) + "\n"
         return out + r"\end{swiftstyledbox}" + "\n"
 
-    text = " ".join(block.lines if "lines" in block.model_fields else [])
-    return apply_formatting(convert_inline_code(text), mode)
+    raise TypeError(
+        f"Unsupported nested LaTeX block type: {type(block).__name__}"
+    )

@@ -22,8 +22,6 @@ import swift_book_pdf.pdf.cli.config as pdf_config
 from swift_book_pdf.cli.common import run_build
 from swift_book_pdf.cli.legal_notices import legal_notices_option
 from swift_book_pdf.cli.options import (
-    OptionTarget,
-    apply_options,
     output_path_argument,
     override_version_option,
     source_options,
@@ -31,36 +29,20 @@ from swift_book_pdf.cli.options import (
 )
 from swift_book_pdf.core.output import OutputFormat
 from swift_book_pdf.pdf.builder import build_pdf
+from swift_book_pdf.pdf.cli.backends import (
+    apply_backend_build_options,
+    apply_backend_command_options,
+    default_engine_value,
+    engine_choices,
+    select_backend_for_cli,
+)
 from swift_book_pdf.pdf.cli.options import (
     pdf_appearance_options,
     pdf_document_options,
     pdf_gutter_option,
     pdf_typography_options,
 )
-from swift_book_pdf.pdf.contracts import PDFBackend
 from swift_book_pdf.pdf.options import EngineKind
-from swift_book_pdf.pdf.registry import select_backend
-
-DEFAULT_ENGINE = EngineKind.LATEX
-LATEX_BACKEND = select_backend(EngineKind.LATEX)
-BACKENDS_BY_KIND = {LATEX_BACKEND.kind: LATEX_BACKEND}
-BACKENDS = tuple(BACKENDS_BY_KIND.values())
-
-
-def apply_backend_build_options(func: OptionTarget) -> OptionTarget:
-    """Add build options for every registered PDF backend."""
-    return apply_options(
-        func,
-        tuple(backend.build_options for backend in BACKENDS),
-    )
-
-
-def apply_backend_command_options(func: OptionTarget) -> OptionTarget:
-    """Add command options for every registered PDF backend."""
-    return apply_options(
-        func,
-        tuple(backend.command_options for backend in BACKENDS),
-    )
 
 
 @click.command(name="swift-book-pdf", help="")
@@ -71,8 +53,8 @@ def apply_backend_command_options(func: OptionTarget) -> OptionTarget:
 @apply_backend_command_options
 @click.option(
     "--engine",
-    type=click.Choice([backend.kind.value for backend in BACKENDS]),
-    default=DEFAULT_ENGINE.value,
+    type=click.Choice(engine_choices()),
+    default=default_engine_value(),
     hidden=True,
 )
 @pdf_typography_options
@@ -115,7 +97,7 @@ def pdf(  # noqa: PLR0913
         verbose: Whether debug logging should be enabled.
         backend_options: Engine-specific option values.
     """
-    backend = _select_backend_for_cli(EngineKind(engine))
+    backend = select_backend_for_cli(EngineKind(engine))
     doc_config = pdf_config.build_doc_config(
         mode=mode,
         paper=paper,
@@ -142,15 +124,6 @@ def pdf(  # noqa: PLR0913
         builder=build_pdf,
         error_details=pdf_config.format_pdf_build_details,
     )
-
-
-def _select_backend_for_cli(engine: EngineKind) -> PDFBackend:
-    try:
-        return BACKENDS_BY_KIND[engine]
-    except KeyError as exc:
-        raise click.ClickException(
-            f"Unsupported PDF engine: {engine.value}"
-        ) from exc
 
 
 if __name__ == "__main__":

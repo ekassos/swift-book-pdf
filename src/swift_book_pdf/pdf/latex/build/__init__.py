@@ -12,16 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""LaTeX rendering for paragraph blocks."""
-
-from swift_book_pdf.core.blocks.models import ParagraphBlock
-from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
-from swift_book_pdf.pdf.latex.render.inline import apply_formatting
-from swift_book_pdf.pdf.options import RenderingMode
-
-
-def convert_paragraph_block(block: ParagraphBlock, mode: RenderingMode) -> str:
-    para_conv = apply_formatting(
-        convert_inline_code(" ".join(block.lines)), mode
-    )
-    return f"\\ParagraphStyle{{{para_conv}}}\n"
+"""LaTeX build-time process and dependency helpers."""

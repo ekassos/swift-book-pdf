@@ -16,28 +16,70 @@
 
 # ruff: noqa: PLC0415
 
+from collections.abc import Callable
+from dataclasses import dataclass
+
 from swift_book_pdf.pdf.config import PDFConfig
 from swift_book_pdf.pdf.contracts import PDFBackend, PDFEngine
 from swift_book_pdf.pdf.options import EngineKind
 
+DEFAULT_ENGINE = EngineKind.LATEX
+
+
+@dataclass(frozen=True)
+class PDFBackendRegistration:
+    """Factories for a registered PDF backend and its build engine."""
+
+    backend_factory: Callable[[], PDFBackend]
+    engine_factory: Callable[[], PDFEngine]
+
+
+def _latex_backend() -> PDFBackend:
+    from swift_book_pdf.pdf.latex.backend import LaTeXBackend
+
+    return LaTeXBackend()
+
+
+def _latex_engine() -> PDFEngine:
+    from swift_book_pdf.pdf.latex.engine import LaTeXEngine
+
+    return LaTeXEngine()
+
+
+PDF_BACKENDS: dict[EngineKind, PDFBackendRegistration] = {
+    EngineKind.LATEX: PDFBackendRegistration(
+        backend_factory=_latex_backend,
+        engine_factory=_latex_engine,
+    ),
+}
+
+
+def registered_engine_kinds() -> tuple[EngineKind, ...]:
+    """Return all registered PDF engine kinds."""
+    return tuple(PDF_BACKENDS)
+
+
+def registered_backends() -> tuple[PDFBackend, ...]:
+    """Return backend adapters for all registered PDF engines."""
+    return tuple(
+        registration.backend_factory()
+        for registration in PDF_BACKENDS.values()
+    )
+
 
 def select_backend(engine_kind: EngineKind) -> PDFBackend:
     """Select the configured PDF backend."""
-    match engine_kind:
-        case EngineKind.LATEX:
-            from swift_book_pdf.pdf.latex.backend import LaTeXBackend
-
-            return LaTeXBackend()
-        case _:
-            raise ValueError(f"Unsupported PDF engine: {engine_kind}")
+    try:
+        return PDF_BACKENDS[engine_kind].backend_factory()
+    except KeyError as exc:
+        raise ValueError(f"Unsupported PDF engine: {engine_kind}") from exc
 
 
 def select_engine(config: PDFConfig) -> PDFEngine:
     """Select the configured PDF engine."""
-    match config.engine_kind:
-        case EngineKind.LATEX:
-            from swift_book_pdf.pdf.latex.engine import LaTeXEngine
-
-            return LaTeXEngine()
-        case _:
-            raise ValueError(f"Unsupported PDF engine: {config.engine_kind}")
+    try:
+        return PDF_BACKENDS[config.engine_kind].engine_factory()
+    except KeyError as exc:
+        raise ValueError(
+            f"Unsupported PDF engine: {config.engine_kind}"
+        ) from exc

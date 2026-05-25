@@ -41,7 +41,16 @@ class PDFConfig(BaseBuildConfig):
 
     def diagnostic_details(self) -> str:
         """Format resolved PDF build details for debug diagnostics."""
-        return str(self.doc_config)
+        doc_config = self.doc_config
+        return "\n".join(
+            [
+                f"Rendering mode: {doc_config.mode}",
+                f"Paper size: {doc_config.paper_size}",
+                f"Appearance: {doc_config.appearance}",
+                f"Book Gutter: {doc_config.gutter}",
+                f"Font size: {doc_config.font_size}pt",
+            ]
+        )
 
     def build_error_details(self) -> str:
         """Format backend-specific details for unexpected build errors."""

@@ -19,8 +19,8 @@ from swift_book_pdf.core.generated.notices.metadata import (
     build_notices_toc_lines,
 )
 from swift_book_pdf.core.markdown import (
+    normalize_versioned_title,
     remove_directives,
-    replace_and_extract_version,
 )
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.core.source import ChapterMetadata
@@ -36,22 +36,14 @@ CHAPTER_ICON_WIDTH_EM = 0.8
 def generate_toc_latex(
     toc: TableOfContents,
     converter: "LaTeXRenderer",
-) -> tuple[str, str | None]:
+) -> str:
     notices_lines = (
         build_notices_toc_lines(include_section_heading=True)
         if toc.include_notices
         else []
     )
     processed_lines = remove_directives(toc.file_content + notices_lines)
-    processed_lines = replace_chapter_href_with_toc_item(
-        processed_lines,
-        toc.chapter_metadata,
-        converter.config.doc_config.mode,
-        converter.config.doc_config.appearance,
-    )
-    processed_lines, version_info = replace_and_extract_version(
-        processed_lines
-    )
+    processed_lines = normalize_versioned_title(processed_lines)
     file_name = get_file_name(toc.tspl_file_path)
     toc_latex_lines = converter.convert_file_to_latex(
         processed_lines, file_name
@@ -62,8 +54,7 @@ def generate_toc_latex(
         converter.config.doc_config.mode,
         converter.config.doc_config.appearance,
     )
-    toc_latex = "\n".join(toc_latex_lines)
-    return toc_latex, version_info
+    return "\n".join(toc_latex_lines)
 
 
 def apply_toc_latex_overrides(

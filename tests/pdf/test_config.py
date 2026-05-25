@@ -12,51 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import cast
-from unittest.mock import Mock
-
-import pytest
-
 from swift_book_pdf.core.config import ResolvedBuildSource
-from swift_book_pdf.pdf.fonts.config import FontConfig
 from swift_book_pdf.pdf.latex.config import LaTeXConfig, LaTeXPDFConfig
-from swift_book_pdf.pdf.latex.fonts import config as font_config_module
+from swift_book_pdf.pdf.latex.fonts.resolver import LaTeXFontConfig
 from swift_book_pdf.pdf.layout import PDFDocumentConfig
 
 
-class _FontDiagnostics:
-    def __str__(self) -> str:
-        return "Font diagnostics"
-
-
-def test_font_config_construction_is_cheap(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(
-        font_config_module,
-        "gather_all_candidate_fonts",
-        Mock(side_effect=AssertionError("font discovery should be explicit")),
-    )
-
-    config = FontConfig(
+def _font_config() -> LaTeXFontConfig:
+    return LaTeXFontConfig(
         main_font="New York",
         mono_font="Berkeley Mono",
         emoji_font="Apple Color Emoji",
-        unicode_font_list=("Noto Sans Symbols 2",),
+        unicode_fonts=("Noto Sans Symbols 2",),
         header_footer_font="SF Pro",
     )
 
+
+def test_latex_font_config_construction_is_cheap() -> None:
+    config = _font_config()
+
     assert config.main_font == "New York"
-    assert config.unicode_font_list == ("Noto Sans Symbols 2",)
-
-
-def test_latex_config_formats_backend_diagnostics() -> None:
-    config = LaTeXConfig(
-        font_config=cast("FontConfig", _FontDiagnostics()),
-        typesets=3,
-    )
-
-    assert str(config) == "Typesets: 3\nFont diagnostics"
+    assert config.unicode_fonts == ("Noto Sans Symbols 2",)
 
 
 def test_latex_pdf_config_formats_document_and_backend_diagnostics() -> None:
@@ -71,7 +47,7 @@ def test_latex_pdf_config_formats_document_and_backend_diagnostics() -> None:
         output_path="book.pdf",
         doc_config=PDFDocumentConfig(),
         latex_config=LaTeXConfig(
-            font_config=cast("FontConfig", _FontDiagnostics()),
+            font_config=_font_config(),
             typesets=3,
         ),
     )
@@ -81,4 +57,29 @@ def test_latex_pdf_config_formats_document_and_backend_diagnostics() -> None:
     assert "Rendering mode: digital" in diagnostics
     assert "Font size: 9.0pt" in diagnostics
     assert "Typesets: 3" in diagnostics
-    assert "Font diagnostics" in diagnostics
+    assert "Main font: New York (custom font)" in diagnostics
+
+
+def test_latex_pdf_config_formats_build_error_details() -> None:
+    config = LaTeXPDFConfig(
+        source=ResolvedBuildSource(
+            temp_dir="build",
+            root_dir="book/TSPL.docc",
+            toc_file_path="book/TSPL.docc/The-Swift-Programming-Language.md",
+            assets_dir="book/TSPL.docc/Assets",
+            original_work_copyright_year_range=(2014, 2026),
+        ),
+        output_path="book.pdf",
+        doc_config=PDFDocumentConfig(),
+        latex_config=LaTeXConfig(
+            font_config=_font_config(),
+            typesets=3,
+        ),
+    )
+
+    assert (
+        "Typesets: 3\nYour font configuration:" in config.build_error_details()
+    )
+    assert "Unicode font(s): Noto Sans Symbols 2 (custom font(s))" in (
+        config.build_error_details()
+    )

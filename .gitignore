@@ -15,6 +15,12 @@ env/
 dist/
 build/
 
+# Source package named "build".
+!src/swift_book_pdf/pdf/latex/build/
+!src/swift_book_pdf/pdf/latex/build/*.py
+!src/swift_book_pdf/pdf/latex/build/deps/
+!src/swift_book_pdf/pdf/latex/build/deps/*.py
+
 # Editor/IDE files
 .vscode/
 

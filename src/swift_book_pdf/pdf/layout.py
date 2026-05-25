@@ -60,15 +60,3 @@ class PDFDocumentConfig:
         """
         if self.font_size <= 0:
             raise ValueError("Font size must be a positive number.")
-
-    def __str__(self) -> str:
-        """Format the resolved layout configuration for diagnostics."""
-        return "\n".join(
-            [
-                f"Rendering mode: {self.mode}",
-                f"Paper size: {self.paper_size}",
-                f"Appearance: {self.appearance}",
-                f"Book Gutter: {self.gutter}",
-                f"Font size: {self.font_size}pt",
-            ]
-        )

@@ -17,8 +17,7 @@
 from dataclasses import dataclass
 
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.fonts.config import FontConfig
-from swift_book_pdf.pdf.latex.fonts.config import format_for_latex
+from swift_book_pdf.pdf.latex.fonts.resolver import LaTeXFontConfig
 from swift_book_pdf.pdf.options import EngineKind
 
 DEFAULT_TYPESETS = 4
@@ -28,7 +27,7 @@ DEFAULT_TYPESETS = 4
 class LaTeXConfig:
     """Resolved LaTeX backend configuration."""
 
-    font_config: FontConfig
+    font_config: LaTeXFontConfig
     typesets: int = DEFAULT_TYPESETS
 
     def __post_init__(self) -> None:
@@ -36,17 +35,12 @@ class LaTeXConfig:
         if self.typesets <= 0:
             raise ValueError("Typesets must be a positive integer.")
 
-    def __str__(self) -> str:
-        """Format the resolved LaTeX configuration for diagnostics."""
-        font_config = (
-            format_for_latex(self.font_config)
-            if isinstance(self.font_config, FontConfig)
-            else str(self.font_config)
-        )
+    def diagnostic_details(self) -> str:
+        """Format resolved LaTeX backend details for diagnostics."""
         return "\n".join(
             [
                 f"Typesets: {self.typesets}",
-                font_config.rstrip(),
+                self.font_config.diagnostic_details().rstrip(),
             ]
         )
 
@@ -60,8 +54,13 @@ class LaTeXPDFConfig(PDFConfig):
 
     def diagnostic_details(self) -> str:
         """Format resolved LaTeX PDF build details for debug diagnostics."""
-        return "\n".join([str(self.doc_config), str(self.latex_config)])
+        return "\n".join(
+            [
+                super().diagnostic_details(),
+                self.latex_config.diagnostic_details(),
+            ]
+        )
 
     def build_error_details(self) -> str:
         """Format LaTeX-specific details for unexpected build errors."""
-        return str(self.latex_config)
+        return self.latex_config.diagnostic_details()

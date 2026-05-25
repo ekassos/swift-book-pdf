@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DEFAULT_BODY_FONT_SIZE = 9.0
+from swift_book_pdf.pdf.layout import DEFAULT_BODY_FONT_SIZE
 
 # Default font sizes in points (at body font size = 9pt).
 #

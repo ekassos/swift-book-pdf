@@ -12,11 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 import pytest
 
 from swift_book_pdf.core.markdown import (
+    extract_version_info,
+    normalize_versioned_title,
     resolve_version_info,
 )
+
+
+def test_normalize_versioned_title_splits_version_from_title() -> None:
+    assert normalize_versioned_title(
+        ["# The Swift Programming Language (6.2 beta)\n"]
+    ) == [
+        "# The Swift Programming Language\n",
+        "Version 6.2 beta\n",
+    ]
+
+
+def test_extract_version_info_reads_toc_title_version() -> None:
+    assert (
+        extract_version_info(["# The Swift Programming Language (6.2 beta)\n"])
+        == "6.2 beta"
+    )
 
 
 def test_resolve_version_info_prefers_override_version() -> None:
@@ -41,7 +61,7 @@ def test_resolve_version_info_requires_override_when_toc_has_no_version() -> (
 ):
     with pytest.raises(
         ValueError,
-        match=(
+        match=re.escape(
             "Couldn't determine the Swift version by parsing the table of "
             "contents. Please provide --override-version."
         ),

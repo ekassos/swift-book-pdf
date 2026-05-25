@@ -50,7 +50,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
         text,
         markdown_links,
         mode,
-        lambda label: _apply_non_link_formatting(label, mode),
+        lambda label: _apply_text_formatting(label, mode),
     )
 
     # Restore the inline code segments.
@@ -58,10 +58,6 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
         text = text.replace(token, segment)
 
     return override_characters(text)
-
-
-def _apply_non_link_formatting(text: str, mode: RenderingMode) -> str:
-    return _apply_text_formatting(text, mode)
 
 
 def _apply_text_formatting(text: str, mode: RenderingMode) -> str:

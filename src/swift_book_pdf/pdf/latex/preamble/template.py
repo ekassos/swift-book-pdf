@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 def generate_preamble(config: LaTeXPDFConfig) -> str:
     """Generate the LaTeX preamble for a resolved build configuration."""
-    return render_preamble(build_preamble_substitutions(config))
+    return PREAMBLE.substitute(**build_preamble_substitutions(config))
 
 
 def build_preamble_substitutions(
@@ -37,10 +37,7 @@ def build_preamble_substitutions(
     """Compute the LaTeX preamble template substitutions."""
     font_config = config.latex_config.font_config
     unicode_fallback = "\n".join(
-        [
-            f'      "{font}:mode=node;",'
-            for font in font_config.unicode_font_list
-        ],
+        [f'      "{font}:mode=node;",' for font in font_config.unicode_fonts],
     )
     colors = get_document_colors(
         config.doc_config.mode, config.doc_config.appearance
@@ -55,6 +52,11 @@ def build_preamble_substitutions(
         logger.debug(f"{key}: {value}pt")
     for key, value in sorted(spacing.items()):
         logger.debug(f"{key}: {value}")
+    header_footer_hero = _render_header_footer_hero(
+        font_config.header_footer_font,
+        template_vars,
+        config.doc_config.gutter,
+    )
     return {
         "background": colors.background,
         "text": colors.text,
@@ -74,23 +76,14 @@ def build_preamble_substitutions(
             config.doc_config.paper_size,
             config.doc_config.gutter,
         ),
+        "fancyhead_fancyfoot_hero": header_footer_hero,
         "main_font": font_config.main_font,
         "mono_font": font_config.mono_font,
         "emoji_font": font_config.emoji_font,
         "unicode_font": unicode_fallback,
         "header_footer_font": font_config.header_footer_font,
-        "fancyhead_fancyfoot_hero": _render_header_footer_hero(
-            font_config.header_footer_font,
-            template_vars,
-            config.doc_config.gutter,
-        ),
         **template_vars,
     }
-
-
-def render_preamble(substitutions: dict[str, str]) -> str:
-    """Render the LaTeX preamble template from resolved substitutions."""
-    return PREAMBLE.substitute(**substitutions)
 
 
 def _render_header_footer_hero(

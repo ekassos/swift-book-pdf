@@ -37,7 +37,17 @@ INLINE_CODE_PADDING_LENGTH = 2
 def render_inline(
     text: str, current_href: str, link_resolver: LinkResolver
 ) -> str:
-    """Render inline Markdown, code spans, and document links."""
+    """Render inline Markdown, code spans, and document links.
+
+    Args:
+        text: Inline Markdown text from a parsed block.
+        current_href: Href of the document containing the text.
+        link_resolver: Resolver for Swift Book `<doc:...>` links.
+
+    Returns:
+        XHTML inline markup. Links and code spans are protected with temporary
+        placeholders before emphasis and escaping are applied.
+    """
     placeholders: dict[str, str] = {}
     placeholder_index = 0
 
@@ -74,7 +84,14 @@ def render_inline(
 
 
 def render_inline_styles(text: str) -> str:
-    """Render inline emphasis, strong text, and code spans only."""
+    """Render inline emphasis, strong text, and code spans only.
+
+    Args:
+        text: Inline text that should not resolve document links.
+
+    Returns:
+        XHTML inline markup for emphasis, strong text, and code spans.
+    """
     placeholders: dict[str, str] = {}
     placeholder_index = 0
 
@@ -95,7 +112,15 @@ def render_inline_styles(text: str) -> str:
 
 
 def _render_inline_tail(text: str, placeholders: dict[str, str]) -> str:
-    """Escape text, apply simple inline styles, and restore placeholders."""
+    """Escape text, apply simple inline styles, and restore placeholders.
+
+    Args:
+        text: Inline text with placeholder tokens for pre-rendered markup.
+        placeholders: Mapping from placeholder token to trusted rendered XHTML.
+
+    Returns:
+        Escaped XHTML with supported Markdown styles applied.
+    """
     text = normalize_prose_punctuation(text)
     text = html.escape(text)
     text = STRONG_PATTERN.sub(r"<strong>\1</strong>", text)
@@ -108,7 +133,16 @@ def _render_inline_tail(text: str, placeholders: dict[str, str]) -> str:
 
 
 def replace_inline_code_spans(text: str, render: Callable[[str], str]) -> str:
-    """Replace Markdown inline code spans using the supplied renderer."""
+    """Replace Markdown inline code spans using the supplied renderer.
+
+    Args:
+        text: Inline Markdown text.
+        render: Callback that receives unescaped code text.
+
+    Returns:
+        Text with matching backtick spans replaced by callback output. Unclosed
+        spans and escaped backticks are preserved as literal text.
+    """
     output: list[str] = []
     index = 0
 
@@ -156,7 +190,16 @@ def replace_inline_code_spans(text: str, render: Callable[[str], str]) -> str:
 def _replace_markdown_links(
     text: str, render: Callable[[str, str], str]
 ) -> str:
-    """Replace Markdown links outside inline code spans."""
+    """Replace Markdown links outside inline code spans.
+
+    Args:
+        text: Inline Markdown text.
+        render: Callback that receives link label and href text.
+
+    Returns:
+        Text with Markdown links replaced, leaving links inside inline code
+        spans untouched.
+    """
     output: list[str] = []
     index = 0
 
@@ -188,7 +231,16 @@ def _replace_markdown_links(
 def _consume_inline_code_fence(
     text: str, start_index: int
 ) -> tuple[str, int] | None:
-    """Return the inline code fence segment starting at `start_index`."""
+    """Return the inline code fence segment starting at `start_index`.
+
+    Args:
+        text: Inline Markdown text.
+        start_index: Candidate fence start.
+
+    Returns:
+        Literal fenced segment and next index, or `None` when the current
+        character is not a backtick.
+    """
     if text[start_index] != "`":
         return None
 
@@ -209,7 +261,15 @@ def _consume_inline_code_fence(
 def _parse_markdown_link(
     text: str, start_index: int
 ) -> tuple[str, str, int] | None:
-    """Parse a Markdown link starting at `start_index`."""
+    """Parse a Markdown link starting at `start_index`.
+
+    Args:
+        text: Inline Markdown text.
+        start_index: Candidate `[` position.
+
+    Returns:
+        Link label, href, and next index, or `None` for non-link text.
+    """
     label_end = text.find("]", start_index + 1)
     if label_end == -1 or label_end + 1 >= len(text):
         return None
@@ -229,7 +289,15 @@ def _parse_markdown_link(
 
 
 def _find_balanced_href_end(text: str, start_index: int) -> int | None:
-    """Return the closing parenthesis for a possibly nested link href."""
+    """Return the closing parenthesis for a possibly nested link href.
+
+    Args:
+        text: Inline Markdown text.
+        start_index: First character inside the href parentheses.
+
+    Returns:
+        Index of the matching closing parenthesis, or `None` if it is missing.
+    """
     href_end = start_index
     depth = 1
     while href_end < len(text):
@@ -245,6 +313,14 @@ def _find_balanced_href_end(text: str, start_index: int) -> int | None:
 
 
 def normalize_prose_punctuation(text: str) -> str:
-    """Normalize ASCII dash sequences to typographic dash characters."""
+    """Normalize ASCII dash sequences to typographic dash characters.
+
+    Args:
+        text: Inline prose text before HTML escaping.
+
+    Returns:
+        Text with triple dashes converted to em dashes and double dashes to en
+        dashes.
+    """
     text = re.sub(r"\s*---\s*", "\u2014", text)
     return re.sub(r"--", "\u2013", text)

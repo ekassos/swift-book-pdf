@@ -36,7 +36,15 @@ def write_toc_ncx_file(
     parts: list[PartEntry],
     book_title: str,
 ) -> None:
-    """Write the NCX table-of-contents file to the workspace."""
+    """Write the NCX table-of-contents file to the workspace.
+
+    Args:
+        workspace: Temporary EPUB workspace root.
+        publication_identifier: Identifier mirrored from OPF metadata.
+        front_back_matter: Optional generated cover and notices documents.
+        parts: Top-level book parts and their child chapters.
+        book_title: Effective title for the NCX document title.
+    """
     cover = front_back_matter.cover
     notices = front_back_matter.notices
     part_navpoints: list[str] = []
@@ -97,7 +105,17 @@ def _build_ncx_navpoint_tree(
     href: str,
     children: list[tuple[str, str]] | None = None,
 ) -> tuple[str, int]:
-    """Render one NCX navPoint subtree and return the next play order."""
+    """Render one NCX navPoint subtree and return the next play order.
+
+    Args:
+        index: Current one-based NCX play order.
+        title: Display title for this navPoint.
+        href: Package href for this navPoint.
+        children: Optional child navPoint titles and hrefs.
+
+    Returns:
+        Rendered XML for this subtree and the next available play order.
+    """
     current_index = index
     next_index = index + 1
     child_navpoints: list[str] = []

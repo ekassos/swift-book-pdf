@@ -52,7 +52,14 @@ class ManifestItem:
 
 
 def build_manifest_items(package_input: OPFPackageInput) -> list[ManifestItem]:
-    """Build the full OPF manifest item list for an EPUB package."""
+    """Build the full OPF manifest item list for an EPUB package.
+
+    Args:
+        package_input: Inputs shared by OPF package writers.
+
+    Returns:
+        Manifest items ready for XML rendering.
+    """
     manifest = [
         ManifestItem(
             item_id="ncx",
@@ -82,14 +89,25 @@ def build_manifest_items(package_input: OPFPackageInput) -> list[ManifestItem]:
 
 
 def render_manifest_items(items: list[ManifestItem]) -> str:
-    """Render OPF manifest items as XML lines."""
+    """Render OPF manifest items as XML lines.
+
+    Args:
+        items: Manifest items in package order.
+
+    Returns:
+        Newline-joined XML `<item>` elements.
+    """
     return "\n".join(_format_manifest_item(item) for item in items)
 
 
 def _document_manifest_items(
     package_input: OPFPackageInput,
 ) -> list[ManifestItem]:
-    """Build manifest items for rendered XHTML documents."""
+    """Build manifest items for rendered XHTML documents.
+
+    The generated inner cover is XHTML containing inline SVG, so it needs the
+    OPF `svg` property even though the file itself is still XHTML.
+    """
     return [
         ManifestItem(
             item_id=f"epub-doc-{index}",
@@ -106,7 +124,11 @@ def _document_manifest_items(
 def _image_manifest_items(
     package_input: OPFPackageInput,
 ) -> list[ManifestItem]:
-    """Build manifest items for copied source image assets."""
+    """Build manifest items for copied source image assets.
+
+    Image assets are sorted by href so repeated builds produce stable manifest
+    XML regardless of the order in which chapters referenced images.
+    """
     return [
         ManifestItem(
             item_id=f"epub-image-{index}",
@@ -123,7 +145,12 @@ def _image_manifest_items(
 
 
 def _static_manifest_items() -> list[ManifestItem]:
-    """Build manifest items for bundled CSS and font assets."""
+    """Build manifest items for bundled CSS and font assets.
+
+    Returns:
+        Manifest entries for the reference stylesheets and embedded IBM Plex
+        font files copied into `_static`.
+    """
     manifest = [
         ManifestItem(
             item_id="epub-style",
@@ -148,7 +175,14 @@ def _static_manifest_items() -> list[ManifestItem]:
 
 
 def _format_manifest_item(item: ManifestItem) -> str:
-    """Render one OPF manifest item as XML."""
+    """Render one OPF manifest item as XML.
+
+    Args:
+        item: Manifest item to render.
+
+    Returns:
+        Escaped OPF `<item>` element.
+    """
     properties = (
         f' properties="{html.escape(item.properties)}"'
         if item.properties is not None

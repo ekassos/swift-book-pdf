@@ -48,14 +48,34 @@ class ImageAsset:
 
 
 class AssetCatalog:
-    """Lookup table for source image assets and optional dark variants."""
+    """Lookup table for source image assets and optional dark variants.
+
+    Swift Book image references are not always byte-for-byte file stems. The
+    catalog indexes normalized stems so `@2x`, `_2x`, and `~dark` variants can
+    be paired before EPUB rendering decides which files to copy.
+    """
 
     def __init__(self, asset_path: Path) -> None:
-        """Index image assets from an upstream Swift Book asset directory."""
+        """Index image assets from an upstream Swift Book asset directory.
+
+        Args:
+            asset_path: Directory containing image files from the source book.
+        """
         self._assets = self._build_asset_pairs(asset_path)
 
     def resolve(self, image_name: str) -> tuple[Path, Path | None]:
-        """Resolve an image reference to light and optional dark assets."""
+        """Resolve an image reference to light and optional dark assets.
+
+        Args:
+            image_name: Raw Markdown image target from the source document.
+
+        Returns:
+            Light image path and an optional dark-mode variant.
+
+        Raises:
+            FileNotFoundError: If the source asset directory has no matching
+                normalized light asset.
+        """
         key = normalize_asset_key(Path(image_name).stem)
         asset_pair = self._assets.get(key)
         if asset_pair is None:
@@ -65,7 +85,14 @@ class AssetCatalog:
     def _build_asset_pairs(
         self, asset_path: Path
     ) -> dict[str, tuple[Path, Path | None]]:
-        """Index light/dark image variants by normalized asset key."""
+        """Index light/dark image variants by normalized asset key.
+
+        Args:
+            asset_path: Directory containing source image files.
+
+        Returns:
+            Mapping from normalized image stem to light and dark asset paths.
+        """
         asset_pairs: dict[str, tuple[Path, Path | None]] = {}
         for asset in asset_path.iterdir():
             if not asset.is_file():
@@ -82,7 +109,15 @@ class AssetCatalog:
 
 
 def normalize_asset_key(stem: str) -> str:
-    """Strip scale and dark-mode suffixes from an image stem."""
+    """Strip scale and dark-mode suffixes from an image stem.
+
+    Args:
+        stem: File stem without extension.
+
+    Returns:
+        Stem used to match source Markdown image names with concrete asset
+        files, independent of Retina or dark-mode suffixes.
+    """
     normalized = stem.replace("~dark", "")
     normalized = normalized.replace("@2x", "")
     if normalized.endswith("_2x"):
@@ -104,7 +139,17 @@ def image_destination_name(asset_path: Path) -> str:
 
 
 def media_type_for_path(path: Path) -> str:
-    """Return the EPUB manifest media type for a supported image path."""
+    """Return the EPUB manifest media type for a supported image path.
+
+    Args:
+        path: Image file path whose suffix determines the media type.
+
+    Returns:
+        OPF manifest media type.
+
+    Raises:
+        ValueError: If the image suffix is not supported by the EPUB pipeline.
+    """
     suffix = path.suffix.lower()
     if suffix == ".png":
         return "image/png"

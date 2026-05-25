@@ -26,7 +26,16 @@ if TYPE_CHECKING:
 
 
 def render_metadata(package_input: OPFPackageInput, modified: str) -> str:
-    """Render the OPF metadata block for a generated EPUB."""
+    """Render the OPF metadata block for a generated EPUB.
+
+    Args:
+        package_input: Inputs shared by OPF package writers.
+        modified: UTC `dcterms:modified` timestamp.
+
+    Returns:
+        XML body for the OPF `<metadata>` element. Optional Apple Books and
+        legacy cover metadata are included only when configured or available.
+    """
     config = package_input.config
     return (
         f"    <dc:language>en</dc:language>\n"
@@ -44,14 +53,28 @@ def render_metadata(package_input: OPFPackageInput, modified: str) -> str:
 
 
 def _optional_publisher(publisher: str | None) -> str:
-    """Render optional publisher metadata."""
+    """Render optional publisher metadata.
+
+    Args:
+        publisher: Optional publisher name from CLI configuration.
+
+    Returns:
+        Escaped `dc:publisher` XML or an empty string.
+    """
     if publisher is None:
         return ""
     return f"<dc:publisher>{html.escape(publisher)}</dc:publisher>\n    "
 
 
 def _optional_contributor(contributor: str | None) -> str:
-    """Render optional contributor metadata."""
+    """Render optional contributor metadata.
+
+    Args:
+        contributor: Optional contributor name from CLI configuration.
+
+    Returns:
+        Escaped `dc:contributor` XML or an empty string.
+    """
     if contributor is None:
         return ""
     return f"<dc:contributor>{html.escape(contributor)}</dc:contributor>\n    "
@@ -68,7 +91,14 @@ def _optional_ibooks_version(ibooks_version: str | None) -> str:
 
 
 def _optional_cover_meta(has_cover_asset: bool) -> str:
-    """Render optional legacy cover metadata."""
+    """Render optional legacy cover metadata.
+
+    Args:
+        has_cover_asset: Whether `_static/cover.png` is in the package.
+
+    Returns:
+        Legacy `meta name="cover"` XML for older readers, or an empty string.
+    """
     if not has_cover_asset:
         return ""
     return '<meta name="cover" content="epub-cover"/>\n    '

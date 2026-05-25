@@ -47,7 +47,14 @@ class EPUBRenderer:
         grammar_targets: dict[str, str],
         original_work_copyright_year_range: tuple[int, int] | None = None,
     ) -> None:
-        """Create a renderer with source assets and grammar link targets."""
+        """Create a renderer with source assets and grammar link targets.
+
+        Args:
+            asset_path: Source image asset directory.
+            grammar_targets: Map from grammar terms to package hrefs.
+            original_work_copyright_year_range: Optional year range for the
+                generated notices page.
+        """
         self.asset_catalog = AssetCatalog(asset_path)
         self.grammar_targets = grammar_targets
         self.original_work_copyright_year_range = (
@@ -55,7 +62,14 @@ class EPUBRenderer:
         )
 
     def render_part_page(self, part: PartEntry) -> str:
-        """Render a top-level book part page."""
+        """Render a top-level book part page.
+
+        Args:
+            part: Part entry to render as a spine page.
+
+        Returns:
+            Complete XHTML document for the part divider page.
+        """
         section_id = anchor_for_heading(part.title).lower()
         body = (
             f'  <div class="section part-page" id="{html.escape(section_id)}">\n'
@@ -72,7 +86,16 @@ class EPUBRenderer:
         link_resolver: LinkResolver,
         image_assets: dict[str, ImageAsset],
     ) -> str:
-        """Render one source chapter page and collect referenced images."""
+        """Render one source chapter page and collect referenced images.
+
+        Args:
+            source_document: Parsed source document to render.
+            link_resolver: Resolver for Swift Book `<doc:...>` links.
+            image_assets: Mutable package image registry.
+
+        Returns:
+            Complete XHTML document for the chapter.
+        """
         document = source_document.entry
         context = RenderContext(
             current_href=document.href,
@@ -97,7 +120,14 @@ class EPUBRenderer:
         )
 
     def render_notices_page(self, document: DocumentEntry) -> str:
-        """Render the generated notices page."""
+        """Render the generated notices page.
+
+        Args:
+            document: Generated notices document entry.
+
+        Returns:
+            Complete XHTML document for legal notices.
+        """
         body = render_notices_xhtml(
             document.title, self.original_work_copyright_year_range
         )
@@ -110,7 +140,12 @@ class EPUBRenderer:
         body_html: str,
         body_class: str | None = None,
     ) -> str:
-        """Wrap rendered body XHTML in the shared EPUB document shell."""
+        """Wrap rendered body XHTML in the shared EPUB document shell.
+
+        Stylesheet hrefs are made relative to each document so the same wrapper
+        works for root-level generated files and chapter files nested under
+        source section directories.
+        """
         css_href = html.escape(relative_href(href, "_static/epub.css"))
         pygments_href = html.escape(
             relative_href(href, "_static/pygments.css")

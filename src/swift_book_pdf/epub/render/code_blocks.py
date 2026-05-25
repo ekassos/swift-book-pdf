@@ -28,7 +28,15 @@ WRAPPING_PLACEHOLDER_MIN_LENGTH = 28
 
 
 def render_code_block(code_lines: list[str]) -> str:
-    """Render Swift code lines with syntax highlighting or outline markup."""
+    """Render Swift code lines with syntax highlighting or outline markup.
+
+    Args:
+        code_lines: Swift code lines without surrounding Markdown fences.
+
+    Returns:
+        XHTML code block. Placeholder-bearing outline code is rendered line by
+        line so `<#...#>` regions can receive custom span classes.
+    """
     has_placeholders = any(
         CODE_PLACEHOLDER_PATTERN.search(line) for line in code_lines
     )
@@ -57,7 +65,14 @@ def render_code_block(code_lines: list[str]) -> str:
 
 
 def _render_outline_code_line(line: str) -> str:
-    """Render one placeholder-bearing outline code line."""
+    """Render one placeholder-bearing outline code line.
+
+    Args:
+        line: Swift code line that may contain outline placeholders.
+
+    Returns:
+        Highlighted XHTML for the line with placeholder spans preserved.
+    """
     parts: list[str] = []
     last_index = 0
 
@@ -76,7 +91,15 @@ def _render_outline_code_line(line: str) -> str:
 
 
 def _render_outline_placeholder(text: str) -> str:
-    """Render an outline placeholder span."""
+    """Render an outline placeholder span.
+
+    Args:
+        text: Placeholder text without `<#` and `#>` markers.
+
+    Returns:
+        XHTML span using the wrapping class for long human-readable
+        placeholders.
+    """
     class_name = "gi"
     if _needs_wrapping_placeholder(text):
         class_name = "gi gi-wrap"
@@ -84,7 +107,15 @@ def _render_outline_placeholder(text: str) -> str:
 
 
 def _needs_wrapping_placeholder(text: str) -> bool:
-    """Return whether a placeholder should allow wrapping."""
+    """Return whether a placeholder should allow wrapping.
+
+    Args:
+        text: Placeholder text.
+
+    Returns:
+        True for long multi-word placeholders that would otherwise stretch code
+        blocks on narrow screens.
+    """
     normalized = text.strip()
     return (
         len(normalized) > WRAPPING_PLACEHOLDER_MIN_LENGTH and " " in normalized
@@ -92,7 +123,14 @@ def _needs_wrapping_placeholder(text: str) -> bool:
 
 
 def _highlight_swift_fragment(fragment: str) -> str:
-    """Syntax-highlight a Swift code fragment without wrapper markup."""
+    """Syntax-highlight a Swift code fragment without wrapper markup.
+
+    Args:
+        fragment: Swift source fragment outside an outline placeholder.
+
+    Returns:
+        Pygments-generated inline XHTML with trailing newlines removed.
+    """
     return highlight(
         fragment, SwiftLexer(), HtmlFormatter(nowrap=True)
     ).rstrip("\n")

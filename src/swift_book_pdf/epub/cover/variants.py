@@ -78,7 +78,17 @@ def cover_version_label(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str | None:
-    """Return the normalized version label shown on the cover."""
+    """Return the normalized version label shown on the cover.
+
+    Args:
+        version_info: Effective Swift version string.
+        cover_variant: Optional explicit cover variant name.
+
+    Returns:
+        Version label without a leading `Swift` or trailing `Edition`, or
+        `None` when no label should be rendered. Beta suffixes are hidden for
+        release/current covers but preserved for nightly covers.
+    """
     if version_info is None:
         return None
     normalized_version = version_info.strip()
@@ -116,7 +126,15 @@ def resolve_cover_variant(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> CoverVariant:
-    """Return the cover variant selected by version text and overrides."""
+    """Return the cover variant selected by version text and overrides.
+
+    Args:
+        version_info: Effective Swift version string.
+        cover_variant: Optional explicit cover variant name.
+
+    Returns:
+        Cover variant configuration.
+    """
     return COVER_VARIANTS[
         resolve_cover_variant_name(version_info, cover_variant)
     ]
@@ -126,7 +144,18 @@ def resolve_cover_variant_name(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str:
-    """Resolve a cover variant name and validate explicit overrides."""
+    """Resolve a cover variant name and validate explicit overrides.
+
+    Args:
+        version_info: Effective Swift version string.
+        cover_variant: Optional explicit cover variant name.
+
+    Returns:
+        Cover variant key.
+
+    Raises:
+        ValueError: If an explicit variant is not registered.
+    """
     if cover_variant is not None:
         if cover_variant not in COVER_VARIANTS:
             known_variants = ", ".join(sorted(COVER_VARIANTS))
@@ -144,7 +173,15 @@ def cover_png_version_fill(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str:
-    """Return the PNG cover version-label fill color."""
+    """Return the PNG cover version-label fill color.
+
+    Args:
+        version_info: Effective Swift version string.
+        cover_variant: Optional explicit cover variant name.
+
+    Returns:
+        Hex color used for the outer cover version label.
+    """
     return resolve_cover_variant(version_info, cover_variant).color
 
 
@@ -152,7 +189,15 @@ def cover_png_version_text(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> str | None:
-    """Return the PNG cover version-label text."""
+    """Return the PNG cover version-label text.
+
+    Args:
+        version_info: Effective Swift version string.
+        cover_variant: Optional explicit cover variant name.
+
+    Returns:
+        Normalized cover version label, or `None`.
+    """
     return cover_version_label(version_info, cover_variant)
 
 
@@ -162,7 +207,19 @@ def cover_template_path(
     cover_variant: str | None = None,
     cover_template_paths: dict[str, Path] | None = None,
 ) -> Path:
-    """Return the cover template path after overrides and variant fallback."""
+    """Return the cover template path after overrides and variant fallback.
+
+    Args:
+        version_info: Effective Swift version string.
+        base_cover_image: Optional global cover image override.
+        cover_variant: Optional explicit cover variant name.
+        cover_template_paths: Optional per-variant template overrides.
+
+    Returns:
+        Cover template path. The broad base override wins first; otherwise the
+        selected variant can be overridden individually before bundled assets
+        are used.
+    """
     if base_cover_image is not None:
         return base_cover_image
     variant_name = resolve_cover_variant_name(version_info, cover_variant)
@@ -180,7 +237,17 @@ def resolve_cover_banner(
     version_info: str | None,
     cover_variant: str | None = None,
 ) -> tuple[str, str]:
-    """Return effective inner-cover banner text and color."""
+    """Return effective inner-cover banner text and color.
+
+    Args:
+        banner_text: Optional explicit banner label.
+        banner_color: Optional explicit banner color.
+        version_info: Effective Swift version string.
+        cover_variant: Optional explicit cover variant name.
+
+    Returns:
+        Banner text and color, using variant defaults for omitted values.
+    """
     variant = resolve_cover_variant(version_info, cover_variant)
     text = banner_text.strip() if banner_text else ""
     color = banner_color or variant.color

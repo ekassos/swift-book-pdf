@@ -35,7 +35,11 @@ EPUB_FONT_FILE_NAMES = (
 
 
 def write_static_files(workspace: Path) -> None:
-    """Copy bundled CSS and font files into the EPUB workspace."""
+    """Copy bundled CSS and font files into the EPUB workspace.
+
+    Args:
+        workspace: Temporary EPUB workspace root.
+    """
     _copy_reference_static_asset("epub.css", workspace)
     _copy_reference_static_asset("pygments.css", workspace)
     for font_file_name in EPUB_FONT_FILE_NAMES:
@@ -43,7 +47,12 @@ def write_static_files(workspace: Path) -> None:
 
 
 def _copy_reference_static_asset(name: str, workspace: Path) -> None:
-    """Copy one bundled reference static asset into OEBPS."""
+    """Copy one bundled reference static asset into OEBPS.
+
+    Args:
+        name: Reference asset path relative to `epub_reference`.
+        workspace: Temporary EPUB workspace root.
+    """
     source = REFERENCE_STATIC_DIR / name
     destination = oebps_workspace_path(workspace, f"_static/{name}")
     destination.parent.mkdir(parents=True, exist_ok=True)

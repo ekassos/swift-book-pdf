@@ -23,7 +23,16 @@ from swift_book_pdf.epub.constants import OEBPS_DIR_NAME
 
 
 def relative_href(current_href: str, target_href: str) -> str:
-    """Return a POSIX relative href from one package document to another."""
+    """Return a POSIX relative href from one package document to another.
+
+    Args:
+        current_href: Href of the XHTML document that will contain the link.
+        target_href: Package-relative target href.
+
+    Returns:
+        Relative href suitable for EPUB package documents, always using POSIX
+        separators regardless of the host platform.
+    """
     current_parent = PurePosixPath(current_href).parent
     current_parent_str = (
         "." if str(current_parent) == "." else str(current_parent)
@@ -32,5 +41,13 @@ def relative_href(current_href: str, target_href: str) -> str:
 
 
 def oebps_workspace_path(workspace: Path, relative_path: str) -> Path:
-    """Return the filesystem path for an OEBPS-relative package path."""
+    """Return the filesystem path for an OEBPS-relative package path.
+
+    Args:
+        workspace: Temporary EPUB workspace root.
+        relative_path: Path relative to the package document root.
+
+    Returns:
+        Concrete filesystem path under `OEBPS`.
+    """
     return workspace / OEBPS_DIR_NAME / PurePosixPath(relative_path)

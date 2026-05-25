@@ -26,14 +26,32 @@ if TYPE_CHECKING:
 
 
 class LinkResolver:
-    """Resolve `<doc:...>` targets against generated document entries."""
+    """Resolve `<doc:...>` targets against generated document entries.
+
+    Unresolved document links are emitted as escaped text rather than broken
+    anchors, matching the rest of the renderer's conservative behavior for
+    source constructs it cannot resolve.
+    """
 
     def __init__(self, documents: list[DocumentEntry]) -> None:
-        """Index generated documents by lowercase document key."""
+        """Index generated documents by lowercase document key.
+
+        Args:
+            documents: Flattened package document entries.
+        """
         self.documents = {document.key: document for document in documents}
 
     def render_doc_link(self, current_href: str, target: str) -> str:
-        """Render one resolved document link or escaped unresolved target."""
+        """Render one resolved document link or escaped unresolved target.
+
+        Args:
+            current_href: Href of the document containing the link.
+            target: Raw `<doc:...>` target, optionally with a fragment.
+
+        Returns:
+            XHTML anchor for known targets, or escaped target text when the
+            document key is unknown.
+        """
         chapter_key, _, fragment = target.partition("#")
         document = self.documents.get(chapter_key.lower())
         if document is None:

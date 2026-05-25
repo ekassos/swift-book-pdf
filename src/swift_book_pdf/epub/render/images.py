@@ -43,7 +43,18 @@ def render_image_block(
     image_assets: dict[str, ImageAsset],
     asset_catalog: AssetCatalog,
 ) -> str:
-    """Render an image block and register its package assets."""
+    """Render an image block and register its package assets.
+
+    Args:
+        block: Parsed image block from source Markdown.
+        current_href: Href of the document containing the image.
+        image_assets: Mutable package image registry keyed by href.
+        asset_catalog: Source image lookup table.
+
+    Returns:
+        XHTML image markup. When a dark-mode variant exists, both images are
+        emitted inside a theme wrapper for CSS switching.
+    """
     asset, dark_asset = asset_catalog.resolve(block.imgname)
     image_href = _register_asset(asset, image_assets)
     width = _image_display_width(asset, Path(image_href).name)
@@ -67,7 +78,15 @@ def render_image_block(
 
 
 def _register_asset(asset: Path, image_assets: dict[str, ImageAsset]) -> str:
-    """Add an image to the package asset collection and return its href."""
+    """Add an image to the package asset collection and return its href.
+
+    Args:
+        asset: Source image path to copy into the EPUB.
+        image_assets: Mutable package image registry keyed by href.
+
+    Returns:
+        Package href for the image asset.
+    """
     href = f"_images/{image_destination_name(asset)}"
     if href not in image_assets:
         image_assets[href] = ImageAsset(
@@ -79,7 +98,16 @@ def _register_asset(asset: Path, image_assets: dict[str, ImageAsset]) -> str:
 
 
 def _image_display_width(path: Path, file_name: str) -> float | None:
-    """Return CSS display width, adjusting retina assets to logical size."""
+    """Return CSS display width, adjusting retina assets to logical size.
+
+    Args:
+        path: Image file to inspect.
+        file_name: Destination file name used to detect `_2x` assets.
+
+    Returns:
+        CSS pixel width, half-sized for Retina assets, or `None` when the image
+        cannot be inspected.
+    """
     try:
         with Image.open(path) as image:
             width = image.width

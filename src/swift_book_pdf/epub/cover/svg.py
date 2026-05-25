@@ -104,7 +104,16 @@ def render_cover_page(
     version_info: str | None,
     options: CoverPageOptions,
 ) -> str:
-    """Render the complete generated cover XHTML document."""
+    """Render the complete generated cover XHTML document.
+
+    Args:
+        document: Generated cover document entry.
+        version_info: Effective Swift version string.
+        options: Inner-cover rendering options.
+
+    Returns:
+        XHTML document containing the generated SVG cover.
+    """
     version_label = cover_version_label(version_info, options.cover_variant)
     css_href = html.escape(relative_href(document.href, "_static/epub.css"))
     banner_text, banner_color = options.cover_banner
@@ -124,7 +133,15 @@ def render_cover_page(
 
 
 def _render_banner_layer(banner_text: str, banner_color: str) -> str:
-    """Render the colored edition banner SVG layer."""
+    """Render the colored edition banner SVG layer.
+
+    Args:
+        banner_text: Effective banner label.
+        banner_color: Effective banner fill color.
+
+    Returns:
+        SVG markup for the fixed-position banner rectangle and text.
+    """
     return (
         f'        <rect x="0" y="1029" width="1440" height="153" '
         f'fill="{banner_color}"/>\n'
@@ -215,7 +232,14 @@ def _render_title_layers(
 
 
 def _render_footer_layer(options: CoverPageOptions) -> str | None:
-    """Render the optional footer or compiler-credit SVG layer."""
+    """Render the optional footer or compiler-credit SVG layer.
+
+    Args:
+        options: Inner-cover rendering options.
+
+    Returns:
+        SVG footer layer, compiler-credit layer, or `None`.
+    """
     if options.cover_footer_line:
         return (
             f'        <text class="cover-footer-text" x="720" y="2023" '
@@ -255,7 +279,15 @@ def _render_footer_layer(options: CoverPageOptions) -> str | None:
 def _build_accessible_title(
     options: CoverPageOptions, version_label: str | None
 ) -> str:
-    """Build the hidden accessible title for the cover image."""
+    """Build the hidden accessible title for the cover image.
+
+    Args:
+        options: Inner-cover rendering options.
+        version_label: Normalized visible version label.
+
+    Returns:
+        Descriptive label used by both hidden heading text and SVG ARIA.
+    """
     accessible_parts: list[str] = [options.cover_banner[0]]
     accessible_parts.append("The Swift Programming Language")
     if version_label:
@@ -273,7 +305,17 @@ def _wrap_cover_xhtml(
     accessible_title: str,
     svg_body: str,
 ) -> str:
-    """Wrap cover SVG markup in a complete XHTML document."""
+    """Wrap cover SVG markup in a complete XHTML document.
+
+    Args:
+        options: Inner-cover rendering options.
+        css_href: Cover document relative href to the EPUB stylesheet.
+        accessible_title: Accessible label for the cover image.
+        svg_body: SVG child markup.
+
+    Returns:
+        Complete XHTML cover page.
+    """
     return f"""<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
@@ -297,7 +339,17 @@ def render_cover_text(
     y: float,
     style: SVGTextStyle,
 ) -> str:
-    """Render a positioned SVG cover text element."""
+    """Render a positioned SVG cover text element.
+
+    Args:
+        text: Plain text or span sequence for the element body.
+        x: SVG x coordinate.
+        y: SVG y coordinate.
+        style: Shared SVG text styling.
+
+    Returns:
+        SVG `<text>` element with escaped content.
+    """
     text_content = _render_cover_text_content(text)
     return (
         f'        <text class="cover-title-text" x="{x:g}" y="{y:g}" '
@@ -312,14 +364,28 @@ def render_cover_text(
 
 
 def _render_cover_text_content(text: CoverTextContent) -> str:
-    """Render plain text or span-based cover text content."""
+    """Render plain text or span-based cover text content.
+
+    Args:
+        text: Plain text or span sequence.
+
+    Returns:
+        Escaped SVG text content.
+    """
     if isinstance(text, str):
         return html.escape(text)
     return "".join(_render_cover_text_span(span) for span in text)
 
 
 def _render_cover_text_span(span: CoverTextSpan) -> str:
-    """Render a single SVG `<tspan>` for cover text."""
+    """Render a single SVG `<tspan>` for cover text.
+
+    Args:
+        span: Text span and optional positioning overrides.
+
+    Returns:
+        SVG `<tspan>` markup.
+    """
     attributes = ['dominant-baseline="text-before-edge"']
     if span.letter_spacing is not None:
         attributes.append(f'letter-spacing="{span.letter_spacing:g}"')

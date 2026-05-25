@@ -29,21 +29,38 @@ if TYPE_CHECKING:
 
 
 def prepare_workspace(config: EPUBConfig) -> Path:
-    """Create and return the temporary EPUB workspace directory."""
+    """Create and return the temporary EPUB workspace directory.
+
+    Args:
+        config: Resolved EPUB build configuration.
+
+    Returns:
+        Workspace directory used to stage the unpacked EPUB tree.
+    """
     workspace = Path(config.temp_dir) / "epub"
     workspace.mkdir(parents=True, exist_ok=True)
     return workspace
 
 
 def write_text(workspace: Path, relative_path: str, content: str) -> None:
-    """Write UTF-8 text to an OEBPS-relative path."""
+    """Write UTF-8 text to an OEBPS-relative path.
+
+    Args:
+        workspace: Temporary EPUB workspace root.
+        relative_path: Path relative to `OEBPS`.
+        content: Text content to write.
+    """
     path = oebps_workspace_path(workspace, relative_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
 
 
 def write_container_file(workspace: Path) -> None:
-    """Write the EPUB mimetype and container metadata files."""
+    """Write the EPUB mimetype and container metadata files.
+
+    The `mimetype` file is written at the workspace root so packaging can store
+    it first and uncompressed, as required by EPUB readers.
+    """
     _write_text_file(workspace / "mimetype", "application/epub+zip")
     _write_text_file(
         workspace / "META-INF" / "container.xml",
@@ -60,7 +77,12 @@ def write_container_file(workspace: Path) -> None:
 def copy_image_assets(
     workspace: Path, image_assets: dict[str, ImageAsset]
 ) -> None:
-    """Copy rendered document image assets into the EPUB workspace."""
+    """Copy rendered document image assets into the EPUB workspace.
+
+    Args:
+        workspace: Temporary EPUB workspace root.
+        image_assets: Image assets collected while rendering chapter XHTML.
+    """
     for asset in image_assets.values():
         destination = oebps_workspace_path(workspace, asset.href)
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -68,7 +90,12 @@ def copy_image_assets(
 
 
 def package_epub(config: EPUBConfig, workspace: Path) -> None:
-    """Zip the EPUB workspace and move the archive to the output path."""
+    """Zip the EPUB workspace and move the archive to the output path.
+
+    Args:
+        config: Resolved EPUB build configuration.
+        workspace: Temporary EPUB workspace root.
+    """
     output_path = Path(config.output_path)
     archive_path = Path(config.temp_dir) / output_path.name
     with zipfile.ZipFile(archive_path, "w") as archive:
@@ -90,6 +117,11 @@ def package_epub(config: EPUBConfig, workspace: Path) -> None:
 
 
 def _write_text_file(path: Path, content: str) -> None:
-    """Write UTF-8 text to a concrete filesystem path."""
+    """Write UTF-8 text to a concrete filesystem path.
+
+    Args:
+        path: File path to create or replace.
+        content: Text content to write.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")

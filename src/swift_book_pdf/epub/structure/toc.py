@@ -21,7 +21,15 @@ from swift_book_pdf.epub.patterns import (
 
 
 def parse_toc_sections(toc_lines: list[str]) -> list[tuple[str, list[str]]]:
-    """Return TOC part titles with their ordered document tags."""
+    """Return TOC part titles with their ordered document tags.
+
+    Args:
+        toc_lines: Raw lines from `The-Swift-Programming-Language.md`.
+
+    Returns:
+        Pairs of part title and ordered DocC tags. Empty parts are skipped
+        because EPUB spine generation cannot render a part without children.
+    """
     sections: list[tuple[str, list[str]]] = []
     current_title: str | None = None
     current_tags: list[str] = []

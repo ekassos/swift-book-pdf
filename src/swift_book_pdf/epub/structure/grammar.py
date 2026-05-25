@@ -27,7 +27,16 @@ def build_grammar_target_map(
     parts: list[PartEntry],
     source_documents: dict[str, SourceDocument],
 ) -> dict[str, str]:
-    """Build a map from grammar term text to target href."""
+    """Build a map from grammar term text to target href.
+
+    Args:
+        parts: Top-level book parts whose children define spine order.
+        source_documents: Parsed source documents keyed by document key.
+
+    Returns:
+        First definition href for each grammar term. Later duplicates are left
+        untouched so grammar links point to the earliest defining production.
+    """
     grammar_targets: dict[str, str] = {}
     for part in parts:
         for document in part.children:

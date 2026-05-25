@@ -32,7 +32,15 @@ def render_notices_xhtml(
     title: str,
     year_range: tuple[int, int] | None = None,
 ) -> str:
-    """Render the generated notices body for an EPUB XHTML document."""
+    """Render the generated notices body for an EPUB XHTML document.
+
+    Args:
+        title: Notices page title.
+        year_range: Optional original-work copyright year range.
+
+    Returns:
+        XHTML body fragment for the generated legal notices page.
+    """
     return (
         f'  <div class="section" id="{html.escape(NOTICES_SECTION_ID)}">\n'
         f"<h1>{html.escape(title)}</h1>\n"
@@ -63,7 +71,14 @@ def render_notices_xhtml(
 def _build_original_work_copyright_sentence(
     year_range: tuple[int, int] | None,
 ) -> str:
-    """Build the original-work copyright sentence for notices."""
+    """Build the original-work copyright sentence for notices.
+
+    Args:
+        year_range: Optional inclusive original-work year range.
+
+    Returns:
+        Copyright sentence with a concrete year range when available.
+    """
     year_text = format_copyright_year_range(year_range)
     if year_text:
         return (

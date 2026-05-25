@@ -71,7 +71,14 @@ def write_cover_asset(
     workspace: Path,
     version_info: str | None,
 ) -> None:
-    """Write the outer cover PNG into the EPUB workspace."""
+    """Write the outer cover PNG into the EPUB workspace.
+
+    Args:
+        config: Resolved EPUB build configuration.
+        workspace: Temporary EPUB workspace root.
+        version_info: Effective Swift version string used for label and
+            variant selection.
+    """
     template_path = cover_template_path(
         version_info,
         config.base_cover_image,
@@ -126,7 +133,15 @@ def write_cover_asset(
 
 
 def export_cover_asset(workspace: Path, output_path: Path) -> Path | None:
-    """Copy the generated cover PNG next to the output EPUB."""
+    """Copy the generated cover PNG next to the output EPUB.
+
+    Args:
+        workspace: Temporary EPUB workspace root.
+        output_path: Final EPUB output path.
+
+    Returns:
+        Exported cover image path, or `None` if no package cover was written.
+    """
     source = oebps_workspace_path(workspace, COVER_ASSET_HREF)
     if not source.exists():
         return None
@@ -137,7 +152,14 @@ def export_cover_asset(workspace: Path, output_path: Path) -> Path | None:
 
 
 def has_cover_asset(workspace: Path) -> bool:
-    """Return whether the EPUB workspace contains an outer cover PNG."""
+    """Return whether the EPUB workspace contains an outer cover PNG.
+
+    Args:
+        workspace: Temporary EPUB workspace root.
+
+    Returns:
+        True when `_static/cover.png` exists in the staged package tree.
+    """
     return oebps_workspace_path(workspace, COVER_ASSET_HREF).exists()
 
 
@@ -146,7 +168,12 @@ def _draw_cover_version_text(
     text: str,
     style: _PNGTextStyle,
 ) -> None:
-    """Draw baseline-aligned tracked version text onto a cover image."""
+    """Draw baseline-aligned tracked version text onto a cover image.
+
+    Pillow positions text by bounding box, not typographic baseline. The
+    overlay calculation compensates for the font's top offset so the version
+    label stays aligned to the cover template coordinates.
+    """
     text_width, text_height, bbox_left, bbox_top = _measure_tracked_text(
         text, style.font, style.tracking
     )
@@ -173,7 +200,13 @@ def _draw_cover_footer_line(
     text: str,
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
 ) -> None:
-    """Draw a centered footer line onto a cover image."""
+    """Draw a centered footer line onto a cover image.
+
+    Args:
+        image: Mutable cover image.
+        text: Footer text to draw.
+        font: Font used for footer rendering.
+    """
     _draw_cover_centered_text(
         image,
         text,
@@ -188,7 +221,16 @@ def _measure_tracked_text(
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
     tracking: float = COVER_TEXT_TRACKING,
 ) -> tuple[float, int, int, int]:
-    """Measure text dimensions after applying manual glyph tracking."""
+    """Measure text dimensions after applying manual glyph tracking.
+
+    Args:
+        text: Text to measure.
+        font: Pillow font used to draw the text.
+        tracking: Extra pixels between glyphs.
+
+    Returns:
+        Width, height, left bearing, and top bearing for the tracked text.
+    """
     dummy = Image.new("RGBA", (1, 1), (255, 255, 255, 0))
     draw = ImageDraw.Draw(dummy)
     left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
@@ -204,7 +246,14 @@ def _draw_tracked_text(
     text: str,
     style: _PNGTextStyle,
 ) -> None:
-    """Draw text one glyph at a time when tracking is nonzero."""
+    """Draw text one glyph at a time when tracking is nonzero.
+
+    Args:
+        draw: Pillow drawing context.
+        position: Top-left text position adjusted for glyph bearing.
+        text: Text to draw.
+        style: Font, tracking, and fill settings.
+    """
     if style.tracking == 0:
         draw.text(position, text, fill=style.fill, font=style.font)
         return

@@ -72,7 +72,11 @@ class BlockRenderer:
     """Render parsed Swift Book blocks into XHTML snippets."""
 
     def __init__(self, context: RenderContext) -> None:
-        """Create a renderer with document-local rendering context."""
+        """Create a renderer with document-local rendering context.
+
+        Args:
+            context: Per-document render state and shared asset registries.
+        """
         self.context = context
 
     def render_blocks(
@@ -80,7 +84,16 @@ class BlockRenderer:
         blocks: list[Block],
         initial_level: int,
     ) -> list[str]:
-        """Render block sequence and close nested heading sections."""
+        """Render block sequence and close nested heading sections.
+
+        Args:
+            blocks: Parsed blocks in source order.
+            initial_level: Heading level already open in the caller.
+
+        Returns:
+            XHTML fragments for the blocks, including generated section divs
+            and closing tags needed to keep heading hierarchy balanced.
+        """
         rendered: list[str] = []
         current_level = initial_level
 
@@ -111,7 +124,17 @@ class BlockRenderer:
         return rendered
 
     def _render_block(self, block: Block) -> str:
-        """Dispatch one parsed block to the matching EPUB renderer."""
+        """Dispatch one parsed block to the matching EPUB renderer.
+
+        Args:
+            block: Parsed backend-neutral block.
+
+        Returns:
+            XHTML fragment for the block.
+
+        Raises:
+            ValueError: If the block type is not supported by EPUB rendering.
+        """
         if isinstance(block, ParagraphBlock):
             rendered_block = self._render_paragraph_block(block)
         elif isinstance(block, CodeBlock):
@@ -138,7 +161,14 @@ class BlockRenderer:
         return rendered_block
 
     def _render_paragraph_block(self, block: ParagraphBlock) -> str:
-        """Render a paragraph block."""
+        """Render a paragraph block.
+
+        Args:
+            block: Paragraph block whose lines are joined for EPUB prose.
+
+        Returns:
+            XHTML paragraph with inline Markdown rendered.
+        """
         return (
             "<p>"
             + render_inline(
@@ -150,7 +180,14 @@ class BlockRenderer:
         )
 
     def _render_ordered_list_block(self, block: OrderedListBlock) -> str:
-        """Render a flat ordered-list block."""
+        """Render a flat ordered-list block.
+
+        Args:
+            block: Parsed ordered list with already-joined item text.
+
+        Returns:
+            XHTML ordered list matching the reference EPUB CSS classes.
+        """
         items = "".join(
             "<li><p>"
             + render_inline(
@@ -164,7 +201,15 @@ class BlockRenderer:
         return f'<ol class="arabic simple">{items}</ol>'
 
     def _render_unordered_list_block(self, block: UnorderedListBlock) -> str:
-        """Render an unordered list with nested block content."""
+        """Render an unordered list with nested block content.
+
+        Args:
+            block: Parsed unordered list with nested item blocks.
+
+        Returns:
+            XHTML unordered list whose item bodies may contain paragraphs,
+            nested lists, asides, or code blocks.
+        """
         list_items: list[str] = []
         for item_blocks in block.items:
             item_html = "".join(
@@ -174,7 +219,14 @@ class BlockRenderer:
         return '<ul class="simple">' + "".join(list_items) + "</ul>"
 
     def _render_term_list_block(self, block: TermListBlock) -> str:
-        """Render a Swift grammar term-list block."""
+        """Render a Swift grammar term-list block.
+
+        Args:
+            block: Parsed Swift Book term-list block.
+
+        Returns:
+            XHTML definition list.
+        """
         items = "".join(
             (
                 "<dt>"
@@ -196,7 +248,15 @@ class BlockRenderer:
         return f'<dl class="simple">{items}</dl>'
 
     def _render_table_block(self, block: TableBlock) -> str:
-        """Render a Markdown table block."""
+        """Render a Markdown table block.
+
+        Args:
+            block: Parsed Markdown table. The first row is treated as the
+                header row.
+
+        Returns:
+            XHTML table with inline rendering applied to each cell.
+        """
         header_cells = "".join(
             "<th>"
             + render_inline(
@@ -229,7 +289,12 @@ class BlockRenderer:
         )
 
     def _render_note_block(self, block: NoteBlock) -> str:
-        """Render a Swift Book aside or grammar block."""
+        """Render a Swift Book aside or grammar block.
+
+        Grammar asides are routed to the grammar renderer so productions get
+        stable anchors and cross-links; other asides keep the regular note
+        wrapper used by the EPUB stylesheet.
+        """
         if is_grammar_note_label(block.label):
             return render_grammar_block(
                 block,
@@ -249,7 +314,14 @@ class BlockRenderer:
 
 
 def _heading_level(block: Block) -> int | None:
-    """Return the EPUB heading level represented by a heading block."""
+    """Return the EPUB heading level represented by a heading block.
+
+    Args:
+        block: Parsed block to inspect.
+
+    Returns:
+        XHTML heading level for heading blocks, otherwise `None`.
+    """
     if isinstance(block, Header2Block):
         return 2
     if isinstance(block, Header3Block):
@@ -260,5 +332,12 @@ def _heading_level(block: Block) -> int | None:
 
 
 def _heading_text(block: Header2Block | Header3Block | Header4Block) -> str:
-    """Return display text from a heading block."""
+    """Return display text from a heading block.
+
+    Args:
+        block: Parsed heading block.
+
+    Returns:
+        Heading content without Markdown markers.
+    """
     return block.content

@@ -48,7 +48,12 @@ def write_nav_file(
     front_back_matter: FrontBackMatter,
     parts: list[PartEntry],
 ) -> None:
-    """Write the EPUB 3 navigation document to the workspace."""
+    """Write the EPUB 3 navigation document to the workspace.
+
+    The navigation document contains both the visible table of contents and
+    Apple Books landmarks. Reader start falls back from the first body part to
+    notices, then cover, then the nav document itself for degenerate builds.
+    """
     cover = front_back_matter.cover
     notices = front_back_matter.notices
     reader_start_href = (

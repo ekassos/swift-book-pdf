@@ -41,7 +41,19 @@ def build_source_document(
     key: str,
     metadata: ChapterMetadata,
 ) -> SourceDocument:
-    """Build one parsed source document from chapter metadata."""
+    """Build one parsed source document from chapter metadata.
+
+    Args:
+        key: Lowercase document key used for cross-document links.
+        metadata: Chapter metadata from the loaded source TOC.
+
+    Returns:
+        Source document with preprocessed Markdown, parsed blocks, navigation
+        metadata, and heading-anchor lookup.
+
+    Raises:
+        FileNotFoundError: If the metadata does not point to a source file.
+    """
     if metadata.file_path is None:
         raise FileNotFoundError(f"Missing source metadata for chapter {key}.")
 
@@ -81,7 +93,16 @@ def load_source_lines(source_path: Path, subtitle: str | None) -> list[str]:
 def strip_title_and_subtitle(
     lines: list[str], subtitle: str | None
 ) -> list[str]:
-    """Remove leading title and optional subtitle lines from source Markdown."""
+    """Remove leading title and optional subtitle lines from source Markdown.
+
+    Args:
+        lines: Preprocessed Markdown lines.
+        subtitle: Subtitle discovered from chapter metadata.
+
+    Returns:
+        Lines that should become the chapter body. The renderer emits the title
+        separately from `DocumentEntry`, so the source heading is removed here.
+    """
     remaining_lines = _drop_leading_blank_lines(list(lines))
 
     if remaining_lines and remaining_lines[0].startswith("# "):
@@ -96,7 +117,15 @@ def strip_title_and_subtitle(
 
 
 def extract_heading_map(lines: list[str]) -> dict[str, str]:
-    """Map generated heading anchors back to display heading text."""
+    """Map generated heading anchors back to display heading text.
+
+    Args:
+        lines: Chapter body Markdown lines after preprocessing.
+
+    Returns:
+        Mapping from generated fragment identifiers to display headings for
+        `<doc:...#fragment>` link labels.
+    """
     heading_map: dict[str, str] = {}
     seen_anchors: dict[str, int] = {}
     for raw_line in lines:
@@ -110,7 +139,14 @@ def extract_heading_map(lines: list[str]) -> dict[str, str]:
 
 
 def _drop_leading_blank_lines(lines: list[str]) -> list[str]:
-    """Return `lines` after removing leading blank lines in place."""
+    """Return `lines` after removing leading blank lines in place.
+
+    Args:
+        lines: Mutable list of source lines.
+
+    Returns:
+        The same list object after leading blank lines have been removed.
+    """
     while lines and not lines[0].strip():
         lines.pop(0)
     return lines

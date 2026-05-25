@@ -93,7 +93,12 @@ class EPUBBuilder:
     """Build an EPUB workspace, render documents, and package the archive."""
 
     def __init__(self, config: EPUBConfig, toc: TableOfContents) -> None:
-        """Create a builder from resolved config and a loaded source TOC."""
+        """Create a builder from resolved config and a loaded source TOC.
+
+        Args:
+            config: Resolved EPUB build configuration.
+            toc: Loaded Swift Book table of contents and chapter metadata.
+        """
         self.config = config
         self.toc = toc
         self.asset_path = Path(config.assets_dir)
@@ -116,7 +121,12 @@ class EPUBBuilder:
         logger.info(f"EPUB saved to {self.config.output_path}")
 
     def _build_publication_metadata(self) -> PublicationMetadata:
-        """Resolve publication metadata shared by rendered and package files."""
+        """Resolve publication metadata shared by rendered and package files.
+
+        Returns:
+            Metadata values used consistently by rendered XHTML, navigation
+            files, NCX, and OPF output.
+        """
         version_info = self._version_info()
         source_revision = get_swift_book_repository_revision(
             self.config.root_dir
@@ -141,7 +151,13 @@ class EPUBBuilder:
     def _write_cover_assets(
         self, workspace: Path, version_info: str | None
     ) -> None:
-        """Write the package cover asset and optional exported cover image."""
+        """Write the package cover asset and optional exported cover image.
+
+        Args:
+            workspace: Temporary EPUB workspace root.
+            version_info: Effective Swift version string used for cover text
+                and variant selection.
+        """
         write_cover_asset(self.config, workspace, version_info)
         if not self.config.export_cover_image:
             return
@@ -152,7 +168,14 @@ class EPUBBuilder:
             logger.info(f"Cover image saved to {cover_output_path}")
 
     def _collect_structure(self, cover_asset_exists: bool) -> EPUBStructure:
-        """Collect book structure from the source TOC and build config."""
+        """Collect book structure from the source TOC and build config.
+
+        Args:
+            cover_asset_exists: Whether a cover PNG was actually written.
+
+        Returns:
+            Renderable EPUB structure with optional front and back matter.
+        """
         return EPUBStructureCollector(
             self.config,
             self.toc,
@@ -165,7 +188,17 @@ class EPUBBuilder:
         structure: EPUBStructure,
         metadata: PublicationMetadata,
     ) -> dict[str, ImageAsset]:
-        """Render XHTML documents and collect image assets they reference."""
+        """Render XHTML documents and collect image assets they reference.
+
+        Args:
+            workspace: Temporary EPUB workspace root.
+            structure: Collected book structure and source documents.
+            metadata: Publication metadata shared with generated documents.
+
+        Returns:
+            Image assets discovered while rendering source chapters, keyed by
+            package href.
+        """
         renderer = EPUBRenderer(
             self.asset_path,
             structure.grammar_targets,
@@ -289,7 +322,12 @@ class EPUBBuilder:
         )
 
     def _version_info(self) -> str:
-        """Resolve the Swift version string for this build."""
+        """Resolve the Swift version string for this build.
+
+        Returns:
+            The explicit override when supplied, otherwise the version parsed
+            from the source table of contents.
+        """
         return resolve_version_info(
             self.toc.file_content, self.config.override_version
         )

@@ -20,7 +20,16 @@ import re
 
 
 def anchor_for_heading(title: str) -> str:
-    """Build a stable EPUB fragment identifier from heading text."""
+    """Build a stable EPUB fragment identifier from heading text.
+
+    Args:
+        title: Display heading text from a source document.
+
+    Returns:
+        EPUB fragment identifier matching the renderer's heading IDs. The
+        normalization intentionally mirrors existing generated output instead
+        of using a general-purpose slug library.
+    """
     cleaned = re.sub(r"[*`]", "", title).strip()
     cleaned = re.sub("[()/:,.!?'\\u2019]", "", cleaned)
     cleaned = re.sub(r"\s+", "-", cleaned)
@@ -28,7 +37,16 @@ def anchor_for_heading(title: str) -> str:
 
 
 def make_unique_anchor(anchor: str, seen: dict[str, int]) -> str:
-    """Return `anchor` or a numbered variant unique within `seen`."""
+    """Return `anchor` or a numbered variant unique within `seen`.
+
+    Args:
+        anchor: Candidate fragment identifier.
+        seen: Mutable per-document count of anchors already emitted.
+
+    Returns:
+        The first occurrence unchanged, then one-based numbered suffixes for
+        duplicate headings.
+    """
     count = seen.get(anchor, 0)
     seen[anchor] = count + 1
     if count == 0:

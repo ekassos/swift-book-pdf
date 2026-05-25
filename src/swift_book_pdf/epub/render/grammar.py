@@ -36,7 +36,17 @@ def render_grammar_block(
     grammar_targets: dict[str, str],
     grammar_anchor_counts: dict[str, int],
 ) -> str:
-    """Render a `Grammar of ...` aside as EPUB XHTML."""
+    """Render a `Grammar of ...` aside as EPUB XHTML.
+
+    Args:
+        block: Parsed grammar aside.
+        current_href: Href of the document containing the aside.
+        grammar_targets: Global grammar term href map.
+        grammar_anchor_counts: Mutable per-document anchor counters.
+
+    Returns:
+        XHTML aside with grouped grammar rule markup.
+    """
     groups: list[str] = []
     for sub_block in block.blocks:
         if not isinstance(sub_block, ParagraphBlock):
@@ -69,7 +79,17 @@ def render_grammar_line(
     grammar_targets: dict[str, str],
     grammar_anchor_counts: dict[str, int],
 ) -> str:
-    """Render one grammar rule or prose line."""
+    """Render one grammar rule or prose line.
+
+    Args:
+        line: Raw grammar line from a paragraph inside a grammar aside.
+        current_href: Href of the document containing the line.
+        grammar_targets: Global grammar term href map.
+        grammar_anchor_counts: Mutable per-document anchor counters.
+
+    Returns:
+        XHTML paragraph for a production rule or grammar prose.
+    """
     rule = parse_grammar_rule(line)
     if rule is None:
         return (
@@ -95,7 +115,13 @@ def _render_grammar_fragment(
     current_href: str,
     grammar_targets: dict[str, str],
 ) -> str:
-    """Render inline grammar tokens while preserving generated markup."""
+    """Render inline grammar tokens while preserving generated markup.
+
+    The renderer protects code spans and grammar-category links with
+    placeholders before escaping. This allows source grammar syntax like
+    `*expression*` and `_?_` to become EPUB-specific markup without leaking raw
+    HTML from source text.
+    """
     placeholders: dict[str, str] = {}
     placeholder_index = 0
 
@@ -147,7 +173,16 @@ def _render_grammar_category(
     current_href: str,
     grammar_targets: dict[str, str],
 ) -> str:
-    """Render a grammar category reference with a link when known."""
+    """Render a grammar category reference with a link when known.
+
+    Args:
+        text: Grammar category text from emphasized source markup.
+        current_href: Href of the document containing the reference.
+        grammar_targets: Global grammar term href map.
+
+    Returns:
+        XHTML span, linking to the first known target when available.
+    """
     target_href = grammar_targets.get(text)
     if target_href is None:
         return '<span class="grammar-ref">' + html.escape(text) + "</span>"
@@ -162,7 +197,16 @@ def _render_grammar_category(
 def _next_grammar_anchor_id(
     term: str, grammar_anchor_counts: dict[str, int]
 ) -> str:
-    """Return the next unique grammar anchor ID for a term."""
+    """Return the next unique grammar anchor ID for a term.
+
+    Args:
+        term: Grammar term being defined.
+        grammar_anchor_counts: Mutable per-document count by normalized term.
+
+    Returns:
+        Stable anchor ID using `grammar_` for the first definition and a
+        numeric suffix for later duplicate terms in the same document.
+    """
     fragment = grammar_anchor_fragment(term)
     count = grammar_anchor_counts.get(fragment, 0) + 1
     grammar_anchor_counts[fragment] = count

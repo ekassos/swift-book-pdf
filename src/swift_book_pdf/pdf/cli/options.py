@@ -17,9 +17,14 @@
 import click
 
 from swift_book_pdf.cli.options import OptionTarget, apply_options
+from swift_book_pdf.pdf.layout import (
+    DEFAULT_BODY_FONT_SIZE,
+    DEFAULT_PAPER_SIZE,
+    DEFAULT_RENDERING_MODE,
+    DEFAULT_TYPESETS,
+)
 from swift_book_pdf.pdf.options import PaperSize, RenderingMode
 
-DEFAULT_TYPESETS = 4
 GUTTER_FLAG_OPTIONS = ("--gutter/--no-gutter", " /-G")
 
 
@@ -39,9 +44,9 @@ def pdf_options(func: OptionTarget) -> OptionTarget:
                 [mode.value for mode in RenderingMode],
                 case_sensitive=False,
             ),
-            default=RenderingMode.DIGITAL.value,
+            default=DEFAULT_RENDERING_MODE.value,
             help="Rendering mode",
-            show_default="digital",
+            show_default=DEFAULT_RENDERING_MODE.value,
         ),
         click.option(
             "--paper",
@@ -49,9 +54,9 @@ def pdf_options(func: OptionTarget) -> OptionTarget:
                 [paper_size.value for paper_size in PaperSize],
                 case_sensitive=False,
             ),
-            default=PaperSize.LETTER.value,
+            default=DEFAULT_PAPER_SIZE.value,
             help="Paper size for the document",
-            show_default="letter",
+            show_default=DEFAULT_PAPER_SIZE.value,
         ),
         click.option(
             "--typesets",
@@ -74,7 +79,7 @@ def pdf_options(func: OptionTarget) -> OptionTarget:
             type=click.FloatRange(min=0, min_open=True),
             default=None,
             help="Base paragraph font size in points. All other font sizes scale proportionally",
-            show_default="9",
+            show_default=f"{DEFAULT_BODY_FONT_SIZE:g}",
         ),
     )
     return apply_options(func, decorators)

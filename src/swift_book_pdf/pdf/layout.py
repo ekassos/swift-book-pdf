@@ -18,6 +18,13 @@ from dataclasses import dataclass
 
 from swift_book_pdf.pdf.options import Appearance, PaperSize, RenderingMode
 
+DEFAULT_RENDERING_MODE = RenderingMode.DIGITAL
+DEFAULT_PAPER_SIZE = PaperSize.LETTER
+DEFAULT_TYPESETS = 4
+DEFAULT_GUTTER = True
+DEFAULT_BODY_FONT_SIZE = 9.0
+DEFAULT_APPEARANCE = Appearance.LIGHT
+
 
 @dataclass(frozen=True)
 class DocConfig:
@@ -32,22 +39,22 @@ class DocConfig:
         appearance: Light or dark rendering appearance.
     """
 
-    mode: RenderingMode = RenderingMode.DIGITAL
+    mode: RenderingMode = DEFAULT_RENDERING_MODE
     """PDF rendering mode."""
 
-    paper_size: PaperSize = PaperSize.LETTER
+    paper_size: PaperSize = DEFAULT_PAPER_SIZE
     """Output paper size."""
 
-    typesets: int = 4
+    typesets: int = DEFAULT_TYPESETS
     """Number of LaTeX typesetting passes."""
 
-    gutter: bool = True
+    gutter: bool = DEFAULT_GUTTER
     """Whether the book gutter should be rendered."""
 
-    font_size: float = 9.0
+    font_size: float = DEFAULT_BODY_FONT_SIZE
     """Base paragraph font size in points."""
 
-    appearance: Appearance = Appearance.LIGHT
+    appearance: Appearance = DEFAULT_APPEARANCE
     """Light or dark rendering appearance."""
 
     def __post_init__(self) -> None:

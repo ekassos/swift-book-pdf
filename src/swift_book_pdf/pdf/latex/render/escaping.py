@@ -16,32 +16,38 @@
 
 import re
 
+TEXTTT_TRANSLATION = str.maketrans(
+    {
+        "\\": r"\textbackslash ",
+        "{": r"\{",
+        "}": r"\}",
+        "_": r"\_",
+        "$": r"\$",
+        "&": r"\&",
+        "%": r"\%",
+        "^": r"\textasciicircum ",
+        "`": r"\textasciigrave ",
+        "~": r"\textasciitilde ",
+        "[": r"{[}",
+        "]": r"{]}",
+        "(": r"{(}",
+        ")": r"{)}",
+        ".": r"{.}",
+        ",": r"{,}",
+        ":": r"{:}",
+        ";": r"{;}",
+        "=": r"{=}",
+        "@": r"{@}",
+        "?": r"{?}",
+        "!": r"{!}",
+    }
+)
+
 
 def escape_texttt(text: str) -> str:
     """Escape characters that cause issues inside ``\\texttt``."""
-    text = text.replace("\\", r"\textbackslash ")
-    text = text.replace("{", r"\{")
-    text = text.replace("}", r"\}")
-    text = text.replace("_", r"\_")
+    text = text.translate(TEXTTT_TRANSLATION)
     text = re.sub(r"(?<!\\)#", r"\#", text)
-    text = text.replace("$", r"\$")
-    text = text.replace("&", r"\&")
-    text = text.replace("%", r"\%")
-    text = text.replace("^", r"\textasciicircum ")
-    text = text.replace("`", r"\textasciigrave ")
-    text = text.replace("~", r"\textasciitilde ")
-    text = text.replace("[", r"{[}")
-    text = text.replace("]", r"{]}")
-    text = text.replace("(", r"{(}")
-    text = text.replace(")", r"{)}")
-    text = text.replace(".", r"{.}")
-    text = text.replace(",", r"{,}")
-    text = text.replace(":", r"{:}")
-    text = text.replace(";", r"{;}")
-    text = text.replace("=", r"{=}")
-    text = text.replace("@", r"{@}")
-    text = text.replace("?", r"{?}")
-    text = text.replace("!", r"{!}")
     text = text.replace("->", r"{->}")
     return override_characters(text)
 

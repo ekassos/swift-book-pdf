@@ -19,7 +19,6 @@ from typing import ClassVar
 
 from swift_book_pdf.core.config.models import BaseBuildConfig
 from swift_book_pdf.core.output import OutputFormat
-from swift_book_pdf.pdf.latex.fonts.config import FontConfig
 from swift_book_pdf.pdf.layout import DocConfig
 from swift_book_pdf.pdf.options import EngineKind
 
@@ -29,14 +28,21 @@ class PDFConfig(BaseBuildConfig):
     """Resolved configuration for PDF builds.
 
     Attributes:
-        font_config: PDF font configuration.
         doc_config: PDF document layout configuration.
+        engine_kind: PDF engine implementation.
         override_version: Optional Swift version override.
     """
 
-    font_config: FontConfig
     doc_config: DocConfig
-    engine_kind: EngineKind = EngineKind.LATEX
+    engine_kind: EngineKind
     override_version: str | None = None
 
     output_format: ClassVar[OutputFormat] = OutputFormat.PDF
+
+    def diagnostic_details(self) -> str:
+        """Format resolved PDF build details for debug diagnostics."""
+        return str(self.doc_config)
+
+    def build_error_details(self) -> str:
+        """Format backend-specific details for unexpected build errors."""
+        return ""

@@ -20,13 +20,14 @@ from swift_book_pdf.core.markdown import (
     remove_multiline_comments,
 )
 from swift_book_pdf.core.source.paths import get_file_name
-from swift_book_pdf.pdf.config import PDFConfig
+from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.render.blocks import convert_blocks_to_latex
 from swift_book_pdf.pdf.latex.render.chapter import generate_chapter_title
+from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 
 
 class LaTeXRenderer:
-    def __init__(self, config: PDFConfig) -> None:
+    def __init__(self, config: LaTeXPDFConfig) -> None:
         self.config = config
 
     def render_file(self, file_path: str) -> str:
@@ -71,12 +72,14 @@ class LaTeXRenderer:
         blocks = parse_blocks(file_content)
         body_latex = convert_blocks_to_latex(
             blocks,
-            file_name,
-            self.config.assets_dir,
-            self.config.doc_config.mode,
-            self.config.doc_config.appearance,
-            self.config.font_config.main_font,
-            self.config.doc_config.font_size,
+            LaTeXRenderContext(
+                file_name=file_name,
+                assets_dir=self.config.assets_dir,
+                mode=self.config.doc_config.mode,
+                appearance=self.config.doc_config.appearance,
+                main_font=self.config.latex_config.font_config.main_font,
+                body_font_size=self.config.doc_config.font_size,
+            ),
         )
         latex_lines.extend(body_latex)
         latex_lines.append("}\n\\newpage\n")

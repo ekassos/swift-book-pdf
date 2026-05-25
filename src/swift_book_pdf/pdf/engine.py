@@ -16,13 +16,18 @@
 
 # ruff: noqa: PLC0415
 
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
+from swift_book_pdf.core.config import ResolvedBuildSource
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.pdf.config import PDFConfig
+from swift_book_pdf.pdf.layout import DocConfig
 from swift_book_pdf.pdf.options import EngineKind
+
+OptionTarget = Callable[..., object]
 
 
 @dataclass(frozen=True)
@@ -34,11 +39,49 @@ class PDFBuildContext:
     version_info: str
 
 
+@dataclass(frozen=True)
+class PDFBackendConfigInput:
+    """Shared inputs used to build a concrete backend config."""
+
+    source: ResolvedBuildSource
+    output_path: str
+    doc_config: DocConfig
+    override_version: str | None
+    dangerously_skip_legal_notices: bool
+    backend_options: Mapping[str, Any]
+
+
 class PDFEngine(Protocol):
     """Engine interface for producing a temporary PDF artifact."""
 
     def build(self, context: PDFBuildContext) -> Path:
         """Render and compile a PDF, returning the temporary PDF path."""
+
+
+class PDFBackend(Protocol):
+    """Backend contract for engine-specific PDF CLI and config behavior."""
+
+    kind: EngineKind
+
+    def build_options(self, func: OptionTarget) -> OptionTarget:
+        """Decorate the PDF command with backend build options."""
+
+    def command_options(self, func: OptionTarget) -> OptionTarget:
+        """Decorate the PDF command with backend-specific CLI options."""
+
+    def build_config(self, config_input: PDFBackendConfigInput) -> PDFConfig:
+        """Build the concrete backend config for a PDF build."""
+
+
+def select_backend(engine_kind: EngineKind) -> PDFBackend:
+    """Select the configured PDF backend."""
+    match engine_kind:
+        case EngineKind.LATEX:
+            from swift_book_pdf.pdf.latex.backend import LaTeXBackend
+
+            return LaTeXBackend()
+        case _:
+            raise ValueError(f"Unsupported PDF engine: {engine_kind}")
 
 
 def select_engine(config: PDFConfig) -> PDFEngine:

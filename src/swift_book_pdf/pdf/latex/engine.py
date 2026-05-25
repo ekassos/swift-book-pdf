@@ -20,6 +20,7 @@ from tqdm import trange
 
 from swift_book_pdf.pdf.engine import PDFBuildContext
 from swift_book_pdf.pdf.latex.build.compiler import LuaLaTeXCompiler
+from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.document import write_latex_document
 from swift_book_pdf.pdf.latex.renderer import LaTeXRenderer
 
@@ -29,16 +30,23 @@ class LaTeXEngine:
 
     def build(self, context: PDFBuildContext) -> Path:
         """Build the temporary PDF for a LaTeX-backed PDF build."""
-        latex_file_path = Path(context.config.temp_dir) / "inner_content.tex"
+        config = _require_latex_config(context.config)
+        latex_file_path = Path(config.temp_dir) / "inner_content.tex"
         write_latex_document(
-            context.config,
+            config,
             context.toc,
-            LaTeXRenderer(context.config),
+            LaTeXRenderer(config),
             latex_file_path,
         )
 
-        compiler = LuaLaTeXCompiler(context.config)
-        for _ in trange(context.config.doc_config.typesets, leave=False):
+        compiler = LuaLaTeXCompiler(config)
+        for _ in trange(config.latex_config.typesets, leave=False):
             compiler.convert_to_pdf(str(latex_file_path))
 
-        return Path(context.config.temp_dir) / "inner_content.pdf"
+        return Path(config.temp_dir) / "inner_content.pdf"
+
+
+def _require_latex_config(config: object) -> LaTeXPDFConfig:
+    if isinstance(config, LaTeXPDFConfig):
+        return config
+    raise TypeError("LaTeXEngine requires a LaTeXPDFConfig.")

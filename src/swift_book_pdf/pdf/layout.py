@@ -20,7 +20,6 @@ from swift_book_pdf.pdf.options import Appearance, PaperSize, RenderingMode
 
 DEFAULT_RENDERING_MODE = RenderingMode.DIGITAL
 DEFAULT_PAPER_SIZE = PaperSize.LETTER
-DEFAULT_TYPESETS = 4
 DEFAULT_GUTTER = True
 DEFAULT_BODY_FONT_SIZE = 9.0
 DEFAULT_APPEARANCE = Appearance.LIGHT
@@ -33,7 +32,6 @@ class DocConfig:
     Attributes:
         mode: PDF rendering mode.
         paper_size: Output paper size.
-        typesets: Number of LaTeX typesetting passes.
         gutter: Whether the book gutter should be rendered.
         font_size: Base paragraph font size in points.
         appearance: Light or dark rendering appearance.
@@ -44,9 +42,6 @@ class DocConfig:
 
     paper_size: PaperSize = DEFAULT_PAPER_SIZE
     """Output paper size."""
-
-    typesets: int = DEFAULT_TYPESETS
-    """Number of LaTeX typesetting passes."""
 
     gutter: bool = DEFAULT_GUTTER
     """Whether the book gutter should be rendered."""
@@ -72,7 +67,6 @@ class DocConfig:
             [
                 f"Rendering mode: {self.mode}",
                 f"Paper size: {self.paper_size}",
-                f"Typesets: {self.typesets}",
                 f"Appearance: {self.appearance}",
                 f"Book Gutter: {self.gutter}",
                 f"Font size: {self.font_size}pt",

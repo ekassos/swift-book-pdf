@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+from dataclasses import dataclass
 
 from swift_book_pdf.pdf.latex.fonts.candidates import (
     EMOJI_FONT_LIST,
@@ -30,20 +31,47 @@ from swift_book_pdf.pdf.latex.fonts.resolution import (
 logger = logging.getLogger(__name__)
 
 
+@dataclass(frozen=True)
 class FontConfig:
-    def __init__(  # noqa: PLR0913
-        self,
+    main_font: str
+    mono_font: str
+    emoji_font: str
+    unicode_font_list: tuple[str, ...]
+    header_footer_font: str
+
+    @classmethod
+    def resolve(  # noqa: PLR0913
+        cls,
         main_font_custom: str | None = None,
         mono_font_custom: str | None = None,
         emoji_font_custom: str | None = None,
         unicode_fonts_custom_list: list[str] | None = None,
         header_footer_font_custom: str | None = None,
-        main_font_list: list[str] = MAIN_FONT_LIST,
-        mono_font_list: list[str] = MONO_FONT_LIST,
-        emoji_font_list: list[str] = EMOJI_FONT_LIST,
-        unicode_font_list: list[str] = UNICODE_FONT_LIST,
-        header_footer_font_list: list[str] = HEADER_FOOTER_FONT_LIST,
-    ) -> None:
+        main_font_list: list[str] | None = None,
+        mono_font_list: list[str] | None = None,
+        emoji_font_list: list[str] | None = None,
+        unicode_font_list: list[str] | None = None,
+        header_footer_font_list: list[str] | None = None,
+    ) -> "FontConfig":
+        main_font_list = (
+            MAIN_FONT_LIST if main_font_list is None else main_font_list
+        )
+        mono_font_list = (
+            MONO_FONT_LIST if mono_font_list is None else mono_font_list
+        )
+        emoji_font_list = (
+            EMOJI_FONT_LIST if emoji_font_list is None else emoji_font_list
+        )
+        unicode_font_list = (
+            UNICODE_FONT_LIST
+            if unicode_font_list is None
+            else unicode_font_list
+        )
+        header_footer_font_list = (
+            HEADER_FOOTER_FONT_LIST
+            if header_footer_font_list is None
+            else header_footer_font_list
+        )
         unicode_fonts_custom_list = unicode_fonts_custom_list or []
         logger.info("Configuring fonts...")
         logger.debug("Custom fonts provided:")
@@ -71,33 +99,33 @@ class FontConfig:
                 header_footer_font_list,
             ],
         )
-        self.main_font = resolve_font_config_value(
+        main_font = resolve_font_config_value(
             "main text",
             main_font_custom,
             main_font_list,
             latex_font_cache,
             "Custom main font",
         )
-        self.mono_font = resolve_font_config_value(
+        mono_font = resolve_font_config_value(
             "monospace text",
             mono_font_custom,
             mono_font_list,
             latex_font_cache,
             "Custom monospace font",
         )
-        self.emoji_font = resolve_font_config_value(
+        emoji_font = resolve_font_config_value(
             "emojis",
             emoji_font_custom,
             emoji_font_list,
             latex_font_cache,
             "Custom emoji font",
         )
-        self.unicode_font_list = resolve_unicode_font_list(
+        resolved_unicode_font_list = resolve_unicode_font_list(
             unicode_fonts_custom_list,
             unicode_font_list,
             latex_font_cache,
         )
-        self.header_footer_font = resolve_font_config_value(
+        header_footer_font = resolve_font_config_value(
             "header/footer text",
             header_footer_font_custom,
             header_footer_font_list,
@@ -106,11 +134,19 @@ class FontConfig:
         )
 
         logger.debug("Font configuration:")
-        logger.debug(f"MAIN: {self.main_font}")
-        logger.debug(f"MONO: {self.mono_font}")
-        logger.debug(f"EMOJI: {self.emoji_font}")
-        logger.debug(f"UNICODE: {', '.join(self.unicode_font_list)}")
-        logger.debug(f"HEADER/FOOTER: {self.header_footer_font}")
+        logger.debug(f"MAIN: {main_font}")
+        logger.debug(f"MONO: {mono_font}")
+        logger.debug(f"EMOJI: {emoji_font}")
+        logger.debug(f"UNICODE: {', '.join(resolved_unicode_font_list)}")
+        logger.debug(f"HEADER/FOOTER: {header_footer_font}")
+
+        return cls(
+            main_font=main_font,
+            mono_font=mono_font,
+            emoji_font=emoji_font,
+            unicode_font_list=tuple(resolved_unicode_font_list),
+            header_footer_font=header_footer_font,
+        )
 
     def __str__(self) -> str:
         return (

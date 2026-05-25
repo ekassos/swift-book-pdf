@@ -29,28 +29,35 @@ from swift_book_pdf.cli.options import (
 )
 from swift_book_pdf.core.output import OutputFormat
 from swift_book_pdf.pdf.builder import build_pdf
-from swift_book_pdf.pdf.cli.options import pdf_font_options, pdf_options
+from swift_book_pdf.pdf.cli.options import (
+    pdf_appearance_options,
+    pdf_document_options,
+    pdf_gutter_option,
+    pdf_typography_options,
+)
+from swift_book_pdf.pdf.engine import select_backend
+from swift_book_pdf.pdf.options import EngineKind
+
+DEFAULT_BACKEND = select_backend(EngineKind.LATEX)
 
 
-@click.command(name="swift-book-pdf")
+@click.command(name="swift-book-pdf", help="")
 @output_path_argument
-@pdf_options
+@pdf_document_options
+@DEFAULT_BACKEND.build_options
 @override_version_option
-@pdf_font_options
+@DEFAULT_BACKEND.command_options
+@pdf_typography_options
+@pdf_appearance_options
 @legal_notices_option
+@pdf_gutter_option
 @source_options
 @version_option("Swift-Book-PDF")
 def pdf(  # noqa: PLR0913
     output_path: str,
     mode: str,
     paper: str,
-    typesets: int,
     override_version: str | None,
-    main: str | None,
-    mono: str | None,
-    unicode: list[str],
-    emoji: str | None,
-    header_footer: str | None,
     font_size: float | None,
     dark: bool,
     dangerously_skip_legal_notices: bool,
@@ -59,6 +66,7 @@ def pdf(  # noqa: PLR0913
     source_ref: str | None,
     source_sha: str | None,
     verbose: bool,
+    **backend_options: object,
 ) -> None:
     """Build the PDF command from parsed Click options.
 
@@ -66,13 +74,7 @@ def pdf(  # noqa: PLR0913
         output_path: User-provided output path.
         mode: Rendering mode option value.
         paper: Paper size option value.
-        typesets: Number of typesetting passes.
         override_version: Optional Swift version override.
-        main: Optional main text font.
-        mono: Optional code font.
-        unicode: Optional fallback fonts for unsupported characters.
-        emoji: Optional emoji font.
-        header_footer: Optional header and footer font.
         font_size: Optional base paragraph font size.
         dark: Whether dark mode should be rendered.
         dangerously_skip_legal_notices: Whether generated notices are omitted.
@@ -81,18 +83,11 @@ def pdf(  # noqa: PLR0913
         source_ref: Optional Swift Book Git ref.
         source_sha: Optional Swift Book commit SHA.
         verbose: Whether debug logging should be enabled.
+        backend_options: Engine-specific option values.
     """
-    font_config = pdf_config.build_font_config(
-        main=main,
-        mono=mono,
-        unicode=unicode,
-        emoji=emoji,
-        header_footer=header_footer,
-    )
     doc_config = pdf_config.build_doc_config(
         mode=mode,
         paper=paper,
-        typesets=typesets,
         dark=dark,
         gutter=gutter,
         font_size=font_size,
@@ -104,8 +99,9 @@ def pdf(  # noqa: PLR0913
         output_format=OutputFormat.PDF,
         config_builder=partial(
             pdf_config.build_pdf_config,
-            font_config=font_config,
+            backend=DEFAULT_BACKEND,
             doc_config=doc_config,
+            backend_options=backend_options,
             override_version=override_version,
             source_ref=source_ref,
             source_sha=source_sha,

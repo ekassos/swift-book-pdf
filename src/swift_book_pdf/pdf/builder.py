@@ -54,7 +54,7 @@ class PDFBookBuilder:
             f"Creating PDF in {doc_config.mode.value} "
             f"({doc_config.appearance}) mode...",
         )
-        logger.debug(f"\n{doc_config}")
+        logger.debug(f"\n{self.config.diagnostic_details()}")
         context = PDFBuildContext(
             config=self.config,
             toc=self.toc,

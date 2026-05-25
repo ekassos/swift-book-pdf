@@ -14,9 +14,12 @@
 
 """PDF config assembly for CLI commands."""
 
+from collections.abc import Mapping
+from typing import Any
+
 from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.latex.fonts.config import FontConfig
+from swift_book_pdf.pdf.engine import PDFBackend, PDFBackendConfigInput
 from swift_book_pdf.pdf.layout import (
     DEFAULT_BODY_FONT_SIZE,
     DEFAULT_GUTTER,
@@ -25,40 +28,10 @@ from swift_book_pdf.pdf.layout import (
 from swift_book_pdf.pdf.options import Appearance, PaperSize, RenderingMode
 
 
-def build_font_config(
-    *,
-    main: str | None,
-    mono: str | None,
-    unicode: list[str],
-    emoji: str | None,
-    header_footer: str | None,
-) -> FontConfig:
-    """Build PDF font configuration from CLI options.
-
-    Args:
-        main: Optional main text font.
-        mono: Optional code font.
-        unicode: Optional fallback fonts for unsupported characters.
-        emoji: Optional emoji font.
-        header_footer: Optional header and footer font.
-
-    Returns:
-        PDF font configuration.
-    """
-    return FontConfig(
-        main_font_custom=main,
-        mono_font_custom=mono,
-        unicode_fonts_custom_list=unicode,
-        emoji_font_custom=emoji,
-        header_footer_font_custom=header_footer,
-    )
-
-
-def build_doc_config(  # noqa: PLR0913
+def build_doc_config(
     *,
     mode: str,
     paper: str,
-    typesets: int,
     dark: bool,
     gutter: bool | None,
     font_size: float | None,
@@ -68,7 +41,6 @@ def build_doc_config(  # noqa: PLR0913
     Args:
         mode: Rendering mode option value.
         paper: Paper size option value.
-        typesets: Number of typesetting passes.
         dark: Whether dark mode should be rendered.
         gutter: Optional gutter override.
         font_size: Optional base paragraph font size.
@@ -79,7 +51,6 @@ def build_doc_config(  # noqa: PLR0913
     return DocConfig(
         mode=RenderingMode(mode),
         paper_size=PaperSize(paper),
-        typesets=typesets,
         gutter=DEFAULT_GUTTER if gutter is None else gutter,
         font_size=(DEFAULT_BODY_FONT_SIZE if font_size is None else font_size),
         appearance=Appearance.DARK if dark else Appearance.LIGHT,
@@ -90,8 +61,9 @@ def build_pdf_config(  # noqa: PLR0913
     temp_dir: str,
     output_path: str,
     *,
-    font_config: FontConfig,
+    backend: PDFBackend,
     doc_config: DocConfig,
+    backend_options: Mapping[str, Any],
     override_version: str | None,
     source_ref: str | None,
     source_sha: str | None,
@@ -103,8 +75,9 @@ def build_pdf_config(  # noqa: PLR0913
     Args:
         temp_dir: Temporary build directory.
         output_path: Validated PDF output path.
-        font_config: PDF font configuration.
+        backend: PDF backend adapter.
         doc_config: PDF document layout configuration.
+        backend_options: Backend-specific CLI option values.
         override_version: Optional Swift version override.
         source_ref: Optional Swift Book Git ref.
         source_sha: Optional Swift Book commit SHA.
@@ -120,13 +93,15 @@ def build_pdf_config(  # noqa: PLR0913
         source_ref=source_ref,
         source_sha=source_sha,
     )
-    return PDFConfig(
-        source=source,
-        output_path=output_path,
-        dangerously_skip_legal_notices=dangerously_skip_legal_notices,
-        font_config=font_config,
-        doc_config=doc_config,
-        override_version=override_version,
+    return backend.build_config(
+        PDFBackendConfigInput(
+            source=source,
+            output_path=output_path,
+            dangerously_skip_legal_notices=dangerously_skip_legal_notices,
+            doc_config=doc_config,
+            override_version=override_version,
+            backend_options=backend_options,
+        )
     )
 
 
@@ -141,4 +116,5 @@ def format_pdf_build_details(config: PDFConfig | None) -> str:
     """
     if config is None:
         return ""
-    return f"\n{config.font_config}"
+    details = config.build_error_details()
+    return f"\n{details}" if details else ""

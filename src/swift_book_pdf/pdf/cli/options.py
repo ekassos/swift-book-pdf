@@ -21,15 +21,14 @@ from swift_book_pdf.pdf.layout import (
     DEFAULT_BODY_FONT_SIZE,
     DEFAULT_PAPER_SIZE,
     DEFAULT_RENDERING_MODE,
-    DEFAULT_TYPESETS,
 )
 from swift_book_pdf.pdf.options import PaperSize, RenderingMode
 
 GUTTER_FLAG_OPTIONS = ("--gutter/--no-gutter", " /-G")
 
 
-def pdf_options(func: OptionTarget) -> OptionTarget:
-    """Add PDF-specific rendering options to the command callback.
+def pdf_document_options(func: OptionTarget) -> OptionTarget:
+    """Add PDF document options to the command callback.
 
     Args:
         func: Click command callback to decorate.
@@ -58,35 +57,12 @@ def pdf_options(func: OptionTarget) -> OptionTarget:
             help="Paper size for the document",
             show_default=DEFAULT_PAPER_SIZE.value,
         ),
-        click.option(
-            "--typesets",
-            type=click.IntRange(min=1),
-            default=DEFAULT_TYPESETS,
-            help="Number of typeset passes to use",
-            show_default=str(DEFAULT_TYPESETS),
-        ),
-        click.option(
-            "--dark", is_flag=True, help="Render the book in dark mode"
-        ),
-        click.option(
-            *GUTTER_FLAG_OPTIONS,
-            required=False,
-            default=None,
-            help="Enable or disable the book gutter",
-        ),
-        click.option(
-            "--font-size",
-            type=click.FloatRange(min=0, min_open=True),
-            default=None,
-            help="Base paragraph font size in points. All other font sizes scale proportionally",
-            show_default=f"{DEFAULT_BODY_FONT_SIZE:g}",
-        ),
     )
     return apply_options(func, decorators)
 
 
-def pdf_font_options(func: OptionTarget) -> OptionTarget:
-    """Add PDF font override options to the command callback.
+def pdf_typography_options(func: OptionTarget) -> OptionTarget:
+    """Add PDF typography options to the command callback.
 
     Args:
         func: Click command callback to decorate.
@@ -96,35 +72,48 @@ def pdf_font_options(func: OptionTarget) -> OptionTarget:
     """
     decorators = (
         click.option(
-            "--main",
-            type=str,
+            "--font-size",
+            type=float,
             default=None,
-            help="Font for the main text",
+            help="Base paragraph font size in points. All other font sizes scale proportionally",
+            show_default=f"{DEFAULT_BODY_FONT_SIZE:g}",
         ),
+    )
+    return apply_options(func, decorators)
+
+
+def pdf_appearance_options(func: OptionTarget) -> OptionTarget:
+    """Add PDF appearance options to the command callback.
+
+    Args:
+        func: Click command callback to decorate.
+
+    Returns:
+        Decorated command callback.
+    """
+    decorators = (
         click.option(
-            "--mono",
-            type=str,
-            default=None,
-            help="Font for code blocks",
+            "--dark", is_flag=True, help="Render the book in dark mode"
         ),
+    )
+    return apply_options(func, decorators)
+
+
+def pdf_gutter_option(func: OptionTarget) -> OptionTarget:
+    """Add the PDF gutter toggle to the command callback.
+
+    Args:
+        func: Click command callback to decorate.
+
+    Returns:
+        Decorated command callback.
+    """
+    decorators = (
         click.option(
-            "--unicode",
-            type=str,
+            *GUTTER_FLAG_OPTIONS,
+            required=False,
             default=None,
-            help="Font(s) for characters not supported by the main font",
-            multiple=True,
-        ),
-        click.option(
-            "--emoji",
-            type=str,
-            default=None,
-            help="Font for emoji",
-        ),
-        click.option(
-            "--header-footer",
-            type=str,
-            default=None,
-            help="Font for text in the header and footer",
+            help="Enable or disable the book gutter",
         ),
     )
     return apply_options(func, decorators)

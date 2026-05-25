@@ -21,7 +21,7 @@ import pytest
 from swift_book_pdf.pdf.latex.build import compiler
 
 if TYPE_CHECKING:
-    from swift_book_pdf.pdf.config import PDFConfig
+    from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 
 
 def test_pdf_converter_uses_package_assets_dir(
@@ -37,7 +37,9 @@ def test_pdf_converter_uses_package_assets_dir(
         compiler, "check_minted_runtime_compatibility", lambda: None
     )
 
-    converter = compiler.LuaLaTeXCompiler(cast("PDFConfig", SimpleNamespace()))
+    converter = compiler.LuaLaTeXCompiler(
+        cast("LaTeXPDFConfig", SimpleNamespace())
+    )
 
     asset_dirs = tuple(Path(path) for path in converter.local_asset_dirs)
     assert [path.name for path in asset_dirs] == [

@@ -80,16 +80,6 @@ def assert_success(result: Result) -> None:
     assert result.exit_code == 0, result.output
 
 
-def stub_pdf_font_config(monkeypatch: pytest.MonkeyPatch) -> Mock:
-    font_config = Mock()
-    monkeypatch.setattr(
-        pdf_cli_config,
-        "build_font_config",
-        Mock(return_value=font_config),
-    )
-    return font_config
-
-
 def stub_resolve_cli_build_source(
     module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> Mock:
@@ -167,11 +157,14 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     tmp_path: Path,
 ) -> None:
     fake_config = SimpleNamespace(dangerously_skip_legal_notices=True)
-    font_config = stub_pdf_font_config(monkeypatch)
     resolve_source = stub_resolve_cli_build_source(pdf_cli_config, monkeypatch)
-    pdf_config = Mock(return_value=fake_config)
+    build_pdf_config = Mock(return_value=fake_config)
     build_pdf = Mock()
-    monkeypatch.setattr(pdf_cli_config, "PDFConfig", pdf_config)
+    monkeypatch.setattr(
+        pdf_cli.DEFAULT_BACKEND,
+        "build_config",
+        build_pdf_config,
+    )
     monkeypatch.setattr(pdf_cli, "build_pdf", build_pdf)
 
     output_dir = tmp_path / "dist"
@@ -218,18 +211,22 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert source_kwargs["input_path"] == str(tmp_path / "swift-book")
     assert source_kwargs["source_ref"] == "swift-6.2-branch"
     assert source_kwargs["source_sha"] == "abc123"
-    kwargs = pdf_config.call_args.kwargs
-    assert kwargs["source"] is RESOLVED_SOURCE
-    assert kwargs["output_path"] == str(output_dir / "swift_book.pdf")
-    assert kwargs["font_config"] is font_config
-    assert kwargs["doc_config"].mode.value == "print"
-    assert kwargs["doc_config"].paper_size.value == "a4"
-    assert kwargs["doc_config"].typesets == PDF_TYPESSETS
-    assert kwargs["doc_config"].appearance.value == "dark"
-    assert kwargs["doc_config"].gutter is False
-    assert kwargs["doc_config"].font_size == PDF_FONT_SIZE
-    assert kwargs["override_version"] == "6.2 beta"
-    assert kwargs["dangerously_skip_legal_notices"] is True
+    config_input = build_pdf_config.call_args.args[0]
+    assert config_input.source is RESOLVED_SOURCE
+    assert config_input.output_path == str(output_dir / "swift_book.pdf")
+    assert config_input.backend_options["typesets"] == PDF_TYPESSETS
+    assert config_input.backend_options["main"] == "New York"
+    assert config_input.backend_options["mono"] == "Berkeley Mono"
+    assert config_input.backend_options["unicode"] == ("Noto Sans Symbols 2",)
+    assert config_input.backend_options["emoji"] == "Apple Color Emoji"
+    assert config_input.backend_options["header_footer"] == "SF Pro"
+    assert config_input.doc_config.mode.value == "print"
+    assert config_input.doc_config.paper_size.value == "a4"
+    assert config_input.doc_config.appearance.value == "dark"
+    assert config_input.doc_config.gutter is False
+    assert config_input.doc_config.font_size == PDF_FONT_SIZE
+    assert config_input.override_version == "6.2 beta"
+    assert config_input.dangerously_skip_legal_notices is True
     assert LEGAL_NOTICES_WARNING in result.output
     build_pdf.assert_called_once_with(fake_config)
 
@@ -337,7 +334,7 @@ def test_epub_command_builds_epub_config_and_calls_epub_builder(
             DirectoryOutputScenario(
                 module=pdf_cli,
                 command=pdf_cli.pdf,
-                config_name="PDFConfig",
+                config_name="",
                 builder_name="build_pdf",
                 output_dir_name="books",
                 expected_file="swift_book.pdf",
@@ -365,13 +362,18 @@ def test_directory_output_defaults_to_format_extension(
 ) -> None:
     fake_config = SimpleNamespace(dangerously_skip_legal_notices=False)
     config_mock = Mock(return_value=fake_config)
-    if scenario.module is pdf_cli:
-        stub_pdf_font_config(monkeypatch)
     config_module = (
         pdf_cli_config if scenario.module is pdf_cli else epub_cli_config
     )
     stub_resolve_cli_build_source(config_module, monkeypatch)
-    monkeypatch.setattr(config_module, scenario.config_name, config_mock)
+    if scenario.module is pdf_cli:
+        monkeypatch.setattr(
+            pdf_cli.DEFAULT_BACKEND,
+            "build_config",
+            config_mock,
+        )
+    else:
+        monkeypatch.setattr(config_module, scenario.config_name, config_mock)
     monkeypatch.setattr(scenario.module, scenario.builder_name, Mock())
 
     output_dir = tmp_path / scenario.output_dir_name
@@ -379,9 +381,14 @@ def test_directory_output_defaults_to_format_extension(
     result = runner.invoke(scenario.command, [str(output_dir)])
 
     assert_success(result)
-    assert config_mock.call_args.kwargs["output_path"] == str(
-        output_dir / scenario.expected_file
-    )
+    if scenario.module is pdf_cli:
+        assert config_mock.call_args.args[0].output_path == str(
+            output_dir / scenario.expected_file
+        )
+    else:
+        assert config_mock.call_args.kwargs["output_path"] == str(
+            output_dir / scenario.expected_file
+        )
 
 
 @pytest.mark.parametrize(
@@ -410,11 +417,8 @@ def test_directory_output_defaults_to_format_extension(
 )
 def test_input_path_rejects_revision_selection(
     runner: CliRunner,
-    monkeypatch: pytest.MonkeyPatch,
     scenario: InputPathValidationScenario,
 ) -> None:
-    if scenario.requires_pdf_font_stub:
-        stub_pdf_font_config(monkeypatch)
     result = runner.invoke(
         scenario.command,
         [

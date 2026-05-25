@@ -44,46 +44,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     # Escape literal currency/math markers from source text before we inject
     # formatter-owned LaTeX snippets that intentionally use math mode.
     text = text.replace("$", r"\$")
-
-    # Apply formatting to the rest of the text.
-    text = text.replace("→", r"\scalebox{1.2}{$\rightarrow$}")
-    text = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", text)
-    text = re.sub(r"\*(.+?)\*", r"\\emph{\1}", text)
-    text = UNDERSCORE_EMPHASIS_PATTERN.sub(r"\\emph{\1}", text)
-    text = re.sub(r"\s\\\s", r" \\\\ ", text)
-    text = re.sub(r"(?<!\\)_", r"\_", text)
-    text = re.sub(r"---", r"\\textemdash \\ ", text)
-    text = re.sub(r"--", r"\\textendash", text)
-    text = re.sub(r"\(\\\`\)", r"(\;\`\; )", text)
-    text = re.sub(
-        r"<doc:([^>#]+)#([^>]+)>",
-        lambda m: (
-            (
-                "\\fallbackrefbook{"
-                if mode == RenderingMode.PRINT
-                else "\\fallbackrefdigital{"
-            )
-            + m.group(1).lower()
-            + "_"
-            + m.group(2).lower()
-            + "}"
-        ),
-        text,
-    )
-    text = re.sub(
-        r"<doc:([^>#]+)>",
-        lambda m: (
-            (
-                "\\fallbackrefbook{"
-                if mode == RenderingMode.PRINT
-                else "\\fallbackrefdigital{"
-            )
-            + m.group(1).lower()
-            + "}"
-        ),
-        text,
-    )
-    text = re.sub(r"(?<!\\)#", r"\#", text)
+    text = _apply_text_formatting(text, mode)
 
     text = restore_markdown_links(
         text,
@@ -100,6 +61,10 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
 
 
 def _apply_non_link_formatting(text: str, mode: RenderingMode) -> str:
+    return _apply_text_formatting(text, mode)
+
+
+def _apply_text_formatting(text: str, mode: RenderingMode) -> str:
     text = text.replace("→", r"\scalebox{1.2}{$\rightarrow$}")
     text = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", text)
     text = re.sub(r"\*(.+?)\*", r"\\emph{\1}", text)
@@ -111,30 +76,24 @@ def _apply_non_link_formatting(text: str, mode: RenderingMode) -> str:
     text = re.sub(r"\(\\\`\)", r"(\;\`\; )", text)
     text = re.sub(
         r"<doc:([^>#]+)#([^>]+)>",
-        lambda m: (
-            (
-                "\\fallbackrefbook{"
-                if mode == RenderingMode.PRINT
-                else "\\fallbackrefdigital{"
-            )
-            + m.group(1).lower()
-            + "_"
-            + m.group(2).lower()
-            + "}"
+        lambda m: _format_doc_reference(
+            mode,
+            f"{m.group(1).lower()}_{m.group(2).lower()}",
         ),
         text,
     )
     text = re.sub(
         r"<doc:([^>#]+)>",
-        lambda m: (
-            (
-                "\\fallbackrefbook{"
-                if mode == RenderingMode.PRINT
-                else "\\fallbackrefdigital{"
-            )
-            + m.group(1).lower()
-            + "}"
-        ),
+        lambda m: _format_doc_reference(mode, m.group(1).lower()),
         text,
     )
     return re.sub(r"(?<!\\)#", r"\#", text)
+
+
+def _format_doc_reference(mode: RenderingMode, key: str) -> str:
+    command = (
+        "\\fallbackrefbook"
+        if mode == RenderingMode.PRINT
+        else "\\fallbackrefdigital"
+    )
+    return f"{command}{{{key}}}"

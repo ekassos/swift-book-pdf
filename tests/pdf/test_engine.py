@@ -14,20 +14,28 @@
 
 from pathlib import Path
 from types import SimpleNamespace
+from typing import cast
 
 import pytest
 
+from swift_book_pdf.config import PDFConfig
 from swift_book_pdf.pdf import engine
 
 
 def test_pdf_converter_uses_package_assets_dir(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(engine.shutil, "which", lambda name: f"/usr/bin/{name}")
-    monkeypatch.setattr(engine, "check_required_latex_packages_installed", lambda: None)
-    monkeypatch.setattr(engine, "check_minted_runtime_compatibility", lambda: None)
+    monkeypatch.setattr(
+        engine.shutil, "which", lambda name: f"/usr/bin/{name}"
+    )
+    monkeypatch.setattr(
+        engine, "check_required_latex_packages_installed", lambda: None
+    )
+    monkeypatch.setattr(
+        engine, "check_minted_runtime_compatibility", lambda: None
+    )
 
-    converter = engine.PDFConverter(SimpleNamespace())
+    converter = engine.PDFConverter(cast("PDFConfig", SimpleNamespace()))
 
     assets_dir = Path(converter.local_assets_dir)
     assert assets_dir.name == "assets"

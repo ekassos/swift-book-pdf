@@ -86,7 +86,7 @@ def render_notices_latex(
         f"{original_work_copyright} "
         "The Swift project authors are credited at "
         f"{contributors_reference}.",
-        "Swift and the Swift logo are trademarks of Apple Inc. This edition is not "
+        "Swift is a trademark of Apple Inc. This edition is not "
         "published by, endorsed by, or affiliated with Apple Inc. or the "
         "Swift.org open source project.",
     ]

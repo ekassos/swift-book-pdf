@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.
+- Remove the Swift logo from the header and footer of the generated PDF document, and remove the related `swift-logo` asset directory.
 
 ### Internal
 - Reorganize the package into shared `core`, `cli`, `pdf`, and `epub` modules, with PDF and EPUB builders owning their backend-specific CLI, config, rendering, packaging, and asset code.

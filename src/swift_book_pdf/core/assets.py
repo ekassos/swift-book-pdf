@@ -16,7 +16,7 @@
 
 from pathlib import Path
 
-ASSETS_DIR = Path(__file__).resolve().parent / "assets"
+ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 """Root directory for bundled package assets."""
 
 SWIFT_LOGO_ASSETS_DIR = ASSETS_DIR / "swift-logo"

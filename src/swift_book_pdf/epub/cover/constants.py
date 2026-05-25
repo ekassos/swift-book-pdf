@@ -14,7 +14,7 @@
 
 """Cover image and typography constants."""
 
-from swift_book_pdf.assets import EPUB_COVERS_DIR, IBM_PLEX_FONT_DIR
+from swift_book_pdf.core.assets import EPUB_COVERS_DIR, IBM_PLEX_FONT_DIR
 
 COVER_FONT_DIR = IBM_PLEX_FONT_DIR
 COVER_SANS_FONT_PATH = COVER_FONT_DIR / "IBMPlexSans-Medium.ttf"

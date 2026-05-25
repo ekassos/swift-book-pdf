@@ -19,7 +19,7 @@ from __future__ import annotations
 import shutil
 from typing import TYPE_CHECKING
 
-from swift_book_pdf.assets import EPUB_STATIC_DIR, IBM_PLEX_FONT_DIR
+from swift_book_pdf.core.assets import EPUB_STATIC_DIR, IBM_PLEX_FONT_DIR
 from swift_book_pdf.epub.paths import oebps_workspace_path
 
 if TYPE_CHECKING:

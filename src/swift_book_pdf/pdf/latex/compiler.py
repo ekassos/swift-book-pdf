@@ -19,7 +19,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from swift_book_pdf.assets import (
+from swift_book_pdf.core.assets import (
     IBM_PLEX_FONT_DIR,
     ICON_ASSETS_DIR,
     SWIFT_LOGO_ASSETS_DIR,

@@ -25,11 +25,11 @@ from swift_book_pdf.pdf.latex.blocks import convert_blocks_to_latex
 from swift_book_pdf.pdf.latex.chapter import generate_chapter_title
 
 
-class LaTeXConverter:
+class LaTeXRenderer:
     def __init__(self, config: PDFConfig) -> None:
         self.config = config
 
-    def generate_latex(self, file_path: str) -> str:
+    def render_file(self, file_path: str) -> str:
         file_name = get_file_name(file_path)
         path = Path(file_path)
         if not path.exists():

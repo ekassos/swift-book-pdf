@@ -12,6 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .converter import LaTeXConverter
-
-__all__ = ["LaTeXConverter"]
+"""LaTeX PDF engine package."""

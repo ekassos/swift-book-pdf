@@ -17,8 +17,8 @@ from swift_book_pdf.pdf.latex.inline import (
     apply_formatting,
     convert_inline_code,
 )
-from swift_book_pdf.pdf.latex.typography import get_font_size, get_spacing
 from swift_book_pdf.pdf.options import RenderingMode
+from swift_book_pdf.pdf.styling.typography import get_font_size, get_spacing
 
 
 def convert_table_block(

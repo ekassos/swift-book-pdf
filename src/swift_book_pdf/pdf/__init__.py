@@ -12,12 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__all__ = ["PDFConverter"]
-
-
-def __getattr__(name: str) -> object:
-    if name == "PDFConverter":
-        from swift_book_pdf.pdf.engine import PDFConverter
-
-        return PDFConverter
-    raise AttributeError(name)
+"""PDF build package."""

@@ -12,21 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Top-level orchestration for building PDF artifacts."""
+
 import logging
 import shutil
-from pathlib import Path
 
-from tqdm import trange
-
-from swift_book_pdf.core.generated.notices.metadata import NOTICES_DOC_KEY
 from swift_book_pdf.core.markdown import resolve_version_info
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.engine import PDFConverter
-from swift_book_pdf.pdf.latex import LaTeXConverter
-from swift_book_pdf.pdf.latex.notices import render_notices_latex
-from swift_book_pdf.pdf.latex.preamble import generate_preamble
-from swift_book_pdf.pdf.latex.toc import generate_toc_latex
+from swift_book_pdf.pdf.engine import PDFBuildContext, select_engine
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +35,8 @@ def build_pdf(config: PDFConfig) -> None:
 
 
 class PDFBookBuilder:
+    """Build a PDF by delegating engine-specific rendering and compilation."""
+
     def __init__(self, config: PDFConfig) -> None:
         self.config = config
         self.toc = TableOfContents(
@@ -50,51 +46,18 @@ class PDFBookBuilder:
             include_notices=not config.dangerously_skip_legal_notices,
         )
 
-    def process_files_in_order(
-        self,
-        converter: LaTeXConverter,
-        latex_file_path: str,
-    ) -> None:
-        latex = generate_preamble(self.config)
-        self._version_info()
-        # TODO: Use the version to generate a cover page
-        toc_latex, _ = generate_toc_latex(self.toc, converter)
-        latex += toc_latex + "\n"
-        for tag in self.toc.doc_tags:
-            if tag.lower() == NOTICES_DOC_KEY:
-                latex += render_notices_latex(
-                    self.config.doc_config.mode,
-                    self.config.original_work_copyright_year_range,
-                )
-                latex += "\n"
-                continue
-            file_path = None
-            chapter_metadata = self.toc.chapter_metadata.get(tag.lower())
-            if chapter_metadata:
-                file_path = chapter_metadata.file_path
-            if file_path:
-                latex_content = converter.generate_latex(file_path)
-                latex += latex_content + "\n"
-            else:
-                logger.warning(
-                    f"Warning: No file found for tag <doc:{tag}>, skipping...",
-                )
-        latex += r"\end{document}"
-        with Path(latex_file_path).open("w", encoding="utf-8") as f:
-            f.write(latex)
-
     def build(self) -> None:
-        converter = LaTeXConverter(self.config)
-        latex_file_path = Path(self.config.temp_dir) / "inner_content.tex"
-        self.process_files_in_order(converter, str(latex_file_path))
+        """Render and compile the configured PDF artifact."""
         logger.info(
-            f"Creating PDF in {self.config.doc_config.mode.value} ({self.config.doc_config.appearance}) mode...",
+            f"Creating PDF in {self.config.doc_config.mode.value} "
+            f"({self.config.doc_config.appearance}) mode...",
         )
-        pdf_converter = PDFConverter(self.config)
-        for _ in trange(self.config.doc_config.typesets, leave=False):
-            pdf_converter.convert_to_pdf(str(latex_file_path))
-
-        temp_pdf_path = Path(self.config.temp_dir) / "inner_content.pdf"
+        context = PDFBuildContext(
+            config=self.config,
+            toc=self.toc,
+            version_info=self._version_info(),
+        )
+        temp_pdf_path = select_engine(self.config).build(context)
         if not temp_pdf_path.exists():
             logger.error(f"PDF file not found: {temp_pdf_path}")
             return

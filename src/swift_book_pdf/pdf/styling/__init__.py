@@ -12,24 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import StrEnum
-
-
-class RenderingMode(StrEnum):
-    DIGITAL = "digital"
-    PRINT = "print"
-
-
-class Appearance(StrEnum):
-    LIGHT = "light"
-    DARK = "dark"
-
-
-class PaperSize(StrEnum):
-    A4 = "a4"
-    LETTER = "letter"
-    LEGAL = "legal"
-
-
-class EngineKind(StrEnum):
-    LATEX = "latex"
+"""Shared PDF styling helpers."""

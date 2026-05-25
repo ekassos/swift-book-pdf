@@ -16,95 +16,17 @@ import logging
 from string import Template
 
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.latex.typography import (
+from swift_book_pdf.pdf.latex.preamble.geometry import get_geometry_opts
+from swift_book_pdf.pdf.latex.preamble.patches import (
+    get_keep_whole_box_patch,
+)
+from swift_book_pdf.pdf.styling.colors import get_document_colors
+from swift_book_pdf.pdf.styling.typography import (
     compute_font_sizes,
     compute_spacing,
 )
-from swift_book_pdf.pdf.options import PaperSize
-
-from .colors import get_document_colors
 
 logger = logging.getLogger(__name__)
-
-
-def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
-    return {
-        PaperSize.A4: f"a4paper,{'inner=1.67in,outer=0.9in' if gutter else 'hmargin=1.285in'}",
-        PaperSize.LETTER: f"letterpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
-        PaperSize.LEGAL: f"legalpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
-    }.get(
-        paper_size,
-        f"letterpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
-    )
-
-
-def get_keep_whole_box_patch() -> str:
-    r"""Return the LaTeX patch that keeps short breakable boxes intact.
-
-    `tcolorbox`'s `breakable` mode decides whether to split a box based on the
-    *remaining* space on the current page. That is usually correct for long
-    prose boxes, but it produces awkward output for highlighted content near
-    the bottom of a page: a box that would fit perfectly on the next page is
-    still split immediately because the current page does not have enough room.
-
-    The Swift book looks better when styled code examples and aside notes
-    follow a stricter rule: if a box fits on a fresh page, move the entire box
-    to the next page; only boxes that are genuinely taller than a page should
-    be split. There is no public `tcolorbox` option for that exact behavior, so
-    we patch the internal split-start routine and guard the behavior behind a
-    dedicated option, `whole on next page if possible`.
-
-    The option defaults to false so the patch does not affect other breakable
-    `tcolorbox` environments. `swiftstyledbox` and `asideNote` opt into it
-    explicitly.
-    """
-    return r"""
-\makeatletter
-\newif\iftcb@wholeonnextpageifpossible
-\tcbset{
-  whole on next page if possible/.is if=tcb@wholeonnextpageifpossible,
-  whole on next page if possible/.default=true,
-  whole on next page if possible=false,
-}
-
-\def\tcb@split@start{%
-  \tcb@breakat@init%
-  \tcb@comp@h@page%
-  \tcb@comp@h@total@standalone%
-  \iftcb@wholeonnextpageifpossible%
-    \ifdim\tcb@h@total>\tcb@h@page\relax%
-      \ifdim\tcb@h@total<\dimexpr\vsize+\kvtcb@enlargepage@flex\relax%
-        \tcb@split@pagebreak%
-        \tcb@comp@h@page%
-      \fi%
-    \fi%
-  \fi%
-  \let\tcb@split@next=\relax%
-  \tcb@check@for@final@box%
-  \iftcb@final@box%
-    \tcb@drawcolorbox@standalone%
-  \else%
-    \iftcb@break@allowed%
-      \ifdim\dimexpr\tcb@h@page-\tcb@h@padding-\tcb@h@padtitle<\kvtcb@breakminlines\baselineskip\relax%
-        \tcb@split@pagebreak%
-        \tcb@comp@h@page%
-        \tcb@check@for@final@box%
-        \iftcb@final@box%
-          \tcb@drawcolorbox@standalone%
-        \else%
-          \let\tcb@split@next=\tcb@split@first%
-        \fi%
-      \else%
-        \let\tcb@split@next=\tcb@split@first%
-      \fi%
-    \else%
-      \let\tcb@split@next=\tcb@split@first%
-    \fi%
-  \fi%
-  \tcb@split@next%
-}
-\makeatother
-"""
 
 
 def generate_preamble(config: PDFConfig) -> str:

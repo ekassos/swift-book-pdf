@@ -24,7 +24,7 @@ from swift_book_pdf.core.markdown import (
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.core.source import ChapterMetadata
 from swift_book_pdf.core.source.paths import get_file_name
-from swift_book_pdf.pdf.latex import LaTeXConverter
+from swift_book_pdf.pdf.latex.renderer import LaTeXRenderer
 from swift_book_pdf.pdf.options import Appearance, RenderingMode
 
 CHAPTER_ICON_WIDTH_EM = 0.8
@@ -32,7 +32,7 @@ CHAPTER_ICON_WIDTH_EM = 0.8
 
 def generate_toc_latex(
     toc: TableOfContents,
-    converter: LaTeXConverter,
+    converter: LaTeXRenderer,
 ) -> tuple[str, str | None]:
     notices_lines = (
         build_notices_toc_lines(include_section_heading=True)

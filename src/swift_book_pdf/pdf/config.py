@@ -19,8 +19,9 @@ from typing import ClassVar
 
 from swift_book_pdf.core.config.models import BaseBuildConfig
 from swift_book_pdf.core.output import OutputFormat
-from swift_book_pdf.pdf.doc import DocConfig
-from swift_book_pdf.pdf.fonts import FontConfig
+from swift_book_pdf.pdf.latex.fonts import FontConfig
+from swift_book_pdf.pdf.layout import DocConfig
+from swift_book_pdf.pdf.options import EngineKind
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -35,6 +36,7 @@ class PDFConfig(BaseBuildConfig):
 
     font_config: FontConfig
     doc_config: DocConfig
+    engine_kind: EngineKind = EngineKind.LATEX
     override_version: str | None = None
 
     output_format: ClassVar[OutputFormat] = OutputFormat.PDF

@@ -16,8 +16,8 @@
 
 from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.pdf.config import PDFConfig
-from swift_book_pdf.pdf.doc import DocConfig
-from swift_book_pdf.pdf.fonts import FontConfig
+from swift_book_pdf.pdf.latex.fonts import FontConfig
+from swift_book_pdf.pdf.layout import DocConfig
 from swift_book_pdf.pdf.options import PaperSize, RenderingMode
 
 

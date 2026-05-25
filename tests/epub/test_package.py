@@ -285,3 +285,46 @@ def test_nav_file_escapes_titles_and_parses_as_xhtml(tmp_path: Path) -> None:
     assert "Language &amp; Runtime" in nav
     assert "Generics &lt;T&gt; &amp; Operators" in nav
     assert 'href="Basics/Operators&amp;Symbols.xhtml"' in nav
+
+
+def test_ncx_file_escapes_titles_and_parses_as_xml(tmp_path: Path) -> None:
+    config = cast(
+        "EPUBConfig",
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+        ),
+    )
+    workspace = prepare_workspace(config)
+    child = DocumentEntry(
+        key="operators",
+        title="Operators <T> & Symbols",
+        subtitle=None,
+        href="Basics/Operators&Symbols.xhtml",
+        directory="Basics",
+    )
+    parts = [
+        PartEntry(
+            title="Language & Runtime",
+            href="Basics/BasicsPart.xhtml",
+            directory="Basics",
+            children=[child],
+        )
+    ]
+
+    write_toc_ncx_file(
+        workspace,
+        "urn:uuid:test-book",
+        FrontBackMatter(None, None),
+        parts,
+        "The Swift Programming Language",
+    )
+
+    ncx = (workspace / "OEBPS" / "toc.ncx").read_text(encoding="utf-8")
+
+    ET.fromstring(ncx)  # noqa: S314 - parses generated test output
+    assert "Language &amp; Runtime" in ncx
+    assert "Operators &lt;T&gt; &amp; Symbols" in ncx
+    assert 'src="Basics/Operators&amp;Symbols.xhtml"' in ncx
+    assert 'id="navPoint1" playOrder="1"' in ncx
+    assert 'id="navPoint2" playOrder="2"' in ncx

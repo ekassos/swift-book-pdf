@@ -16,17 +16,40 @@
 
 from __future__ import annotations
 
-import html
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from swift_book_pdf.epub.constants import NCX_FILE_NAME
 from swift_book_pdf.epub.package.workspace import write_text
+from swift_book_pdf.epub.templating import render_epub_template
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from swift_book_pdf.core.document import PartEntry
     from swift_book_pdf.epub.package.nav import FrontBackMatter
+
+
+@dataclass(frozen=True)
+class NavPoint:
+    """An NCX navPoint entry."""
+
+    play_order: int
+    """One-based NCX play order."""
+
+    title: str
+    """Display title for this navPoint."""
+
+    href: str
+    """Package href for this navPoint target."""
+
+    children: tuple[NavPoint, ...] = ()
+    """Nested child navPoints."""
+
+    @property
+    def navpoint_id(self) -> str:
+        """ID derived from the NCX play order."""
+        return f"navPoint{self.play_order}"
 
 
 def write_toc_ncx_file(
@@ -45,9 +68,38 @@ def write_toc_ncx_file(
         parts: Top-level book parts and their child chapters.
         book_title: Effective title for the NCX document title.
     """
+    navpoints = _build_ncx_navpoints(front_back_matter, parts)
+    rendered = render_epub_template(
+        "toc.ncx",
+        {
+            "publication_identifier": publication_identifier,
+            "book_title": book_title,
+            "navpoints": navpoints,
+        },
+    )
+    write_text(
+        workspace,
+        NCX_FILE_NAME,
+        rendered,
+    )
+
+
+def _build_ncx_navpoints(
+    front_back_matter: FrontBackMatter,
+    parts: list[PartEntry],
+) -> tuple[NavPoint, ...]:
+    """Build top-level NCX navPoints.
+
+    Args:
+        front_back_matter: Optional generated cover and notices documents.
+        parts: Top-level book parts and their child chapter entries.
+
+    Returns:
+        Ordered NCX navPoints with stable one-based play orders.
+    """
     cover = front_back_matter.cover
     notices = front_back_matter.notices
-    part_navpoints: list[str] = []
+    navpoints: list[NavPoint] = []
     navpoint_index = 1
     if cover is not None:
         cover_navpoint, navpoint_index = _build_ncx_navpoint_tree(
@@ -55,86 +107,57 @@ def write_toc_ncx_file(
             cover.title,
             cover.href,
         )
-        part_navpoints.append(cover_navpoint)
+        navpoints.append(cover_navpoint)
     for part in parts:
         part_navpoint, navpoint_index = _build_ncx_navpoint_tree(
             navpoint_index,
             part.title,
             part.href,
-            [(child.title, child.href) for child in part.children],
+            tuple((child.title, child.href) for child in part.children),
         )
-        part_navpoints.append(part_navpoint)
+        navpoints.append(part_navpoint)
     if notices is not None:
         notices_navpoint, _ = _build_ncx_navpoint_tree(
             navpoint_index,
             notices.title,
             notices.href,
         )
-        part_navpoints.append(notices_navpoint)
-    write_text(
-        workspace,
-        NCX_FILE_NAME,
-        """<?xml version="1.0" encoding="UTF-8"?>
-<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
-  <head>
-    <meta name="dtb:uid" content=\""""
-        + html.escape(publication_identifier)
-        + """\"/>
-    <meta name="dtb:depth" content="2"/>
-    <meta name="dtb:totalPageCount" content="0"/>
-    <meta name="dtb:maxPageNumber" content="0"/>
-  </head>
-  <docTitle>
-    <text>"""
-        + html.escape(book_title)
-        + """</text>
-  </docTitle>
-  <navMap>
-"""
-        + "\n".join(part_navpoints)
-        + """
-  </navMap>
-</ncx>
-""",
-    )
+        navpoints.append(notices_navpoint)
+    return tuple(navpoints)
 
 
 def _build_ncx_navpoint_tree(
-    index: int,
+    play_order: int,
     title: str,
     href: str,
-    children: list[tuple[str, str]] | None = None,
-) -> tuple[str, int]:
-    """Render one NCX navPoint subtree and return the next play order.
+    children: tuple[tuple[str, str], ...] = (),
+) -> tuple[NavPoint, int]:
+    """Build one NCX navPoint subtree.
 
     Args:
-        index: Current one-based NCX play order.
+        play_order: Current one-based NCX play order.
         title: Display title for this navPoint.
         href: Package href for this navPoint.
         children: Optional child navPoint titles and hrefs.
 
     Returns:
-        Rendered XML for this subtree and the next available play order.
+        Built navPoint and the next available play order.
     """
-    current_index = index
-    next_index = index + 1
-    child_navpoints: list[str] = []
-    for child_title, child_href in children or []:
+    next_play_order = play_order + 1
+    child_navpoints: list[NavPoint] = []
+    for child_title, child_href in children:
         child_navpoint, next_index = _build_ncx_navpoint_tree(
-            next_index,
+            next_play_order,
             child_title,
             child_href,
         )
         child_navpoints.append(child_navpoint)
+        next_play_order = next_index
 
-    child_lines = "".join(child_navpoints)
-    navpoint = (
-        f'    <navPoint id="navPoint{current_index}" playOrder="{current_index}">\n'
-        "      <navLabel>\n"
-        f"        <text>{html.escape(title)}</text>\n"
-        "      </navLabel>\n"
-        f'      <content src="{html.escape(href)}" />\n'
-        f"{child_lines}"
-        "    </navPoint>"
+    navpoint = NavPoint(
+        play_order=play_order,
+        title=title,
+        href=href,
+        children=tuple(child_navpoints),
     )
-    return navpoint, next_index
+    return navpoint, next_play_order

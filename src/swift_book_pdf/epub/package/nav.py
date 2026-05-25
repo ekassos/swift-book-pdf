@@ -114,7 +114,7 @@ def write_nav_file(
         cover_relative_href,
     )
     rendered = render_epub_template(
-        "nav.xhtml",
+        "nav.xhtml.j2",
         {
             "toc_items": toc_items,
             "landmarks": landmarks,

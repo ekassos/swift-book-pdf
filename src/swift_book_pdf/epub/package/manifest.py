@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""OPF manifest item construction and rendering."""
+"""OPF manifest item construction."""
 
 from __future__ import annotations
 
-import html
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -36,19 +35,19 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class ManifestItem:
-    """One OPF manifest item.
-
-    Attributes:
-        item_id: Manifest `id` value.
-        href: Package-relative item href.
-        media_type: Manifest media-type value.
-        properties: Optional OPF item properties.
-    """
+    """One OPF manifest item."""
 
     item_id: str
+    """Manifest `id` value."""
+
     href: str
+    """Package-relative item href."""
+
     media_type: str
+    """Manifest media-type value."""
+
     properties: str | None = None
+    """Optional OPF item properties."""
 
 
 def build_manifest_items(package_input: OPFPackageInput) -> list[ManifestItem]:
@@ -86,18 +85,6 @@ def build_manifest_items(package_input: OPFPackageInput) -> list[ManifestItem]:
             )
         )
     return manifest
-
-
-def render_manifest_items(items: list[ManifestItem]) -> str:
-    """Render OPF manifest items as XML lines.
-
-    Args:
-        items: Manifest items in package order.
-
-    Returns:
-        Newline-joined XML `<item>` elements.
-    """
-    return "\n".join(_format_manifest_item(item) for item in items)
 
 
 def _document_manifest_items(
@@ -172,24 +159,3 @@ def _static_manifest_items() -> list[ManifestItem]:
         for index, font_file_name in enumerate(EPUB_FONT_FILE_NAMES)
     )
     return manifest
-
-
-def _format_manifest_item(item: ManifestItem) -> str:
-    """Render one OPF manifest item as XML.
-
-    Args:
-        item: Manifest item to render.
-
-    Returns:
-        Escaped OPF `<item>` element.
-    """
-    properties = (
-        f' properties="{html.escape(item.properties)}"'
-        if item.properties is not None
-        else ""
-    )
-    return (
-        f'    <item id="{html.escape(item.item_id)}"'
-        f' href="{html.escape(item.href)}"'
-        f' media-type="{html.escape(item.media_type)}"{properties} />'
-    )

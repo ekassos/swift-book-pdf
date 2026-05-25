@@ -112,6 +112,54 @@ def test_content_opf_omits_ibooks_version_metadata_by_default(
     assert 'property="ibooks:version"' not in content_opf
 
 
+def test_content_opf_escapes_package_data_and_parses_as_xml(
+    tmp_path: Path,
+) -> None:
+    config = cast(
+        "EPUBConfig",
+        SimpleNamespace(
+            temp_dir=str(tmp_path),
+            output_path=str(tmp_path / "swift_book.epub"),
+            publisher="Swift & Friends",
+            contributor="Docs <Team>",
+            ibooks_version="6 & 7",
+        ),
+    )
+    workspace = prepare_workspace(config)
+    document = DocumentEntry(
+        key="operators",
+        title="Operators",
+        subtitle=None,
+        href="Basics/Operators&Symbols.xhtml",
+        directory="Basics",
+    )
+
+    write_content_opf_file(
+        workspace,
+        OPFPackageInput(
+            config=config,
+            book_title="Swift <Guide> & Reference",
+            documents=[document],
+            image_assets={},
+            publication_identifier="urn:uuid:test&book",
+            has_cover_asset=True,
+        ),
+    )
+
+    content_opf = (workspace / "OEBPS" / "content.opf").read_text(
+        encoding="utf-8"
+    )
+
+    ET.fromstring(content_opf)  # noqa: S314 - parses generated test output
+    assert "Swift &lt;Guide&gt; &amp; Reference" in content_opf
+    assert "Swift &amp; Friends" in content_opf
+    assert "Docs &lt;Team&gt;" in content_opf
+    assert "urn:uuid:test&amp;book" in content_opf
+    assert 'href="Basics/Operators&amp;Symbols.xhtml"' in content_opf
+    assert '<meta property="ibooks:version">6 &amp; 7</meta>' in content_opf
+    assert '<meta name="cover" content="epub-cover"/>' in content_opf
+
+
 def test_content_opf_marks_cover_document_as_svg(
     tmp_path: Path,
 ) -> None:

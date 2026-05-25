@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" xml:lang="en"
+ prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/"
+ xmlns:epub="http://www.idpf.org/2007/ops"
+ xmlns:ibooks="http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/"
+ unique-identifier="{{ metadata.identifier_id }}">
+  <metadata xmlns:opf="http://www.idpf.org/2007/opf"
+        xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:language>{{ metadata.language }}</dc:language>
+    <dc:title>{{ metadata.book_title }}</dc:title>
+    <dc:creator>{{ metadata.creator }}</dc:creator>
+{% if metadata.publisher is not none %}
+    <dc:publisher>{{ metadata.publisher }}</dc:publisher>
+{% endif %}
+{% if metadata.contributor is not none %}
+    <dc:contributor>{{ metadata.contributor }}</dc:contributor>
+{% endif %}
+    <dc:identifier id="{{ metadata.identifier_id }}">{{ metadata.publication_identifier }}</dc:identifier>
+{% if metadata.ibooks_version is not none %}
+    <meta property="ibooks:version">{{ metadata.ibooks_version }}</meta>
+{% endif %}
+    <meta property="dcterms:modified">{{ metadata.modified }}</meta>
+    <meta property="ibooks:specified-fonts">true</meta>
+{% if metadata.has_cover_asset %}
+    <meta name="cover" content="epub-cover"/>
+{% endif %}
+  </metadata>
+  <manifest>
+{% for item in manifest_items %}
+    <item id="{{ item.item_id }}" href="{{ item.href }}" media-type="{{ item.media_type }}"{% if item.properties is not none %} properties="{{ item.properties }}"{% endif %} />
+{% endfor %}
+  </manifest>
+  <spine toc="ncx" page-progression-direction="ltr">
+{% for item in spine_items %}
+    <itemref idref="{{ item.idref }}" />
+{% endfor %}
+  </spine>
+</package>

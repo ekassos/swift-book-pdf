@@ -70,7 +70,7 @@ def write_toc_ncx_file(
     """
     navpoints = _build_ncx_navpoints(front_back_matter, parts)
     rendered = render_epub_template(
-        "toc.ncx",
+        "toc.ncx.j2",
         {
             "publication_identifier": publication_identifier,
             "book_title": book_title,

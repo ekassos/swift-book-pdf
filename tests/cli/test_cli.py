@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
+from typing import Any
 from unittest.mock import Mock
 
 import click
@@ -181,7 +182,7 @@ def test_pygments_lexer_entry_points_load() -> None:
         assert getattr(module, attribute_name) is not None
 
 
-def _load_pyproject_config() -> dict[str, object]:
+def _load_pyproject_config() -> dict[str, Any]:
     toml = (
         import_module("tomllib")
         if sys.version_info >= (3, 11)

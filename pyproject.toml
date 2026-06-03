@@ -88,3 +88,6 @@ addopts = ["--import-mode=importlib"]
 strict_config = true
 strict_markers = true
 testpaths = ["tests"]
+markers = [
+    "external_corpus: networked drift test against swift-book, swift-docc-render, and latest highlight.js",
+]

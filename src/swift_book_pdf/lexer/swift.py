@@ -709,7 +709,7 @@ class SwiftLexer(Lexer):
     """
 
     name = "Swift"
-    aliases: ClassVar[list[str]] = ["swift"]
+    aliases: ClassVar[list[str]] = ["swift-book-swift"]
     filenames: ClassVar[list[str]] = ["*.swift"]
     mimetypes: ClassVar[list[str]] = ["text/x-swift"]
 

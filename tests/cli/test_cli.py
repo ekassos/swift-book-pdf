@@ -160,13 +160,7 @@ def test_command_help_exposes_only_relevant_options(
 
 
 def test_pygments_style_entry_points_load() -> None:
-    if sys.version_info >= (3, 11):
-        import tomllib
-    else:
-        tomllib = pytest.importorskip("tomli")
-
-    pyproject = Path(__file__).parents[2] / "pyproject.toml"
-    project_config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    project_config = _load_pyproject_config()
     entry_points = project_config["project"]["entry-points"]["pygments.styles"]
 
     for entry_point in entry_points.values():
@@ -174,6 +168,28 @@ def test_pygments_style_entry_points_load() -> None:
         module = import_module(module_name)
 
         assert getattr(module, attribute_name) is not None
+
+
+def test_pygments_lexer_entry_points_load() -> None:
+    project_config = _load_pyproject_config()
+    entry_points = project_config["project"]["entry-points"]["pygments.lexers"]
+
+    for entry_point in entry_points.values():
+        module_name, attribute_name = entry_point.split(":", maxsplit=1)
+        module = import_module(module_name)
+
+        assert getattr(module, attribute_name) is not None
+
+
+def _load_pyproject_config() -> dict[str, object]:
+    toml = (
+        import_module("tomllib")
+        if sys.version_info >= (3, 11)
+        else pytest.importorskip("tomli")
+    )
+
+    pyproject = Path(__file__).parents[2] / "pyproject.toml"
+    return toml.loads(pyproject.read_text(encoding="utf-8"))
 
 
 def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(

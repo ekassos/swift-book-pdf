@@ -21,7 +21,7 @@ import re
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import SwiftLexer
+from pygments.lexers import get_lexer_by_name
 
 WRAPPING_PLACEHOLDER_MIN_LENGTH = 28
 CODE_PLACEHOLDER_PATTERN = re.compile(r"<#(.*?)#>")
@@ -47,7 +47,7 @@ def render_code_block(code_lines: list[str]) -> str:
     else:
         highlighted_lines = highlight(
             "\n".join(code_lines),
-            SwiftLexer(),
+            get_lexer_by_name("swift-book-swift"),
             HtmlFormatter(nowrap=True),
         ).splitlines()
     if not highlighted_lines:
@@ -132,5 +132,7 @@ def _highlight_swift_fragment(fragment: str) -> str:
         Pygments-generated inline XHTML with trailing newlines removed.
     """
     return highlight(
-        fragment, SwiftLexer(), HtmlFormatter(nowrap=True)
+        fragment,
+        get_lexer_by_name("swift-book-swift"),
+        HtmlFormatter(nowrap=True),
     ).rstrip("\n")

@@ -14,6 +14,10 @@
 
 from pathlib import Path
 
+import pytest
+from pygments.lexer import Lexer
+from pygments.token import Text
+
 from swift_book_pdf.core.document import DocumentEntry
 from swift_book_pdf.epub.cover.svg import (
     CoverPageOptions,
@@ -24,6 +28,7 @@ from swift_book_pdf.epub.cover.svg import (
 )
 from swift_book_pdf.epub.render import (
     LinkResolver,
+    code_blocks,
     normalize_prose_punctuation,
     render_inline,
 )
@@ -79,6 +84,28 @@ def test_render_inline_supports_code_inside_markdown_link_labels() -> None:
         '<a href="https://example.com">'
         '<code class="inline-code">Array</code></a>' in rendered
     )
+
+
+def test_render_code_block_uses_project_swift_lexer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    requested_lexers = []
+
+    class StubLexer(Lexer):
+        def get_tokens_unprocessed(
+            self, text: str
+        ) -> list[tuple[int, Text, str]]:
+            return [(0, Text, text)]
+
+    def get_stub_lexer(alias: str) -> StubLexer:
+        requested_lexers.append(alias)
+        return StubLexer()
+
+    monkeypatch.setattr(code_blocks, "get_lexer_by_name", get_stub_lexer)
+
+    code_blocks.render_code_block(["let x = 1"])
+
+    assert requested_lexers == ["swift-book-swift"]
 
 
 def test_render_cover_text_emits_configured_letter_spacing() -> None:

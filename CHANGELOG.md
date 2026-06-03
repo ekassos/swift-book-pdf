@@ -9,12 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - When `--cover-footer-line` is omitted, render the `--contributor` value (if any) as a "Compiled by:" credit on the inner cover.
 - Bundle IBM Plex Sans and IBM Plex Serif with the EPUB so cover text and front matter render consistently across reading environments, regardless of host-installed fonts.
+- Add a project-owned `swift-book-swift` Pygments lexer for Swift code highlighting, derived from the Highlight.js Swift grammar and registered for both Python and minted/PDF use.
 
 ### Changed
 - Redesign generated EPUB cover artwork and rendered cover text for release and beta editions, with new templates, edition-specific colors, and adjusted version-label spacing and positioning.
 - Redesign the EPUB inner cover with a new typographic layout that uses the bundled IBM Plex fonts, edition-specific accent colors, and a redesigned banner.
 - Make the inner-cover banner unconditional and default its text to `RELEASE VERSION` or `BETA VERSION` based on the resolved edition; `--cover-banner-text` now overrides the label and `--cover-banner-color` defaults to the edition's accent color.
 - Refresh the trademark wording in the generated notices page and acknowledge the bundled IBM Plex fonts under the SIL Open Font License 1.1, including the full OFL text.
+- Render Swift code blocks in generated PDF and EPUB output with the new `swift-book-swift` lexer for syntax highlighting that more closely matches Swift Book examples and Highlight.js behavior.
+- Add syntax colors for inserted and deleted code tokens in the generated PDF light and dark code styles.
+- Add Highlight.js attribution and BSD 3-Clause license text to the third-party notices.
 
 ### Fixed
 - Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.
@@ -29,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Split EPUB generation into focused cover, rendering, structure, package, and templating modules, including Jinja2-backed OPF, NCX, navigation, and notices templates.
 - Centralize bundled asset paths and move covers, fonts, icons, notices, and Swift logo assets into domain-specific asset directories.
 - Expand focused test coverage for CLI wiring, PDF config and engine behavior, LaTeX font handling, EPUB package generation, cover variants, notices, Markdown transforms, and rendered output.
+- Add Swift lexer fixture coverage for attributes, availability annotations, declarations, keywords, numbers, operators, ownership modifiers, regex literals, strings, SwiftUI snippets, tuples, and type definitions.
+- Add an external Swift Book corpus parity test against the latest Highlight.js Swift grammar in CI.
 
 ## [2.6.0] - 2026-04-22
 ### Added

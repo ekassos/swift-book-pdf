@@ -20,6 +20,7 @@ from pygments.style import Style
 from pygments.token import (
     Comment,
     Error,
+    Generic,
     Keyword,
     Name,
     Number,
@@ -54,6 +55,8 @@ class CustomSwiftBookStyle(Style):
         Punctuation: "#000",
         Comment: "#707f8c",  # --color-syntax-comments
         Comment.Special: "#506375",  # --color-syntax-documentation-markup-keywords
+        Generic.Inserted: "#008000",  # --color-syntax-addition
+        Generic.Deleted: "#ff0000",  # --color-syntax-deletion
     }
 
 
@@ -81,4 +84,6 @@ class CustomSwiftBookDarkStyle(Style):
         Punctuation: "#fff",
         Comment: "#7f8c98",  # --color-syntax-comments
         Comment.Special: "#a3b1bf",  # --color-syntax-documentation-markup-keywords
+        Generic.Inserted: "#009900",  # --color-syntax-addition
+        Generic.Deleted: "#ff3333",  # --color-syntax-deletion
     }

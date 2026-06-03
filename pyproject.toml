@@ -35,6 +35,9 @@ swift_book_epub = "swift_book_pdf.epub.cli.command:epub"
 swift_book_style = "swift_book_pdf.pdf.latex.preamble.styles:CustomSwiftBookStyle"
 swift_book_dark_style = "swift_book_pdf.pdf.latex.preamble.styles:CustomSwiftBookDarkStyle"
 
+[project.entry-points."pygments.lexers"]
+swift_book_swift = "swift_book_pdf.lexer.swift:SwiftLexer"
+
 [dependency-groups]
 dev = [
     "filelock>=3.25.2,<4.0.0",
@@ -88,3 +91,6 @@ addopts = ["--import-mode=importlib"]
 strict_config = true
 strict_markers = true
 testpaths = ["tests"]
+markers = [
+    "external_corpus: networked drift test against swift-book, swift-docc-render, and latest highlight.js",
+]

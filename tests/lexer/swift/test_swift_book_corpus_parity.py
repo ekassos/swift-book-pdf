@@ -27,7 +27,9 @@ from typing import TYPE_CHECKING, Literal
 import pytest
 
 from swift_book_pdf.lexer import highlight_swift
-from swift_book_pdf.lexer.swift import SwiftLexer
+from swift_book_pdf.lexer.docc import build_docc_render_language
+from swift_book_pdf.lexer.engine import Node, highlight
+from swift_book_pdf.lexer.swift import _SCOPE_TO_TOKEN, SwiftLexer
 from swift_book_pdf.pdf.latex.preamble.styles import (
     CustomSwiftBookDarkStyle,
     CustomSwiftBookStyle,
@@ -84,12 +86,13 @@ class HighlightResult:
 
 @dataclass(frozen=True)
 class CorpusEnvironment:
-    """External repositories and latest highlight.js installation."""
+    """External repositories and the pinned highlight.js installation."""
 
     swift_book: Path
     swift_docc_render: Path
     node_package: Path
     node: str
+    highlightjs_version: str
 
 
 @pytest.fixture(scope="module")
@@ -117,25 +120,33 @@ def corpus_environment(
         destination=tmp_path / "swift-docc-render",
         git=git,
     )
-    node_package = _install_latest_highlight_js(tmp_path / "node", npm)
+    highlightjs_version = _swift_docc_render_highlightjs_version(
+        swift_docc_render
+    )
+    node_package = _install_highlight_js(
+        tmp_path / "node", npm, highlightjs_version
+    )
+    _write_swift_docc_render_override(swift_docc_render, node_package)
     return CorpusEnvironment(
         swift_book=swift_book,
         swift_docc_render=swift_docc_render,
         node_package=node_package,
         node=node,
+        highlightjs_version=highlightjs_version,
     )
 
 
-def test_swift_book_corpus_matches_latest_highlightjs_html(
+def test_swift_book_corpus_matches_swift_docc_render_html(
     corpus_environment: CorpusEnvironment,
 ) -> None:
-    """Verify the ported lexer emits the same HTML as latest highlight.js."""
+    """Verify HTML spans match Swift-DocC-Render's custom Swift highlighter."""
     blocks = _extract_swift_code_blocks(corpus_environment.swift_book)
-    highlightjs = _highlight_with_latest_highlightjs(
+    highlightjs = _highlight_with_highlightjs(
         corpus_environment,
         [block.code for block in blocks],
         class_prefix=None,
     )
+    assert highlightjs.version == corpus_environment.highlightjs_version
 
     mismatches: list[dict[str, object]] = []
     for index, (block, expected) in enumerate(
@@ -148,10 +159,44 @@ def test_swift_book_corpus_matches_latest_highlightjs_html(
             )
 
     assert mismatches == [], (
-        f"Latest highlight.js {highlightjs.version} differed from the "
-        f"ported lexer for {len(mismatches)} of {len(blocks)} Swift Book "
-        f"blocks:\n{json.dumps(mismatches[:5], indent=2)}"
+        f"highlight.js {highlightjs.version} plus swift-docc-render's "
+        f"Swift override differed from highlight_swift for "
+        f"{len(mismatches)} of {len(blocks)} Swift Book blocks:\n"
+        f"{json.dumps(mismatches[:5], indent=2)}"
     )
+
+
+def test_swift_book_corpus_token_scopes_are_mapped(
+    corpus_environment: CorpusEnvironment,
+) -> None:
+    """Verify every relevant DocC Swift token scope has a Pygments mapping."""
+    blocks = _extract_swift_code_blocks(corpus_environment.swift_book)
+    emitted_scopes = _emitted_scope_roots(blocks)
+    docc_theme = _load_docc_syntax_theme(corpus_environment.swift_docc_render)
+    docc_tokens = set(docc_theme["token_colors"])
+
+    missing_emitted_mappings = sorted(emitted_scopes - set(_SCOPE_TO_TOKEN))
+    missing_docc_mappings = sorted(docc_tokens - set(_SCOPE_TO_TOKEN))
+    assert missing_emitted_mappings == []
+    assert missing_docc_mappings == []
+
+    plain_fallback_scopes = emitted_scopes - docc_tokens
+    plain_fallback_colors = {
+        scope: {
+            "light": _style_color(
+                CustomSwiftBookStyle, _SCOPE_TO_TOKEN[scope]
+            ),
+            "dark": _style_color(
+                CustomSwiftBookDarkStyle, _SCOPE_TO_TOKEN[scope]
+            ),
+        }
+        for scope in sorted(plain_fallback_scopes)
+    }
+    assert plain_fallback_colors == {
+        "operator": {"light": "000000", "dark": "ffffff"},
+        "regexp": {"light": "000000", "dark": "ffffff"},
+        "variable": {"light": "000000", "dark": "ffffff"},
+    }
 
 
 def test_swift_book_corpus_matches_swift_docc_render_colors(
@@ -160,11 +205,12 @@ def test_swift_book_corpus_matches_swift_docc_render_colors(
     """Verify the Pygments adapter keeps current DocC syntax colors."""
     blocks = _extract_swift_code_blocks(corpus_environment.swift_book)
     docc_theme = _load_docc_syntax_theme(corpus_environment.swift_docc_render)
-    highlightjs = _highlight_with_latest_highlightjs(
+    highlightjs = _highlight_with_highlightjs(
         corpus_environment,
         [block.code for block in blocks],
         class_prefix="syntax-",
     )
+    assert highlightjs.version == corpus_environment.highlightjs_version
 
     for appearance, style in (
         ("light", CustomSwiftBookStyle),
@@ -189,7 +235,7 @@ def test_swift_book_corpus_matches_swift_docc_render_colors(
         )
 
         assert mismatches == [], (
-            f"Latest highlight.js {highlightjs.version} plus current "
+            f"highlight.js {highlightjs.version} plus current "
             f"swift-docc-render syntax colors differed from the {appearance} "
             f"Pygments adapter for {len(mismatches)} of {len(blocks)} Swift "
             f"Book blocks:\n{json.dumps(mismatches[:5], indent=2)}"
@@ -226,7 +272,24 @@ def _resolve_or_clone_repo(
     return destination
 
 
-def _install_latest_highlight_js(destination: Path, npm: str) -> Path:
+def _swift_docc_render_highlightjs_version(swift_docc_render: Path) -> str:
+    lock = swift_docc_render / "package-lock.json"
+    if lock.exists():
+        data = json.loads(lock.read_text(encoding="utf-8"))
+        package = data.get("packages", {}).get("node_modules/highlight.js", {})
+        if package.get("version"):
+            return package["version"]
+        dependency = data.get("dependencies", {}).get("highlight.js", {})
+        if dependency.get("version"):
+            return dependency["version"]
+    pytest.fail(
+        f"Could not determine the highlight.js version Swift-DocC-Render "
+        f"uses from {lock}"
+    )
+    raise AssertionError("unreachable")
+
+
+def _install_highlight_js(destination: Path, npm: str, version: str) -> Path:
     destination.mkdir()
     subprocess.run(  # noqa: S603
         [npm, "init", "-y"],
@@ -235,12 +298,50 @@ def _install_latest_highlight_js(destination: Path, npm: str) -> Path:
         stdout=subprocess.DEVNULL,
     )
     subprocess.run(  # noqa: S603
-        [npm, "install", "highlight.js@latest", "--no-audit", "--no-fund"],
+        [
+            npm,
+            "install",
+            f"highlight.js@{version}",
+            "--no-audit",
+            "--no-fund",
+        ],
         cwd=destination,
         check=True,
         stdout=subprocess.DEVNULL,
     )
     return destination
+
+
+def _write_swift_docc_render_override(
+    swift_docc_render: Path, node_package: Path
+) -> None:
+    """Stage Swift-DocC-Render's Swift override as a CommonJS module.
+
+    Args:
+        swift_docc_render: Resolved Swift-DocC-Render checkout.
+        node_package: Directory holding the pinned highlight.js install.
+    """
+    source = swift_docc_render / "src/utils/custom-highlight-lang/swift.js"
+    if not source.exists():
+        pytest.fail(f"Missing Swift-DocC-Render Swift override: {source}")
+    text = source.read_text(encoding="utf-8")
+    import_line = "import swift from 'highlight.js/lib/languages/swift';"
+    export_line = "export default function swiftOverride(hljs) {"
+    if import_line not in text or export_line not in text:
+        pytest.fail(
+            "Swift-DocC-Render Swift override no longer matches the expected "
+            "ES module shape; update the CommonJS rewrite."
+        )
+    commonjs = text.replace(
+        import_line,
+        "const swift = require('highlight.js/lib/languages/swift');",
+    ).replace(
+        export_line,
+        "module.exports = function swiftOverride(hljs) {",
+    )
+    (node_package / "swift-override.cjs").write_text(
+        commonjs, encoding="utf-8"
+    )
 
 
 def _extract_swift_code_blocks(swift_book: Path) -> list[CodeBlock]:
@@ -285,13 +386,15 @@ def _extract_swift_code_blocks(swift_book: Path) -> list[CodeBlock]:
     return blocks
 
 
-def _highlight_with_latest_highlightjs(
+def _highlight_with_highlightjs(
     corpus_environment: CorpusEnvironment,
     code_blocks: list[str],
+    *,
     class_prefix: str | None,
 ) -> HighlightResult:
     script = f"""
-const hljs = require("highlight.js");
+const hljs = require("highlight.js/lib/core");
+hljs.registerLanguage("swift", require("./swift-override.cjs"));
 const classPrefix = {json.dumps(class_prefix)};
 if (classPrefix !== null) {{
   hljs.configure({{ classPrefix }});
@@ -323,6 +426,24 @@ process.stdin.on("end", () => {{
         version=payload["version"],
         html=list(payload["html"]),
     )
+
+
+def _emitted_scope_roots(blocks: list[CodeBlock]) -> set[str]:
+    language = build_docc_render_language()
+    scopes: set[str] = set()
+    for block in blocks:
+        emitter = highlight(language, block.code)
+        _collect_scope_roots(emitter.root, scopes)
+    return scopes
+
+
+def _collect_scope_roots(node: Node | str, scopes: set[str]) -> None:
+    if isinstance(node, str):
+        return
+    if node.scope:
+        scopes.add(node.scope.split(".")[0])
+    for child in node.children:
+        _collect_scope_roots(child, scopes)
 
 
 def _load_docc_syntax_theme(

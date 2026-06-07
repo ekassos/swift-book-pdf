@@ -40,6 +40,7 @@ from swift_book_pdf.pdf.cli.options import (
     pdf_appearance_options,
     pdf_document_options,
     pdf_gutter_option,
+    pdf_output_options,
     pdf_typography_options,
 )
 from swift_book_pdf.pdf.config import EngineKind
@@ -48,6 +49,7 @@ from swift_book_pdf.pdf.config import EngineKind
 @click.command(name="swift-book-pdf", help="")
 @output_path_argument
 @pdf_document_options
+@pdf_output_options
 @apply_backend_build_options
 @override_version_option
 @apply_backend_command_options
@@ -67,6 +69,7 @@ def pdf(  # noqa: PLR0913
     output_path: str,
     mode: str,
     paper: str,
+    save_tex: bool,
     engine: str,
     override_version: str | None,
     font_size: float | None,
@@ -85,6 +88,7 @@ def pdf(  # noqa: PLR0913
         output_path: User-provided output path.
         mode: Rendering mode option value.
         paper: Paper size option value.
+        save_tex: Whether to save LaTeX source instead of compiling a PDF.
         engine: PDF rendering engine option value.
         override_version: Optional Swift version override.
         font_size: Optional base paragraph font size.
@@ -109,11 +113,12 @@ def pdf(  # noqa: PLR0913
     run_build(
         verbose=verbose,
         output_path=output_path,
-        output_format=OutputFormat.PDF,
+        output_format=OutputFormat.TEX if save_tex else OutputFormat.PDF,
         config_builder=partial(
             pdf_config.build_pdf_config,
             backend=backend,
             doc_config=doc_config,
+            save_tex=save_tex,
             backend_options=backend_options,
             override_version=override_version,
             source_ref=source_ref,

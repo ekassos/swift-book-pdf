@@ -62,6 +62,25 @@ def pdf_document_options(func: OptionTarget) -> OptionTarget:
     return apply_options(func, decorators)
 
 
+def pdf_output_options(func: OptionTarget) -> OptionTarget:
+    """Add PDF output artifact options to the command callback.
+
+    Args:
+        func: Click command callback to decorate.
+
+    Returns:
+        Decorated command callback.
+    """
+    decorators = (
+        click.option(
+            "--save-tex",
+            is_flag=True,
+            help="Save the generated LaTeX source instead of compiling a PDF",
+        ),
+    )
+    return apply_options(func, decorators)
+
+
 def pdf_typography_options(func: OptionTarget) -> OptionTarget:
     """Add PDF typography options to the command callback.
 

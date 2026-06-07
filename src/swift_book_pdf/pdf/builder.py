@@ -32,9 +32,9 @@ def build_pdf(config: PDFConfig) -> None:
 
     Raises:
         FileNotFoundError: If the selected engine does not produce the
-            expected temporary PDF.
-        RuntimeError: If the generated PDF cannot be moved to the requested
-            output path.
+            expected temporary artifact.
+        RuntimeError: If the generated artifact cannot be moved to the
+            requested output path.
     """
     toc = TableOfContents(
         config.root_dir,
@@ -43,21 +43,24 @@ def build_pdf(config: PDFConfig) -> None:
         include_notices=not config.dangerously_skip_legal_notices,
     )
     doc_config = config.doc_config
+    artifact_label = "TeX" if config.save_tex else "PDF"
     logger.info(
-        f"Creating PDF in {doc_config.mode.value} "
+        f"Creating {artifact_label} in {doc_config.mode.value} "
         f"({doc_config.appearance}) mode...",
     )
     logger.debug(f"\n{config.diagnostic_details()}")
-    temp_pdf_path = select_engine(config).build(
+    temp_artifact_path = select_engine(config).build(
         PDFBuildContext(config=config, toc=toc)
     )
-    if not temp_pdf_path.exists():
-        raise FileNotFoundError(f"PDF file not found: {temp_pdf_path}")
+    if not temp_artifact_path.exists():
+        raise FileNotFoundError(
+            f"{artifact_label} file not found: {temp_artifact_path}"
+        )
 
     try:
-        shutil.move(str(temp_pdf_path), config.output_path)
-        logger.info(f"PDF saved to {config.output_path}")
+        shutil.move(str(temp_artifact_path), config.output_path)
+        logger.info(f"{artifact_label} saved to {config.output_path}")
     except (OSError, shutil.Error) as e:
         raise RuntimeError(
-            f"Failed to save PDF to {config.output_path}"
+            f"Failed to save {artifact_label} to {config.output_path}"
         ) from e

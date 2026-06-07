@@ -25,3 +25,6 @@ class OutputFormat(StrEnum):
 
     EPUB = "epub"
     """Generate an EPUB artifact."""
+
+    TEX = "tex"
+    """Generate a LaTeX source artifact."""

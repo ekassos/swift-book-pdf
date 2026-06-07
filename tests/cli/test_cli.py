@@ -269,9 +269,37 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert config_input.doc_config.appearance.value == "dark"
     assert config_input.doc_config.gutter is False
     assert config_input.doc_config.font_size == PDF_FONT_SIZE
+    assert config_input.save_tex is False
     assert config_input.override_version == "6.2 beta"
     assert config_input.dangerously_skip_legal_notices is True
     assert LEGAL_NOTICES_WARNING in result.output
+    build_pdf.assert_called_once_with(fake_config)
+
+
+def test_pdf_command_can_save_tex_instead_of_pdf(
+    runner: CliRunner,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_config = SimpleNamespace(dangerously_skip_legal_notices=False)
+    stub_resolve_cli_build_source(pdf_cli_config, monkeypatch)
+    build_pdf_config = Mock(return_value=fake_config)
+    build_pdf = Mock()
+    monkeypatch.setattr(
+        pdf_cli_backends.select_backend_for_cli(EngineKind.LATEX),
+        "build_config",
+        build_pdf_config,
+    )
+    monkeypatch.setattr(pdf_cli, "build_pdf", build_pdf)
+
+    output_dir = tmp_path / "dist"
+    output_dir.mkdir()
+    result = runner.invoke(pdf_cli.pdf, [str(output_dir), "--save-tex"])
+
+    assert_success(result)
+    config_input = build_pdf_config.call_args.args[0]
+    assert config_input.output_path == str(output_dir / "swift_book.tex")
+    assert config_input.save_tex is True
     build_pdf.assert_called_once_with(fake_config)
 
 

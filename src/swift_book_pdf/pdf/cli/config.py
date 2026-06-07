@@ -65,6 +65,7 @@ def build_pdf_config(  # noqa: PLR0913
     *,
     backend: PDFBackend,
     doc_config: PDFDocumentConfig,
+    save_tex: bool,
     backend_options: Mapping[str, Any],
     override_version: str | None,
     source_ref: str | None,
@@ -79,6 +80,7 @@ def build_pdf_config(  # noqa: PLR0913
         output_path: Validated PDF output path.
         backend: PDF backend adapter.
         doc_config: PDF document layout configuration.
+        save_tex: Whether to save LaTeX source instead of compiling a PDF.
         backend_options: Backend-specific CLI option values.
         override_version: Optional Swift version override.
         source_ref: Optional Swift Book Git ref.
@@ -101,6 +103,7 @@ def build_pdf_config(  # noqa: PLR0913
             output_path=output_path,
             dangerously_skip_legal_notices=dangerously_skip_legal_notices,
             doc_config=doc_config,
+            save_tex=save_tex,
             override_version=override_version,
             backend_options=backend_options,
         )

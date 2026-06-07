@@ -34,13 +34,13 @@ class LaTeXEngine:
     """Render Swift Book Markdown to LaTeX and compile it to PDF."""
 
     def build(self, context: PDFBuildContext) -> Path:
-        """Build the temporary PDF for a LaTeX-backed PDF build.
+        """Build the temporary artifact for a LaTeX-backed PDF build.
 
         Args:
             context: Shared PDF build inputs.
 
         Returns:
-            Path to the generated temporary PDF.
+            Path to the generated temporary artifact.
         """
         config = _require_latex_config(context.config)
         latex_file_path = Path(config.temp_dir) / "inner_content.tex"
@@ -50,6 +50,9 @@ class LaTeXEngine:
             LaTeXRenderer(config),
             latex_file_path,
         )
+
+        if config.save_tex:
+            return latex_file_path
 
         compiler = LuaLaTeXCompiler(config)
         for _ in trange(config.latex_config.typesets, leave=False):

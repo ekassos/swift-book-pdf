@@ -120,6 +120,9 @@ class PDFConfig(BaseBuildConfig, ABC):
     doc_config: PDFDocumentConfig
     """PDF document layout configuration."""
 
+    save_tex: bool = False
+    """Whether to save LaTeX source instead of compiling a PDF."""
+
     engine_kind: EngineKind
     """PDF engine implementation."""
 
@@ -143,6 +146,7 @@ class PDFConfig(BaseBuildConfig, ABC):
                 f"Appearance: {doc_config.appearance}",
                 f"Book Gutter: {doc_config.gutter}",
                 f"Font size: {doc_config.font_size}pt",
+                f"Build target: {'tex' if self.save_tex else 'pdf'}",
             ]
         )
 

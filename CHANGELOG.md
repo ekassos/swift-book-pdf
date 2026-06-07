@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When `--cover-footer-line` is omitted, render the `--contributor` value (if any) as a "Compiled by:" credit on the inner cover.
 - Bundle IBM Plex Sans and IBM Plex Serif with the EPUB so cover text and front matter render consistently across reading environments, regardless of host-installed fonts.
 - Add a project-owned `swift-book-swift` Pygments lexer for Swift code highlighting, derived from the Highlight.js Swift grammar and registered for both Python and minted/PDF use.
+- Add new `--save-tex` flag to `swift-book-pdf` to save the generated LaTeX source instead of compiling a PDF.
 
 ### Changed
 - Redesign generated EPUB cover artwork and rendered cover text for release and beta editions, with new templates, edition-specific colors, and adjusted version-label spacing and positioning.

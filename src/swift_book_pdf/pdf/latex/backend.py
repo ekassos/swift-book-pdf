@@ -53,6 +53,7 @@ class LaTeXBackend:
                 config_input.dangerously_skip_legal_notices
             ),
             doc_config=config_input.doc_config,
+            save_tex=config_input.save_tex,
             latex_config=latex_config,
             override_version=config_input.override_version,
         )

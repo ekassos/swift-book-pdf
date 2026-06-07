@@ -52,6 +52,9 @@ class PDFBackendConfigInput:
     doc_config: PDFDocumentConfig
     """Resolved PDF document layout options."""
 
+    save_tex: bool
+    """Whether to save LaTeX source instead of compiling a PDF."""
+
     override_version: str | None
     """Optional Swift version override."""
 
@@ -66,13 +69,13 @@ class PDFEngine(Protocol):
     """Engine interface for producing a temporary PDF artifact."""
 
     def build(self, context: PDFBuildContext) -> Path:
-        """Render and compile a PDF.
+        """Render a temporary artifact.
 
         Args:
             context: Shared PDF build inputs.
 
         Returns:
-            Path to the temporary PDF artifact.
+            Path to the temporary artifact.
         """
 
 

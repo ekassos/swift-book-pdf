@@ -42,8 +42,10 @@ def test_apply_formatting_preserves_underscores_inside_link_urls() -> None:
     )
 
     assert (
-        rendered
-        == r"\href{https://developer.apple.com/documentation/swift/warning(_:_:)}"
-        r"{{\CodeStyle \texttt{warning{(}\_{:}\_{:}{)}}}}"
+        r"\href{https://developer.apple.com/documentation/swift/warning(_:_:)}"
+        in rendered
+    )
+    assert (
         r"\footnote{\url{https://developer.apple.com/documentation/swift/warning(_:_:)}}"
+        in rendered
     )

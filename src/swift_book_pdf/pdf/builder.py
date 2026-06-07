@@ -16,6 +16,7 @@
 
 import logging
 import shutil
+from pathlib import Path
 
 from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.pdf.backend import PDFBuildContext, select_engine
@@ -57,10 +58,40 @@ def build_pdf(config: PDFConfig) -> None:
             f"{artifact_label} file not found: {temp_artifact_path}"
         )
 
+    if config.intermediates_path is not None:
+        _save_build_directory(config)
+
     try:
         shutil.move(str(temp_artifact_path), config.output_path)
         logger.info(f"{artifact_label} saved to {config.output_path}")
     except (OSError, shutil.Error) as e:
         raise RuntimeError(
             f"Failed to save {artifact_label} to {config.output_path}"
+        ) from e
+
+
+def _save_build_directory(config: PDFConfig) -> None:
+    """Save the complete temporary build directory to a user path.
+
+    Args:
+        config: Resolved PDF build configuration.
+
+    Raises:
+        RuntimeError: If the destination already exists or cannot be written.
+    """
+    if config.intermediates_path is None:
+        raise RuntimeError("Build files directory was not configured.")
+
+    destination = Path(config.intermediates_path)
+    if destination.exists():
+        raise RuntimeError(
+            f"Build files directory already exists: {destination}"
+        )
+
+    try:
+        shutil.copytree(config.temp_dir, destination, symlinks=True)
+        logger.info(f"Build files saved to {destination}")
+    except (OSError, shutil.Error) as e:
+        raise RuntimeError(
+            f"Failed to save build files to {destination}"
         ) from e

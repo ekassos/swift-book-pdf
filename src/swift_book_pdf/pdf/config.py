@@ -123,6 +123,9 @@ class PDFConfig(BaseBuildConfig, ABC):
     save_tex: bool = False
     """Whether to save LaTeX source instead of compiling a PDF."""
 
+    intermediates_path: str | None = None
+    """Optional destination directory for build intermediates."""
+
     engine_kind: EngineKind
     """PDF engine implementation."""
 
@@ -147,6 +150,7 @@ class PDFConfig(BaseBuildConfig, ABC):
                 f"Book Gutter: {doc_config.gutter}",
                 f"Font size: {doc_config.font_size}pt",
                 f"Build target: {'tex' if self.save_tex else 'pdf'}",
+                f"Build files: {self.intermediates_path or 'temporary'}",
             ]
         )
 

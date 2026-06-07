@@ -77,6 +77,13 @@ def pdf_output_options(func: OptionTarget) -> OptionTarget:
             is_flag=True,
             help="Save the generated LaTeX source instead of compiling a PDF",
         ),
+        click.option(
+            "--save-intermediates",
+            metavar="BUILD_DIRECTORY",
+            type=click.Path(resolve_path=True, file_okay=False),
+            default=None,
+            help="Save build intermediates in this directory",
+        ),
     )
     return apply_options(func, decorators)
 

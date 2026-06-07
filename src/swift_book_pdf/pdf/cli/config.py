@@ -66,6 +66,7 @@ def build_pdf_config(  # noqa: PLR0913
     backend: PDFBackend,
     doc_config: PDFDocumentConfig,
     save_tex: bool,
+    intermediates_path: str | None,
     backend_options: Mapping[str, Any],
     override_version: str | None,
     source_ref: str | None,
@@ -81,6 +82,8 @@ def build_pdf_config(  # noqa: PLR0913
         backend: PDF backend adapter.
         doc_config: PDF document layout configuration.
         save_tex: Whether to save LaTeX source instead of compiling a PDF.
+        intermediates_path: Optional destination directory for build
+            intermediates.
         backend_options: Backend-specific CLI option values.
         override_version: Optional Swift version override.
         source_ref: Optional Swift Book Git ref.
@@ -104,6 +107,7 @@ def build_pdf_config(  # noqa: PLR0913
             dangerously_skip_legal_notices=dangerously_skip_legal_notices,
             doc_config=doc_config,
             save_tex=save_tex,
+            intermediates_path=intermediates_path,
             override_version=override_version,
             backend_options=backend_options,
         )

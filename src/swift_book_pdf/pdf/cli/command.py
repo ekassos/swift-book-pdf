@@ -70,6 +70,7 @@ def pdf(  # noqa: PLR0913
     mode: str,
     paper: str,
     save_tex: bool,
+    save_intermediates: str | None,
     engine: str,
     override_version: str | None,
     font_size: float | None,
@@ -89,6 +90,8 @@ def pdf(  # noqa: PLR0913
         mode: Rendering mode option value.
         paper: Paper size option value.
         save_tex: Whether to save LaTeX source instead of compiling a PDF.
+        save_intermediates: Optional directory for build intermediates and
+            output.
         engine: PDF rendering engine option value.
         override_version: Optional Swift version override.
         font_size: Optional base paragraph font size.
@@ -101,6 +104,11 @@ def pdf(  # noqa: PLR0913
         verbose: Whether debug logging should be enabled.
         backend_options: Engine-specific option values.
     """
+    if save_tex and save_intermediates is not None:
+        raise click.UsageError(
+            "Use either --save-tex or --save-intermediates, not both."
+        )
+
     backend = select_backend_for_cli(EngineKind(engine))
     doc_config = pdf_config.build_doc_config(
         mode=mode,
@@ -119,6 +127,7 @@ def pdf(  # noqa: PLR0913
             backend=backend,
             doc_config=doc_config,
             save_tex=save_tex,
+            intermediates_path=save_intermediates,
             backend_options=backend_options,
             override_version=override_version,
             source_ref=source_ref,

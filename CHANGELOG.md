@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.
 - Fix an issue where Swift property scopes and unknown Highlight.js scopes could receive unsupported token styling instead of falling back to normal code text.
 - Fix an issue where multiline string escaped-newline continuations in Swift code could be highlighted differently from Swift-DocC-Render in generated HTML and Pygments tokens.
+- Fix an issue where generated PDF links with URL fragments could fail LaTeX compilation.
 
 ### Removed
 - Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.

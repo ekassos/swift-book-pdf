@@ -74,10 +74,17 @@ def restore_markdown_links(
     """
     for token, (label, url) in markdown_links.items():
         formatted_label = format_label(label)
+        escaped_url = _escape_latex_url(url)
         replacement = (
-            f"\\href{{{url}}}{{{formatted_label}}}\\footnote{{\\url{{{url}}}}}"
+            f"\\href{{{escaped_url}}}{{{formatted_label}}}"
+            f"\\footnote{{\\url{{{escaped_url}}}}}"
             if mode == RenderingMode.PRINT
-            else f"\\href{{{url}}}{{{formatted_label}}}"
+            else f"\\href{{{escaped_url}}}{{{formatted_label}}}"
         )
         text = text.replace(token, replacement)
     return text
+
+
+def _escape_latex_url(url: str) -> str:
+    """Escape URL characters that are special in LaTeX macro arguments."""
+    return url.replace("#", r"\#")

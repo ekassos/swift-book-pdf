@@ -143,17 +143,46 @@
 \end{flushleft}%
 }
 
+\newcommand{\DocCArticleHeroHeadlineStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${article_hero_headline_font_size}}{${article_hero_headline_line_height}}\selectfont
+}
+
+\newcommand{\DocCArticleHeroIntroStyle}{%
+  \global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{${article_hero_intro_font_size}}{${article_hero_intro_line_height}}\selectfont
+}
+
 \makeatletter
+\newcommand{\DocCSetCurrentLabelName}[1]{%
+  \def\@currentlabelname{#1}%
+}
+
 \def\section{\@startsection{section}{1}{0pt}%
-   {${spacing_section_before}}
-   {${spacing_section_after}}
-   {\mainFontWithFallback{$main_font}\fontsize{${font_size_section}pt}{${spacing_baselineskip_section}}\selectfont\global\AtPageTopfalse}}
+  {${content_node_paragraph_to_heading_2_margin_top}}%
+  {${article_stacked_margin_small}}%
+  {\mainFontWithFallback{$main_font}\fontsize{${content_node_heading_2_font_size}}{${content_node_heading_2_line_height}}\selectfont\global\AtPageTopfalse}%
+}
 \makeatother
 
-\newcommand{\TitleSection}[2]{%
+\newcommand{\DocCArticleHeroChapterGap}{${article_stacked_margin_large}}
+
+\newcommand{\DocCArticleHeroTitle}[2]{%
   {%
-    \pdfbookmark[1]{#1}{#2}\section*{#1}\label{#2}\par
+    \pdfbookmark[1]{#1}{#2}%
+    \DocCSetCurrentLabelName{#1}%
+    \vspace*{${spacing_stacked_margin_large}}%
+    {\DocCArticleHeroHeadlineStyle\strut #1\strut\par}%
+    \label{#2}%
   }%
+}
+
+\newcommand{\DocCArticleHeroTextGroup}[3]{%
+  \DocCArticleHeroTitle{#1}{#2}%
+  \vspace*{${documentation_topic_title_margin_bottom}}%
+  {\DocCArticleHeroIntroStyle #3\strut\par}%
+}
+
+\newcommand{\DocCContentLineBox}[1]{%
+  \strut #1\strut%
 }
 
 \makeatletter

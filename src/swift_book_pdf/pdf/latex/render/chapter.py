@@ -47,9 +47,9 @@ def generate_chapter_title(
     title_subtitle_snippet = rf"""
     \thispagestyle{{firstpagestyle}}
     \renewcommand{{\customheader}}{{{header_line}}}
-    \vspace*{{0.3in}}
-    \HeroBox{{{header_line}}}{{{file_name}}}{{{subtitle_line}}}
-    \vspace*{{0.3in}}
+    \vspace*{{\DocCArticleHeroChapterGap}}
+    \DocCArticleHeroBox{{{header_line}}}{{{file_name}}}{{{subtitle_line}}}
+    \vspace*{{\DocCArticleHeroChapterGap}}
     """
 
     return title_subtitle_snippet, lines[i:]

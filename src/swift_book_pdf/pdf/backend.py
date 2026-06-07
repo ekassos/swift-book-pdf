@@ -55,6 +55,9 @@ class PDFBackendConfigInput:
     save_tex: bool
     """Whether to save LaTeX source instead of compiling a PDF."""
 
+    intermediates_path: str | None
+    """Optional destination directory for build intermediates."""
+
     override_version: str | None
     """Optional Swift version override."""
 

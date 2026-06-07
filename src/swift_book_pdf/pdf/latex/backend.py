@@ -54,6 +54,7 @@ class LaTeXBackend:
             ),
             doc_config=config_input.doc_config,
             save_tex=config_input.save_tex,
+            intermediates_path=config_input.intermediates_path,
             latex_config=latex_config,
             override_version=config_input.override_version,
         )

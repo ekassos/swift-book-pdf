@@ -105,6 +105,8 @@ def stub_resolve_cli_build_source(
             (
                 "--mode",
                 "--paper",
+                "--save-tex",
+                "--save-intermediates",
                 "--typesets",
                 "--override-version",
                 "--main",
@@ -223,6 +225,8 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
             "a4",
             "--typesets",
             str(PDF_TYPESSETS),
+            "--save-intermediates",
+            "./build-files",
             "--override-version",
             "6.2 beta",
             "--main",
@@ -270,6 +274,7 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert config_input.doc_config.gutter is False
     assert config_input.doc_config.font_size == PDF_FONT_SIZE
     assert config_input.save_tex is False
+    assert config_input.intermediates_path == str(tmp_path / "build-files")
     assert config_input.override_version == "6.2 beta"
     assert config_input.dangerously_skip_legal_notices is True
     assert LEGAL_NOTICES_WARNING in result.output
@@ -301,6 +306,29 @@ def test_pdf_command_can_save_tex_instead_of_pdf(
     assert config_input.output_path == str(output_dir / "swift_book.tex")
     assert config_input.save_tex is True
     build_pdf.assert_called_once_with(fake_config)
+
+
+def test_pdf_save_intermediates_requires_directory_path(
+    runner: CliRunner,
+) -> None:
+    result = runner.invoke(pdf_cli.pdf, ["--save-intermediates"])
+
+    assert_failure(result)
+    assert "Option '--save-intermediates' requires an argument" in (
+        result.output
+    )
+
+
+def test_pdf_save_intermediates_conflicts_with_save_tex(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    result = runner.invoke(
+        pdf_cli.pdf,
+        ["--save-tex", "--save-intermediates", str(tmp_path / "build-files")],
+    )
+
+    assert_failure(result)
+    assert "Use either --save-tex or --save-intermediates" in result.output
 
 
 def test_pdf_command_returns_nonzero_on_builder_failure(
@@ -540,6 +568,9 @@ def test_input_path_rejects_revision_selection(
 def test_validate_output_path_handles_format_suffixes(tmp_path: Path) -> None:
     assert validate_output_path(str(tmp_path), OutputFormat.EPUB) == str(
         tmp_path / "swift_book.epub"
+    )
+    assert validate_output_path(str(tmp_path), OutputFormat.TEX) == str(
+        tmp_path / "swift_book.tex"
     )
 
     with pytest.raises(ValueError, match="not a PDF file"):

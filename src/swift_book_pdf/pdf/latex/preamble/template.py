@@ -74,19 +74,20 @@ def build_preamble_substitutions(
         config.doc_config.gutter,
     )
     return {
-        "background": colors.background,
-        "text": colors.text,
-        "header_background": colors.header_background,
-        "header_text": colors.header_text,
-        "hero_background": colors.hero_background,
-        "hero_text": colors.hero_text,
-        "link": colors.link,
-        "aside_background": colors.aside_background,
-        "aside_text": colors.aside_text,
-        "aside_border": colors.aside_border,
-        "table_border": colors.table_border,
-        "code_border": colors.code_border,
-        "code_background": colors.code_background,
+        "color_text_background": colors.color_text_background,
+        "color_text": colors.color_text,
+        "color_article_background": colors.color_article_background,
+        "color_header_footer_background": (
+            colors.color_header_footer_background
+        ),
+        "color_header_footer_text": colors.color_header_footer_text,
+        "color_link": colors.color_link,
+        "color_grid": colors.color_grid,
+        "color_code_background": colors.color_code_background,
+        "color_code_plain": colors.color_code_plain,
+        "color_aside_note_background": colors.color_aside_note_background,
+        "color_aside_note_border": colors.color_aside_note_border,
+        "color_aside_note": colors.color_aside_note,
         "code_style": colors.code_style,
         "geometry_opts": get_geometry_opts(
             config.doc_config.paper_size,

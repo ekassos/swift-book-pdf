@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add syntax colors for inserted and deleted code tokens in the generated PDF light and dark code styles.
 - Add Highlight.js attribution and BSD 3-Clause license text to the third-party notices.
 - Apply Swift-DocC-Render's Swift grammar overrides when highlighting Swift code.
+- Align generated PDF LaTeX colors with Swift-DocC-Render CSS color tokens for page backgrounds, chapter heroes, links, tables, code blocks, and aside notes.
 
 ### Fixed
 - Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.

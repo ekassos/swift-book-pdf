@@ -1,5 +1,13 @@
 # Copyright 2025 Evangelos Kassos
 #
+# Portions derived from swift-docc-render:
+#   Copyright (c) 2021-2025 Apple Inc. and the Swift project authors
+#   Licensed under Apache License v2.0 with Runtime Library Exception
+#
+#   See https://swift.org/LICENSE.txt for details.
+#   The Swift project authors are credited at https://swift.org/CONTRIBUTORS.txt.
+#   See THIRD-PARTY-NOTICES.txt for details.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -21,46 +29,43 @@ from swift_book_pdf.pdf.config import Appearance, RenderingMode
 
 @dataclass(frozen=True)
 class DocumentColors:
-    """RGB color substitutions used by the LaTeX preamble."""
+    """DocC Render CSS colors used by the LaTeX preamble."""
 
-    background: str
-    """Page background color."""
+    color_text_background: str
+    """DocC `--color-text-background` color."""
 
-    text: str
-    """Primary text color."""
+    color_text: str
+    """DocC `--color-text` color."""
 
-    header_background: str
-    """Running header background color."""
+    color_article_background: str
+    """DocC `--color-article-background` color."""
 
-    header_text: str
-    """Running header text color."""
+    color_header_footer_background: str
+    """PDF running header and footer background color."""
 
-    hero_background: str
-    """Chapter hero background color."""
+    color_header_footer_text: str
+    """PDF running header and footer text color."""
 
-    hero_text: str
-    """Chapter hero text color."""
+    color_link: str
+    """DocC `--color-link` color."""
 
-    link: str
-    """Hyperlink text color."""
+    color_grid: str
+    """DocC `--color-grid` color."""
 
-    aside_background: str
-    """Aside box background color."""
+    color_code_background: str
+    """DocC `--color-code-background` color."""
 
-    aside_border: str
-    """Aside box border color."""
+    color_code_plain: str
+    """DocC `--color-code-plain` color."""
 
-    aside_text: str
-    """Aside box text color."""
+    color_aside_note_background: str
+    """DocC `--color-aside-note-background` color."""
 
-    table_border: str
-    """Table rule color."""
+    color_aside_note_border: str
+    """DocC `--color-aside-note-border` color."""
 
-    code_border: str
-    """Code box border color."""
-
-    code_background: str
-    """Code box background color."""
+    color_aside_note: str
+    """DocC `--color-aside-note` color."""
 
     code_style: str
     """Pygments style name for code highlighting."""
@@ -101,21 +106,20 @@ def light_colors(rendering_mode: RenderingMode) -> DocumentColors:
         Light-mode document colors.
     """
     return DocumentColors(
-        background="255, 255, 255",
-        text="0, 0, 0",
-        header_background="51, 51, 51",
-        header_text="255, 255, 255",
-        hero_background="240, 240, 240",
-        hero_text="0, 0, 0",
-        link="51, 102, 255"
+        color_text_background="255, 255, 255",
+        color_text="0, 0, 0",
+        color_article_background="240, 240, 240",
+        color_header_footer_background="51, 51, 51",
+        color_header_footer_text="255, 255, 255",
+        color_link="51, 102, 255"
         if rendering_mode == RenderingMode.DIGITAL
         else "0, 0, 0",
-        aside_background="245, 245, 245",
-        aside_text="0, 0, 0",
-        aside_border="102, 102, 102",
-        table_border="240, 240, 240",
-        code_border="204, 204, 204",
-        code_background="247, 247, 247",
+        color_grid="204, 204, 204",
+        color_code_background="247, 247, 247",
+        color_code_plain="0, 0, 0",
+        color_aside_note_background="245, 245, 245",
+        color_aside_note_border="102, 102, 102",
+        color_aside_note="0, 0, 0",
         code_style="swift_book_style",
     )
 
@@ -130,20 +134,19 @@ def dark_colors(rendering_mode: RenderingMode) -> DocumentColors:
         Dark-mode document colors.
     """
     return DocumentColors(
-        background="0, 0, 0",
-        text="255, 255, 255",
-        header_background="51, 51, 51",
-        header_text="255, 255, 255",
-        hero_background="51, 51, 51",
-        hero_text="255, 255, 255",
-        link="0, 153, 255"
+        color_text_background="0, 0, 0",
+        color_text="255, 255, 255",
+        color_article_background="42, 42, 42",
+        color_header_footer_background="51, 51, 51",
+        color_header_footer_text="255, 255, 255",
+        color_link="0, 153, 255"
         if rendering_mode == RenderingMode.DIGITAL
         else "255, 255, 255",
-        aside_background="34, 34, 34",
-        aside_text="255, 255, 255",
-        aside_border="176, 176, 176",
-        table_border="66, 66, 66",
-        code_border="87, 87, 87",
-        code_background="22, 22, 22",
+        color_grid="87, 87, 87",
+        color_code_background="22, 22, 22",
+        color_code_plain="255, 255, 255",
+        color_aside_note_background="34, 34, 34",
+        color_aside_note_border="176, 176, 176",
+        color_aside_note="255, 255, 255",
         code_style="swift_book_dark_style",
     )

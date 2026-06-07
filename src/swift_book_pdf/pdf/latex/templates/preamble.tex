@@ -25,22 +25,22 @@
 % ----------------------------------------
 % Define custom colors
 % ----------------------------------------
-\definecolor{background}{RGB}{$background}
-\definecolor{text}{RGB}{$text}
-\definecolor{header_background}{RGB}{$header_background}
-\definecolor{header_text}{RGB}{$header_text}
-\definecolor{hero_background}{RGB}{$hero_background}
-\definecolor{hero_text}{RGB}{$hero_text}
-\definecolor{link}{RGB}{$link}
-\definecolor{aside_background}{RGB}{$aside_background}
-\definecolor{aside_text}{RGB}{$aside_text}
-\definecolor{aside_border}{RGB}{$aside_border}
-\definecolor{table_border}{RGB}{$table_border}
-\definecolor{code_border}{RGB}{$code_border}
-\definecolor{code_background}{RGB}{$code_background}
+\definecolor{color_text_background}{RGB}{$color_text_background}
+\definecolor{color_text}{RGB}{$color_text}
+\definecolor{color_article_background}{RGB}{$color_article_background}
+\definecolor{color_header_footer_background}{RGB}{$color_header_footer_background}
+\definecolor{color_header_footer_text}{RGB}{$color_header_footer_text}
+\definecolor{color_link}{RGB}{$color_link}
+\definecolor{color_grid}{RGB}{$color_grid}
+\definecolor{color_code_background}{RGB}{$color_code_background}
+\definecolor{color_code_plain}{RGB}{$color_code_plain}
+\definecolor{color_aside_note_background}{RGB}{$color_aside_note_background}
+\definecolor{color_aside_note_border}{RGB}{$color_aside_note_border}
+\definecolor{color_aside_note}{RGB}{$color_aside_note}
 
-\pagecolor{background}
-\color{text}
+\pagecolor{color_text_background}
+\color{color_text}
+
 % ----------------------------------------
 % Define fonts and small helpers
 % ----------------------------------------
@@ -89,7 +89,7 @@
 }
 
 \newcommand{\headerFontWithFallback}[2]{%
-  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{header_text}%
+  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{color_header_footer_text}%
 }
 
 \renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{${font_size_footnote}pt}{${font_size_footnote}pt}\selectfont}
@@ -368,7 +368,7 @@
     breakanywhere=true,
     breakbefore={ABCDEFGHIJKLMNOPQRSTUVWXYZ},
     breakafter={.,>)]:(\{},
-    breaksymbolleft={\raisebox{0.1ex}{\color{aside_border}\customsmall\ensuremath{\hookrightarrow}}},
+    breaksymbolleft={\raisebox{0.1ex}{\color{color_aside_note_border}\customsmall\ensuremath{\hookrightarrow}}},
     breaksymbolsepleft=0.3em,
     breakbeforesymbolpre={\,\customsmall\ensuremath{_\rfloor}},
     breakaftersymbolpre={\,\customsmall\ensuremath{_\rfloor}},
@@ -381,8 +381,9 @@
     framesep=0pt,
     escapeinside=||,
   },
-  colback=code_background,
-  colframe=code_border,
+  colback=color_code_background,
+  colframe=color_grid,
+  colupper=color_code_plain,
   boxrule=0.5pt,
   arc=4pt,
   top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
@@ -390,7 +391,6 @@
   boxsep=0pt,
   before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
   after skip=0in,
-  before lower=\color{text},
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
 }
 
@@ -408,8 +408,9 @@
     frame=none,
     framesep=0pt,
   },
-  colback=code_background,
-  colframe=code_border,
+  colback=color_code_background,
+  colframe=color_grid,
+  colupper=color_code_plain,
   boxrule=0.5pt,
   arc=4pt,
   top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
@@ -417,7 +418,6 @@
   boxsep=0pt,
   before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
   after skip=0in,
-  colupper=text,
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
 }
 
@@ -428,24 +428,24 @@
   enhanced,
   breakable,
   whole on next page if possible,
-  colback=aside_background,
+  colback=color_aside_note_background,
   arc=4pt,
-  borderline west={3pt}{0pt}{aside_border},
+  borderline west={3pt}{0pt}{color_aside_note_border},
   boxrule=0pt,
   frame empty,
   before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
   after skip=0in,
   after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\AtPageTopfalse},
   left=${spacing_aside_left}, right=${spacing_aside_pad}, top=${spacing_aside_pad}, bottom=${spacing_aside_pad},
-  before upper={\raggedright\color{aside_text}},
+  before upper={\raggedright\color{color_text}},
 }
 
 
 \hypersetup{
-  colorlinks=true,    % Make links colored
-  linkcolor=link,     % Color of internal links
-  urlcolor=link,      % Color for URLs
-  pdfstartview=FitH,   % Ensure the view fits horizontally on page
+  colorlinks=true,          % Make links colored
+  linkcolor=color_link,     % Color of internal links
+  urlcolor=color_link,      % Color for URLs
+  pdfstartview=FitH,        % Ensure the view fits horizontally on page
   bookmarksdepth=4
 }
 

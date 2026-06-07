@@ -50,7 +50,7 @@ def convert_table_block(
     parskip = get_spacing("parskip", body_font_size)
     baselineskip = get_spacing("baselineskip_table", body_font_size)
     output = [
-        "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{table_border}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
+        "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{color_grid}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
         + main_font
         + "}\\fontsize{"
         + font_size

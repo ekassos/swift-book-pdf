@@ -23,9 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Render Swift code blocks in generated PDF and EPUB output with the new `swift-book-swift` lexer for syntax highlighting that more closely matches Swift Book examples and Highlight.js behavior.
 - Add syntax colors for inserted and deleted code tokens in the generated PDF light and dark code styles.
 - Add Highlight.js attribution and BSD 3-Clause license text to the third-party notices.
+- Apply Swift-DocC-Render's Swift grammar overrides when highlighting Swift code.
 
 ### Fixed
 - Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.
+- Fix an issue where Swift property scopes and unknown Highlight.js scopes could receive unsupported token styling instead of falling back to normal code text.
+- Fix an issue where multiline string escaped-newline continuations in Swift code could be highlighted differently from Swift-DocC-Render in generated HTML and Pygments tokens.
 
 ### Removed
 - Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.
@@ -38,7 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Centralize bundled asset paths and move covers, fonts, icons, notices, and Swift logo assets into domain-specific asset directories.
 - Expand focused test coverage for CLI wiring, PDF config and engine behavior, LaTeX font handling, EPUB package generation, cover variants, notices, Markdown transforms, and rendered output.
 - Add Swift lexer fixture coverage for attributes, availability annotations, declarations, keywords, numbers, operators, ownership modifiers, regex literals, strings, SwiftUI snippets, tuples, and type definitions.
-- Add an external Swift Book corpus parity test against the latest Highlight.js Swift grammar in CI.
+- Add Swift-DocC-Render-derived tests for custom Swift grammar overrides and syntax-highlighting behavior.
+- Add an external Swift Book corpus parity test against Swift-DocC-Render's pinned Highlight.js version and custom Swift grammar override in CI.
 
 ## [2.6.0] - 2026-04-22
 ### Added

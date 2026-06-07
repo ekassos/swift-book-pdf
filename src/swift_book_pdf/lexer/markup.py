@@ -21,8 +21,8 @@
 
 from __future__ import annotations
 
+from swift_book_pdf.lexer.docc import build_docc_render_language
 from swift_book_pdf.lexer.engine import Node, TokenTreeEmitter, highlight
-from swift_book_pdf.lexer.swift import build_language
 
 CLASS_PREFIX = "hljs-"
 SPAN_CLOSE = "</span>"
@@ -155,6 +155,6 @@ def highlight_swift(code: str) -> str:
     Returns:
         Inner HTML only, without wrapping `pre` or `code` elements.
     """
-    language = build_language()
+    language = build_docc_render_language()
     emitter = highlight(language, code)
     return render(emitter)

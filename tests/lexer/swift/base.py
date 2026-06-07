@@ -14,17 +14,11 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-from tests.lexer.swift.base import highlight_base_swift
-
-_FIXTURES = Path(__file__).parent / "fixtures"
+from swift_book_pdf.lexer.engine import highlight
+from swift_book_pdf.lexer.markup import render
+from swift_book_pdf.lexer.swift import build_language
 
 
-def test_operators() -> None:
-    source = (_FIXTURES / "operators.txt").read_text()
-    expected = (_FIXTURES / "operators.expect.txt").read_text()
-    # highlight.js's markup test harness compares trimmed output on
-    # both sides; some .expect.txt fixtures were saved with an extra
-    # or missing trailing newline, so normalize it before comparing.
-    assert highlight_base_swift(source).rstrip("\n") == expected.rstrip("\n")
+def highlight_base_swift(code: str) -> str:
+    """Highlight Swift with the unmodified highlight.js Swift grammar."""
+    return render(highlight(build_language(), code))

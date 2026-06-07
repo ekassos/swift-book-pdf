@@ -679,7 +679,7 @@ _SCOPE_TO_TOKEN: dict[str, _TokenType] = {
     "variable": Token.Text,
     "meta": Keyword,
     "params": Name.Class,
-    "property": Name.Attribute,
+    "property": Token.Text,
     "identifier": Token.Text,
 }
 
@@ -696,7 +696,7 @@ def _scope_to_token(scope: str | None) -> _TokenType:
     if not scope:
         return Token.Text
     first = scope.split(".")[0]
-    return _SCOPE_TO_TOKEN.get(first, Token)
+    return _SCOPE_TO_TOKEN.get(first, Token.Text)
 
 
 class SwiftLexer(Lexer):
@@ -725,7 +725,9 @@ class SwiftLexer(Lexer):
             Tuples containing character offset, Pygments token type, and token
             text.
         """
-        language = build_language()
+        from swift_book_pdf.lexer.docc import build_docc_render_language
+
+        language = build_docc_render_language()
         emitter = highlight(language, text)
         pos = 0
         for token_type, value in _flatten(emitter.root, None):

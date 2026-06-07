@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from swift_book_pdf.lexer import highlight_swift
+from tests.lexer.swift.base import highlight_base_swift
 
 _FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -27,4 +27,4 @@ def test_identifiers() -> None:
     # highlight.js's markup test harness compares trimmed output on
     # both sides; some .expect.txt fixtures were saved with an extra
     # or missing trailing newline, so normalize it before comparing.
-    assert highlight_swift(source).rstrip("\n") == expected.rstrip("\n")
+    assert highlight_base_swift(source).rstrip("\n") == expected.rstrip("\n")

@@ -38,6 +38,7 @@ from swift_book_pdf.pdf.cli.backends import (
 )
 from swift_book_pdf.pdf.cli.options import (
     pdf_appearance_options,
+    pdf_content_options,
     pdf_document_options,
     pdf_gutter_option,
     pdf_output_options,
@@ -59,6 +60,7 @@ from swift_book_pdf.pdf.config import EngineKind
     default=default_engine_value(),
     hidden=True,
 )
+@pdf_content_options
 @pdf_typography_options
 @pdf_appearance_options
 @legal_notices_option
@@ -73,6 +75,8 @@ def pdf(  # noqa: PLR0913
     save_intermediates: str | None,
     engine: str,
     override_version: str | None,
+    only_toc: bool,
+    only_chapter: str | None,
     font_size: float | None,
     dark: bool,
     dangerously_skip_legal_notices: bool,
@@ -94,6 +98,8 @@ def pdf(  # noqa: PLR0913
             output.
         engine: PDF rendering engine option value.
         override_version: Optional Swift version override.
+        only_toc: Whether to render only the table of contents page.
+        only_chapter: Optional document tag or file stem for one chapter.
         font_size: Optional base paragraph font size.
         dark: Whether dark mode should be rendered.
         dangerously_skip_legal_notices: Whether generated notices are omitted.
@@ -117,6 +123,10 @@ def pdf(  # noqa: PLR0913
         gutter=gutter,
         font_size=font_size,
     )
+    content_selection = pdf_config.build_content_selection(
+        only_toc=only_toc,
+        only_chapter=only_chapter,
+    )
 
     run_build(
         verbose=verbose,
@@ -126,6 +136,7 @@ def pdf(  # noqa: PLR0913
             pdf_config.build_pdf_config,
             backend=backend,
             doc_config=doc_config,
+            content_selection=content_selection,
             save_tex=save_tex,
             intermediates_path=save_intermediates,
             backend_options=backend_options,

@@ -15,7 +15,10 @@
 """Inline Markdown formatting for LaTeX output."""
 
 import re
+from collections.abc import Mapping
+from dataclasses import dataclass
 
+from swift_book_pdf.core.source import ChapterMetadata
 from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.escaping import override_characters
 from swift_book_pdf.pdf.latex.render.links import (
@@ -28,7 +31,60 @@ UNDERSCORE_EMPHASIS_PATTERN = re.compile(
 )
 
 
-def apply_formatting(text: str, mode: RenderingMode) -> str:
+@dataclass(frozen=True)
+class DocReferenceResolver:
+    """Resolve document references that cannot exist in subset builds.
+
+    Attributes:
+        chapter_metadata: Chapter metadata keyed by normalized document key.
+        live_reference_prefixes: Label prefixes emitted by the current subset.
+    """
+
+    chapter_metadata: Mapping[str, ChapterMetadata]
+    """Chapter metadata keyed by normalized document key."""
+
+    live_reference_prefixes: frozenset[str]
+    """Label prefixes emitted by the current subset."""
+
+    def static_text_for_missing_reference(self, key: str) -> str | None:
+        """Return static text when a target label is outside the subset.
+
+        Args:
+            key: Normalized LaTeX reference label.
+
+        Returns:
+            Static chapter title for missing cross-chapter references, or
+            `None` when the reference should remain live.
+        """
+        if self._can_resolve_live(key):
+            return None
+
+        chapter_key = key.split("_", maxsplit=1)[0]
+        metadata = self.chapter_metadata.get(chapter_key)
+        if metadata is None:
+            return None
+        return metadata.header_line
+
+    def _can_resolve_live(self, key: str) -> bool:
+        """Return whether the current subset should emit `key`.
+
+        Args:
+            key: Normalized LaTeX reference label.
+
+        Returns:
+            Whether the label is expected in the rendered subset.
+        """
+        return any(
+            key == prefix or key.startswith(f"{prefix}_")
+            for prefix in self.live_reference_prefixes
+        )
+
+
+def apply_formatting(
+    text: str,
+    mode: RenderingMode,
+    doc_references: DocReferenceResolver | None = None,
+) -> str:
     """Apply Markdown inline formatting and source glyph overrides.
 
     Notes:
@@ -39,6 +95,7 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     Args:
         text: Markdown text after inline code conversion.
         mode: PDF rendering mode.
+        doc_references: Optional resolver for subset-build document refs.
 
     Returns:
         LaTeX-safe formatted text.
@@ -65,13 +122,13 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     # Escape literal currency/math markers from source text before we inject
     # formatter-owned LaTeX snippets that intentionally use math mode.
     text = text.replace("$", r"\$")
-    text = _apply_text_formatting(text, mode)
+    text = _apply_text_formatting(text, mode, doc_references)
 
     text = restore_markdown_links(
         text,
         markdown_links,
         mode,
-        lambda label: _apply_text_formatting(label, mode),
+        lambda label: _apply_text_formatting(label, mode, doc_references),
     )
 
     # Restore the inline code segments.
@@ -81,12 +138,17 @@ def apply_formatting(text: str, mode: RenderingMode) -> str:
     return override_characters(text)
 
 
-def _apply_text_formatting(text: str, mode: RenderingMode) -> str:
+def _apply_text_formatting(
+    text: str,
+    mode: RenderingMode,
+    doc_references: DocReferenceResolver | None,
+) -> str:
     """Apply inline Markdown transforms that operate on plain text.
 
     Args:
         text: Markdown text with protected inline segments removed.
         mode: PDF rendering mode.
+        doc_references: Optional resolver for subset-build document refs.
 
     Returns:
         Text with inline Markdown converted to LaTeX snippets.
@@ -105,27 +167,42 @@ def _apply_text_formatting(text: str, mode: RenderingMode) -> str:
         lambda m: _format_doc_reference(
             mode,
             f"{m.group(1).lower()}_{m.group(2).lower()}",
+            doc_references,
         ),
         text,
     )
     text = re.sub(
         r"<doc:([^>#]+)>",
-        lambda m: _format_doc_reference(mode, m.group(1).lower()),
+        lambda m: _format_doc_reference(
+            mode,
+            m.group(1).lower(),
+            doc_references,
+        ),
         text,
     )
     return re.sub(r"(?<!\\)#", r"\#", text)
 
 
-def _format_doc_reference(mode: RenderingMode, key: str) -> str:
+def _format_doc_reference(
+    mode: RenderingMode,
+    key: str,
+    doc_references: DocReferenceResolver | None,
+) -> str:
     """Format a Swift Book doc reference for the active rendering mode.
 
     Args:
         mode: PDF rendering mode.
         key: Normalized document reference key.
+        doc_references: Optional resolver for subset-build document refs.
 
     Returns:
         LaTeX fallback reference command.
     """
+    if doc_references is not None:
+        static_text = doc_references.static_text_for_missing_reference(key)
+        if static_text is not None:
+            return static_text
+
     command = (
         "\\fallbackrefbook"
         if mode == RenderingMode.PRINT

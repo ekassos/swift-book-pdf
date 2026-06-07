@@ -28,6 +28,7 @@ from swift_book_pdf.core.navigation.toc import TableOfContents
 from swift_book_pdf.core.source import ChapterMetadata
 from swift_book_pdf.core.source.paths import get_file_name
 from swift_book_pdf.pdf.config import Appearance, RenderingMode
+from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 
 if TYPE_CHECKING:
     from swift_book_pdf.pdf.latex.renderer import LaTeXRenderer
@@ -64,6 +65,7 @@ def generate_toc_latex(
         toc.chapter_metadata,
         converter.config.doc_config.mode,
         converter.config.doc_config.appearance,
+        resolve_references=not converter.config.content_selection.only_toc,
     )
     return "\n".join(toc_latex_lines)
 
@@ -73,6 +75,8 @@ def apply_toc_latex_overrides(
     chapter_metadata: dict[str, ChapterMetadata],
     mode: RenderingMode,
     appearance: Appearance,
+    *,
+    resolve_references: bool = True,
 ) -> list[str]:
     """Apply PDF-specific table-of-contents LaTeX overrides.
 
@@ -81,6 +85,7 @@ def apply_toc_latex_overrides(
         chapter_metadata: Chapter metadata keyed by normalized document key.
         mode: PDF rendering mode.
         appearance: PDF color appearance.
+        resolve_references: Whether TOC items should use LaTeX references.
 
     Returns:
         Adjusted LaTeX lines for the PDF table of contents.
@@ -95,6 +100,7 @@ def apply_toc_latex_overrides(
         chapter_metadata,
         mode,
         appearance,
+        resolve_references=resolve_references,
     )
 
 
@@ -103,6 +109,8 @@ def replace_chapter_href_with_toc_item(
     chapter_metadata: dict[str, ChapterMetadata],
     mode: RenderingMode,
     appearance: Appearance,
+    *,
+    resolve_references: bool = True,
 ) -> list[str]:
     """Replace chapter references with LaTeX table-of-contents items.
 
@@ -111,6 +119,7 @@ def replace_chapter_href_with_toc_item(
         chapter_metadata: Chapter metadata keyed by normalized document key.
         mode: PDF rendering mode.
         appearance: PDF color appearance.
+        resolve_references: Whether TOC items should use LaTeX references.
 
     Returns:
         Lines with chapter references replaced by table-of-contents items.
@@ -146,7 +155,13 @@ def replace_chapter_href_with_toc_item(
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line
                     or ""
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] \nameref{{{key}}} \\ {subtitle}"
+                title = _toc_item_title(
+                    key,
+                    chapter_metadata,
+                    mode,
+                    resolve_references=resolve_references,
+                )
+                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] {title} \\ {subtitle}"
 
         case RenderingMode.PRINT:
             pattern = re.compile(
@@ -167,7 +182,19 @@ def replace_chapter_href_with_toc_item(
                     chapter_metadata.get(key, ChapterMetadata()).subtitle_line
                     or ""
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] \nameref{{{key}}} {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}} \\ {subtitle}"
+                title = _toc_item_title(
+                    key,
+                    chapter_metadata,
+                    mode,
+                    resolve_references=resolve_references,
+                )
+                page_ref = (
+                    rf" {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}}"
+                    if resolve_references
+                    else ""
+                )
+
+                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] {title} {page_ref} \\ {subtitle}"
 
         case _:
             raise ValueError("Invalid rendering mode specified.")
@@ -177,3 +204,27 @@ def replace_chapter_href_with_toc_item(
         updated_lines.append(updated_line)
 
     return updated_lines
+
+
+def _toc_item_title(
+    key: str,
+    chapter_metadata: dict[str, ChapterMetadata],
+    mode: RenderingMode,
+    *,
+    resolve_references: bool,
+) -> str:
+    """Return a TOC item title for live or static rendering.
+
+    Args:
+        key: Normalized document key.
+        chapter_metadata: Chapter metadata keyed by normalized document key.
+        mode: PDF rendering mode.
+        resolve_references: Whether TOC items should use LaTeX references.
+
+    Returns:
+        LaTeX for the TOC item title.
+    """
+    if resolve_references:
+        return rf"\nameref{{{key}}}"
+    title = chapter_metadata.get(key, ChapterMetadata()).header_line or key
+    return apply_formatting(title, mode)

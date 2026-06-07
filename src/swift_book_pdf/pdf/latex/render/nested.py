@@ -15,18 +15,20 @@
 """Nested block rendering used by list and aside renderers."""
 
 from swift_book_pdf.core.blocks.models import Block, CodeBlock, ParagraphBlock
-from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
+from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 from swift_book_pdf.pdf.latex.render.escaping import override_characters
-from swift_book_pdf.pdf.latex.render.inline import apply_formatting
+from swift_book_pdf.pdf.latex.render.inline import (
+    apply_formatting,
+)
 
 
-def convert_nested_block(block: Block, mode: RenderingMode) -> str:
+def convert_nested_block(block: Block, context: LaTeXRenderContext) -> str:
     """Render a block nested inside another block.
 
     Args:
         block: Parsed nested block.
-        mode: PDF rendering mode.
+        context: LaTeX rendering state for the current document.
 
     Returns:
         Rendered LaTeX for the nested block.
@@ -36,7 +38,9 @@ def convert_nested_block(block: Block, mode: RenderingMode) -> str:
     """
     if isinstance(block, ParagraphBlock):
         para = " ".join(block.lines)
-        return apply_formatting(convert_inline_code(para), mode)
+        return apply_formatting(
+            convert_inline_code(para), context.mode, context.doc_references
+        )
     if isinstance(block, CodeBlock):
         out = "\\parskip=0pt\n" + r"\begin{swiftstyledbox}" + "\n"
         for line in block.lines:

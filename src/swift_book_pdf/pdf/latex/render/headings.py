@@ -22,13 +22,17 @@ from swift_book_pdf.core.blocks.models import (
 )
 from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
-from swift_book_pdf.pdf.latex.render.inline import apply_formatting
+from swift_book_pdf.pdf.latex.render.inline import (
+    DocReferenceResolver,
+    apply_formatting,
+)
 
 
 def convert_header_like_block(
     block: Block,
     file_name: str,
     mode: RenderingMode,
+    doc_references: DocReferenceResolver | None = None,
 ) -> list[str] | None:
     """Render a header block when the block is a supported heading level.
 
@@ -36,6 +40,7 @@ def convert_header_like_block(
         block: Candidate parsed block.
         file_name: Current document key used for labels.
         mode: PDF rendering mode.
+        doc_references: Optional resolver for subset-build document refs.
 
     Returns:
         Rendered LaTeX heading line, or `None` for non-heading blocks.
@@ -43,19 +48,31 @@ def convert_header_like_block(
     if isinstance(block, Header2Block):
         return [
             _convert_header_block(
-                block.content, file_name, mode, "SectionHeader"
+                block.content,
+                file_name,
+                mode,
+                "SectionHeader",
+                doc_references,
             )
         ]
     if isinstance(block, Header3Block):
         return [
             _convert_header_block(
-                block.content, file_name, mode, "SubsectionHeader"
+                block.content,
+                file_name,
+                mode,
+                "SubsectionHeader",
+                doc_references,
             )
         ]
     if isinstance(block, Header4Block):
         return [
             _convert_header_block(
-                block.content, file_name, mode, "SubsubsectionHeader"
+                block.content,
+                file_name,
+                mode,
+                "SubsubsectionHeader",
+                doc_references,
             )
         ]
     return None
@@ -66,6 +83,7 @@ def _convert_header_block(
     file_name: str,
     mode: RenderingMode,
     command: str,
+    doc_references: DocReferenceResolver | None,
 ) -> str:
     """Render one heading as a labeled LaTeX command.
 
@@ -74,6 +92,7 @@ def _convert_header_block(
         file_name: Current document key used for labels.
         mode: PDF rendering mode.
         command: LaTeX heading command name.
+        doc_references: Optional resolver for subset-build document refs.
 
     Returns:
         Rendered LaTeX heading line.
@@ -84,6 +103,6 @@ def _convert_header_block(
     )
     file_label = file_name.replace("'", "")
     return (
-        f"\\{command}{{{apply_formatting(inline_content, mode)}}}"
+        f"\\{command}{{{apply_formatting(inline_content, mode, doc_references)}}}"
         f"{{{file_label}_{label_name}}}\n"
     )

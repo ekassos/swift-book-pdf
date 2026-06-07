@@ -15,7 +15,7 @@
 """Shared PDF build configuration."""
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import ClassVar
 
@@ -107,6 +107,33 @@ class PDFDocumentConfig:
             raise ValueError("Font size must be a positive number.")
 
 
+@dataclass(frozen=True)
+class PDFContentSelection:
+    """Subset of book content to render for a PDF build.
+
+    Attributes:
+        only_toc: Whether to render only the table of contents page.
+        only_chapter: Optional document tag or file stem for one chapter.
+    """
+
+    only_toc: bool = False
+    """Whether to render only the table of contents page."""
+
+    only_chapter: str | None = None
+    """Optional document tag or file stem for one chapter."""
+
+    def __post_init__(self) -> None:
+        """Validate the requested content subset.
+
+        Raises:
+            ValueError: If incompatible content selectors are set.
+        """
+        if self.only_toc and self.only_chapter is not None:
+            raise ValueError(
+                "Use either --only-toc or --only-chapter, not both."
+            )
+
+
 @dataclass(frozen=True, kw_only=True)
 class PDFConfig(BaseBuildConfig, ABC):
     """Resolved configuration for PDF builds.
@@ -120,17 +147,22 @@ class PDFConfig(BaseBuildConfig, ABC):
     doc_config: PDFDocumentConfig
     """PDF document layout configuration."""
 
-    save_tex: bool = False
-    """Whether to save LaTeX source instead of compiling a PDF."""
-
-    intermediates_path: str | None = None
-    """Optional destination directory for build intermediates."""
-
     engine_kind: EngineKind
     """PDF engine implementation."""
 
     override_version: str | None = None
     """Optional Swift version override."""
+
+    content_selection: PDFContentSelection = field(
+        default_factory=PDFContentSelection
+    )
+    """Subset of book content to render."""
+
+    save_tex: bool = False
+    """Whether to save LaTeX source instead of compiling a PDF."""
+
+    intermediates_path: str | None = None
+    """Optional destination directory for build intermediates."""
 
     output_format: ClassVar[OutputFormat] = OutputFormat.PDF
     """Artifact format produced by PDF builders."""
@@ -149,6 +181,7 @@ class PDFConfig(BaseBuildConfig, ABC):
                 f"Appearance: {doc_config.appearance}",
                 f"Book Gutter: {doc_config.gutter}",
                 f"Font size: {doc_config.font_size}pt",
+                f"Content: {format_content_selection(self.content_selection)}",
                 f"Build target: {'tex' if self.save_tex else 'pdf'}",
                 f"Build files: {self.intermediates_path or 'temporary'}",
             ]
@@ -161,3 +194,19 @@ class PDFConfig(BaseBuildConfig, ABC):
         Returns:
             Human-readable backend details.
         """
+
+
+def format_content_selection(selection: PDFContentSelection) -> str:
+    """Format a PDF content selection for diagnostics.
+
+    Args:
+        selection: Requested content subset.
+
+    Returns:
+        Human-readable content selector.
+    """
+    if selection.only_toc:
+        return "toc"
+    if selection.only_chapter is not None:
+        return f"chapter:{selection.only_chapter}"
+    return "full"

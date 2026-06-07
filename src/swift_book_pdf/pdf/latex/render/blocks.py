@@ -28,7 +28,6 @@ from swift_book_pdf.core.blocks.models import (
     TermListBlock,
     UnorderedListBlock,
 )
-from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
 from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 from swift_book_pdf.pdf.latex.render.escaping import override_characters
@@ -83,23 +82,27 @@ def _convert_block_to_latex(  # noqa: PLR0911
                 block, context.assets_dir, context.appearance
             )
         case NoteBlock():
-            return _convert_note_block(block, context.mode)
+            return _convert_note_block(block, context)
         case ParagraphBlock():
-            return [_convert_paragraph_block(block, context.mode)]
+            return [_convert_paragraph_block(block, context)]
         case TableBlock():
             return convert_table_block(
                 block,
                 context.mode,
                 context.main_font,
                 context.body_font_size,
+                context.doc_references,
             )
         case UnorderedListBlock() | OrderedListBlock() | TermListBlock():
-            list_block = convert_list_like_block(block, context.mode)
+            list_block = convert_list_like_block(block, context)
             if list_block is not None:
                 return list_block
         case Header2Block() | Header3Block() | Header4Block():
             header_block = convert_header_like_block(
-                block, context.file_name, context.mode
+                block,
+                context.file_name,
+                context.mode,
+                context.doc_references,
             )
             if header_block is not None:
                 return header_block
@@ -122,18 +125,20 @@ def _convert_code_block(block: CodeBlock) -> list[str]:
     return output
 
 
-def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
+def _convert_note_block(
+    block: NoteBlock, context: LaTeXRenderContext
+) -> list[str]:
     """Render a note block as an aside box.
 
     Args:
         block: Parsed note block.
-        mode: PDF rendering mode.
+        context: LaTeX rendering state for the current document.
 
     Returns:
         Rendered LaTeX lines.
     """
     aside_content = "\n".join(
-        convert_nested_block(sub_block, mode) for sub_block in block.blocks
+        convert_nested_block(sub_block, context) for sub_block in block.blocks
     )
     return [
         "\\begin{flushleft}\\begin{asideNote}",
@@ -144,18 +149,20 @@ def _convert_note_block(block: NoteBlock, mode: RenderingMode) -> list[str]:
 
 
 def _convert_paragraph_block(
-    block: ParagraphBlock, mode: RenderingMode
+    block: ParagraphBlock, context: LaTeXRenderContext
 ) -> str:
     """Render a paragraph block with inline Markdown formatting.
 
     Args:
         block: Parsed paragraph block.
-        mode: PDF rendering mode.
+        context: LaTeX rendering state for the current document.
 
     Returns:
         Rendered LaTeX paragraph line.
     """
     paragraph = apply_formatting(
-        convert_inline_code(" ".join(block.lines)), mode
+        convert_inline_code(" ".join(block.lines)),
+        context.mode,
+        context.doc_references,
     )
     return f"\\ParagraphStyle{{{paragraph}}}\n"

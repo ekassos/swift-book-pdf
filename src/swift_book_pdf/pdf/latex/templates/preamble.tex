@@ -95,15 +95,15 @@
 }
 
 \newcommand{\mainFontWithFallback}[1]{%
- \fontspec{#1}[RawFeature={fallback=mainFontFallback}]%
+ \fontspec{#1}[Kerning=Off,RawFeature={fallback=mainFontFallback}]%
 }
 
 \newcommand{\monoFontWithFallback}[1]{%
-  \fontspec{#1}[RawFeature={fallback=monoFallback}]%
+  \fontspec{#1}[Kerning=Off,RawFeature={fallback=monoFallback}]%
 }
 
 \newcommand{\headerFontWithFallback}[2]{%
-  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{color_header_footer_text}%
+  \fontspec{#1}[Kerning=Off,RawFeature={fallback=headerFallback},#2]\color{color_header_footer_text}%
 }
 
 \renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{${font_size_footnote}pt}{${font_size_footnote}pt}\selectfont}

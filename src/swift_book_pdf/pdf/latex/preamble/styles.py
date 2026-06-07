@@ -14,7 +14,7 @@
 
 """Pygments styles that mirror Swift Book syntax colors."""
 
-from typing import ClassVar
+from collections.abc import Mapping
 
 from pygments.style import Style
 from pygments.token import (
@@ -28,13 +28,14 @@ from pygments.token import (
     Punctuation,
     String,
     Text,
+    _TokenType,
 )
 
 
 class CustomSwiftBookStyle(Style):
     """Light-mode Pygments token colors for Swift code blocks."""
 
-    styles: ClassVar[dict[object, str]] = {
+    styles: Mapping[_TokenType, str] = {
         Text: "#000",
         Error: "#000",
         Keyword: "#ad3da4",  # --color-syntax-keywords
@@ -63,7 +64,7 @@ class CustomSwiftBookStyle(Style):
 class CustomSwiftBookDarkStyle(Style):
     """Dark-mode Pygments token colors for Swift code blocks."""
 
-    styles: ClassVar[dict[object, str]] = {
+    styles: Mapping[_TokenType, str] = {
         Text: "#fff",
         Error: "#fff",
         Keyword: "#ff7ab2",  # --color-syntax-keywords

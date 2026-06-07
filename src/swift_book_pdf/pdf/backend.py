@@ -21,7 +21,12 @@ from typing import Any, Protocol
 
 from swift_book_pdf.core.config import ResolvedBuildSource
 from swift_book_pdf.core.navigation.toc import TableOfContents
-from swift_book_pdf.pdf.config import EngineKind, PDFConfig, PDFDocumentConfig
+from swift_book_pdf.pdf.config import (
+    EngineKind,
+    PDFConfig,
+    PDFContentSelection,
+    PDFDocumentConfig,
+)
 from swift_book_pdf.pdf.latex.backend import LaTeXBackend
 from swift_book_pdf.pdf.latex.engine import LaTeXEngine
 
@@ -51,6 +56,9 @@ class PDFBackendConfigInput:
 
     doc_config: PDFDocumentConfig
     """Resolved PDF document layout options."""
+
+    content_selection: PDFContentSelection
+    """Subset of book content to render."""
 
     save_tex: bool
     """Whether to save LaTeX source instead of compiling a PDF."""

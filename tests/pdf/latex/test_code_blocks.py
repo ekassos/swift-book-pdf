@@ -31,7 +31,7 @@ def test_convert_code_block_preserves_percent_for_minted() -> None:
 def test_convert_nested_code_block_preserves_percent_for_minted() -> None:
     block = CodeBlock(lines=["-9 % 4 // equals -1"])
 
-    rendered = convert_nested_block(block, RenderingMode.PRINT)
+    rendered = convert_nested_block(block, _render_context())
 
     assert "-9 % 4 // equals -1" in rendered
     assert r"\%" not in rendered

@@ -25,6 +25,7 @@ from swift_book_pdf.pdf.config import (
     Appearance,
     PaperSize,
     PDFConfig,
+    PDFContentSelection,
     PDFDocumentConfig,
     RenderingMode,
 )
@@ -59,12 +60,34 @@ def build_doc_config(
     )
 
 
+def build_content_selection(
+    *,
+    only_toc: bool,
+    only_chapter: str | None,
+) -> PDFContentSelection:
+    """Build the PDF content selection from CLI options.
+
+    Args:
+        only_toc: Whether to render only the table of contents page.
+        only_chapter: Optional document tag or file stem for one chapter.
+
+    Returns:
+        PDF content selection.
+    """
+    chapter = only_chapter.strip() if only_chapter is not None else None
+    return PDFContentSelection(
+        only_toc=only_toc,
+        only_chapter=chapter or None,
+    )
+
+
 def build_pdf_config(  # noqa: PLR0913
     temp_dir: str,
     output_path: str,
     *,
     backend: PDFBackend,
     doc_config: PDFDocumentConfig,
+    content_selection: PDFContentSelection,
     save_tex: bool,
     intermediates_path: str | None,
     backend_options: Mapping[str, Any],
@@ -81,6 +104,7 @@ def build_pdf_config(  # noqa: PLR0913
         output_path: Validated PDF output path.
         backend: PDF backend adapter.
         doc_config: PDF document layout configuration.
+        content_selection: Requested content subset.
         save_tex: Whether to save LaTeX source instead of compiling a PDF.
         intermediates_path: Optional destination directory for build
             intermediates.
@@ -106,6 +130,7 @@ def build_pdf_config(  # noqa: PLR0913
             output_path=output_path,
             dangerously_skip_legal_notices=dangerously_skip_legal_notices,
             doc_config=doc_config,
+            content_selection=content_selection,
             save_tex=save_tex,
             intermediates_path=intermediates_path,
             override_version=override_version,

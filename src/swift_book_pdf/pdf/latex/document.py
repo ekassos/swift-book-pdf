@@ -43,26 +43,75 @@ def write_latex_document(
         output_path: Destination ``.tex`` file path.
     """
     latex = generate_preamble(config)
-    toc_latex = generate_toc_latex(toc, renderer)
-    latex += toc_latex + "\n"
 
-    for tag in toc.doc_tags:
-        if tag.lower() == NOTICES_DOC_KEY:
-            latex += render_notices_latex(
-                config.doc_config.mode,
-                config.original_work_copyright_year_range,
+    if config.content_selection.only_toc:
+        latex += generate_toc_latex(toc, renderer) + "\n"
+    elif config.content_selection.only_chapter is not None:
+        latex += _render_chapter(
+            config,
+            toc,
+            renderer,
+            config.content_selection.only_chapter,
+            required=True,
+        )
+    else:
+        latex += generate_toc_latex(toc, renderer) + "\n"
+        for tag in toc.doc_tags:
+            latex += _render_chapter(
+                config, toc, renderer, tag, required=False
             )
-            latex += "\n"
-            continue
-
-        chapter_metadata = toc.chapter_metadata.get(tag.lower())
-        if chapter_metadata is None or chapter_metadata.file_path is None:
-            logger.warning(
-                f"Warning: No file found for tag <doc:{tag}>, skipping...",
-            )
-            continue
-
-        latex += renderer.render_file(chapter_metadata.file_path) + "\n"
 
     latex += r"\end{document}"
     output_path.write_text(latex, encoding="utf-8")
+
+
+def _render_chapter(
+    config: LaTeXPDFConfig,
+    toc: TableOfContents,
+    renderer: LaTeXRenderer,
+    tag: str,
+    *,
+    required: bool,
+) -> str:
+    """Render one chapter by document tag or file stem.
+
+    Args:
+        config: Resolved PDF build configuration.
+        toc: Loaded Swift Book table of contents.
+        renderer: Chapter renderer for source Markdown files.
+        tag: Document tag or file stem.
+        required: Whether missing chapter metadata should fail the build.
+
+    Returns:
+        Rendered chapter LaTeX, including a trailing newline.
+
+    Raises:
+        ValueError: If `tag` does not match a known chapter.
+    """
+    chapter_key = tag.lower()
+    if chapter_key == NOTICES_DOC_KEY:
+        return (
+            render_notices_latex(
+                config.doc_config.mode,
+                config.original_work_copyright_year_range,
+            )
+            + "\n"
+        )
+
+    chapter_metadata = toc.chapter_metadata.get(chapter_key)
+    if chapter_metadata is None:
+        if required:
+            raise ValueError(f"Couldn't find chapter <doc:{tag}>.")
+        logger.warning(
+            f"Warning: No file found for tag <doc:{tag}>, skipping...",
+        )
+        return ""
+    if chapter_metadata.file_path is None:
+        if required:
+            raise ValueError(f"Couldn't find source file for <doc:{tag}>.")
+        logger.warning(
+            f"Warning: No file found for tag <doc:{tag}>, skipping...",
+        )
+        return ""
+
+    return renderer.render_file(chapter_metadata.file_path) + "\n"

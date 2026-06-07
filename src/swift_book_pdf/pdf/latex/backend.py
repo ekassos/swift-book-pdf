@@ -53,6 +53,7 @@ class LaTeXBackend:
                 config_input.dangerously_skip_legal_notices
             ),
             doc_config=config_input.doc_config,
+            content_selection=config_input.content_selection,
             save_tex=config_input.save_tex,
             intermediates_path=config_input.intermediates_path,
             latex_config=latex_config,

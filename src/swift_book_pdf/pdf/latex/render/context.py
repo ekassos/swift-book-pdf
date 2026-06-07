@@ -17,6 +17,7 @@
 from dataclasses import dataclass
 
 from swift_book_pdf.pdf.config import Appearance, RenderingMode
+from swift_book_pdf.pdf.latex.render.inline import DocReferenceResolver
 
 
 @dataclass(frozen=True)
@@ -40,3 +41,6 @@ class LaTeXRenderContext:
 
     body_font_size: float
     """Base paragraph font size in points."""
+
+    doc_references: DocReferenceResolver | None = None
+    """Optional resolver for subset-build document references."""

@@ -62,6 +62,31 @@ def pdf_document_options(func: OptionTarget) -> OptionTarget:
     return apply_options(func, decorators)
 
 
+def pdf_content_options(func: OptionTarget) -> OptionTarget:
+    """Add PDF content selection options to the command callback.
+
+    Args:
+        func: Click command callback to decorate.
+
+    Returns:
+        Decorated command callback.
+    """
+    decorators = (
+        click.option(
+            "--only-toc",
+            is_flag=True,
+            help="Render only the table of contents page",
+        ),
+        click.option(
+            "--only-chapter",
+            metavar="DOC_TAG",
+            default=None,
+            help="Render only one chapter by DocC tag or file stem",
+        ),
+    )
+    return apply_options(func, decorators)
+
+
 def pdf_output_options(func: OptionTarget) -> OptionTarget:
     """Add PDF output artifact options to the command callback.
 

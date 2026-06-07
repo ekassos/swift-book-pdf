@@ -187,10 +187,26 @@
 
 \makeatletter
 \def\subsection{\@startsection{subsection}{2}{0pt}%
-   {\ifprecededbyparagraph ${spacing_subsection_before_para} \else ${spacing_subsection_before} \fi}
-   {${spacing_heading_after}}
-   {\mainFontWithFallback{$main_font}\fontsize{${font_size_subsection}pt}{${spacing_baselineskip_subsection}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {0bp}
+   {1sp}
+   {\mainFontWithFallback{$main_font}\fontsize{${content_node_heading_2_font_size}}{${content_node_heading_2_line_height}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse}}
 \makeatother
+
+\newcommand{\DocCContentNodeHeadingTwoBefore}{%
+\ifprecededbyparagraph\nointerlineskip\vspace{${content_node_paragraph_to_heading_2_margin_top}}\fi%
+\ifprecededbybox\nointerlineskip\vspace{${content_node_code_listing_to_documentation_h2_margin_top}}\fi%
+\ifprecededbynote\nointerlineskip\vspace{${content_node_aside_to_documentation_h2_margin_top}}\fi%
+\ifprecededbysection\nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}\fi%
+\ifprecededbytable\nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}\fi%
+}
+
+\newcommand{\DocCContentNodeHeadingTwo}[2]{%
+  {%
+    \setlength{\parskip}{0pt}
+    \DocCContentNodeHeadingTwoBefore
+    \pdfbookmark[2]{#1}{#2}\subsection*{\DocCContentLineBox{#1}}\label{#2}
+  }%
+}
 
 \newcommand{\SectionHeader}[2]{%
   {%
@@ -275,6 +291,12 @@
 
 \newif\ifprecededbysection
 \precededbysectionfalse
+
+\newif\ifprecededbyinlineimage
+\precededbyinlineimagefalse
+
+\newif\ifprecededbytable
+\precededbytablefalse
 
 \newif\ifprecededbyparagraph
 \precededbyparagraphfalse

@@ -99,7 +99,7 @@ def render_notices_latex(
         for paragraph in paragraphs
     )
     latex_lines.append(
-        "\\SectionHeader{Apache License 2.0 and Related Notices}"
+        "\\DocCContentNodeHeadingTwo{Apache License 2.0 and Related Notices}"
         f"{{{NOTICES_DOC_KEY}_apache-license-20_and_related_notices}}\n"
     )
     latex_lines.extend(

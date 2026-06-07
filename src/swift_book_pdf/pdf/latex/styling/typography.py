@@ -20,10 +20,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Typography scale and spacing helpers for LaTeX PDFs."""
+"""DocC Render lengths converted to LaTeX PDF dimensions."""
 
 from swift_book_pdf.pdf.config import DEFAULT_BODY_FONT_SIZE
 
+### PREVIOUSLY:
+### TODO(ekassos): Remove this once we've transitioned to the new typography variables.
 # Default font sizes in points (at body font size = 9pt).
 #
 # | Element          | Default  | Ratio  |
@@ -204,6 +206,7 @@ def format_pt(value: float) -> str:
     return f"{rounded:.2f}".rstrip("0")
 
 
+### NEW:
 CSS_ROOT_FONT_SIZE_PX = 17.0
 CSS_POINT_PER_PX = 0.75
 DOCC_PDF_SCALE = 0.75

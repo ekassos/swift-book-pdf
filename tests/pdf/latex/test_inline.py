@@ -49,3 +49,21 @@ def test_apply_formatting_preserves_underscores_inside_link_urls() -> None:
         r"\footnote{\url{https://developer.apple.com/documentation/swift/warning(_:_:)}}"
         in rendered
     )
+
+
+def test_apply_formatting_escapes_hash_fragments_inside_link_urls() -> None:
+    source = (
+        "[Conforming to the Hashable Protocol]"
+        "(https://developer.apple.com/documentation/swift/hashable#2849490)"
+    )
+
+    rendered = apply_formatting(source, RenderingMode.PRINT)
+
+    assert (
+        r"\href{https://developer.apple.com/documentation/swift/hashable\#2849490}"
+        r"{Conforming to the Hashable Protocol}" in rendered
+    )
+    assert (
+        r"\footnote{\url{https://developer.apple.com/documentation/swift/hashable\#2849490}}"
+        in rendered
+    )

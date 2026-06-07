@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new `--save-intermediates` flag to `swift-book-pdf` to save the build intermediates to a user-provided directory.
 - Add new `--only-toc` flag to `swift-book-pdf` to generate only the table of contents.
 - Add new `--only-chapter` flag to `swift-book-pdf` to generate a single chapter by DocC tag (`<doc:TheBasics>`) or file stem (`TheBasics`).
+- Add Swift-DocC-Render-compatible word break opportunities to generated PDF inline code spans.
 
 ### Changed
 - Redesign generated EPUB cover artwork and rendered cover text for release and beta editions, with new templates, edition-specific colors, and adjusted version-label spacing and positioning.

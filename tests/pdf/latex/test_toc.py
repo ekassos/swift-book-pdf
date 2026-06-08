@@ -114,3 +114,83 @@ def test_toc_topic_links_remove_generic_list_spacing_wrappers() -> None:
         r"\DocCTopicLinkBlock{chapter-icon.png}{\nameref{thebasics}}"
         in rendered
     )
+
+
+def test_toc_only_mode_uses_static_chapter_titles() -> None:
+    lines = [
+        "\\item \\begin{DocCContentListItemParagraph}\n"
+        "\\fallbackrefdigital{guidedtour}\n"
+        "\\end{DocCContentListItemParagraph}"
+    ]
+    metadata = {
+        "guidedtour": ChapterMetadata(
+            header_line="A Guided Tour",
+            subtitle_line="A quick start.",
+        ),
+    }
+
+    rendered = replace_chapter_href_with_toc_item(
+        lines,
+        metadata,
+        RenderingMode.DIGITAL,
+        Appearance.LIGHT,
+        resolve_references=False,
+    )
+
+    assert rendered[0] == (
+        r"\DocCTopicLinkBlock{chapter-icon.png}"
+        r"{A Guided Tour}{A quick start.}"
+    )
+    assert r"\nameref{guidedtour}" not in rendered[0]
+    assert "??" not in rendered[0]
+
+
+def test_toc_overrides_convert_generated_topic_link_list_items() -> None:
+    rendered = apply_toc_latex_overrides(
+        [
+            r"\begin{itemize}",
+            "\\item \\begin{DocCContentListItemParagraph}\n"
+            "\\fallbackrefdigital{guidedtour}\n"
+            "\\end{DocCContentListItemParagraph}",
+            r"\end{itemize}",
+        ],
+        {
+            "guidedtour": ChapterMetadata(
+                header_line="A Guided Tour",
+                subtitle_line="A quick start.",
+            )
+        },
+        RenderingMode.DIGITAL,
+        Appearance.LIGHT,
+        resolve_references=False,
+    )
+
+    assert rendered == [
+        r"\begin{DocCTopicLinkBlockList}",
+        (
+            r"\DocCTopicLinkBlock{chapter-icon.png}"
+            r"{A Guided Tour}{A quick start.}"
+        ),
+        r"\end{DocCTopicLinkBlockList}",
+    ]
+    assert r"\item" not in "\n".join(rendered)
+
+
+def test_toc_heading_overrides_use_tex_control_word_names() -> None:
+    rendered = apply_toc_latex_overrides(
+        [
+            r"\DocCContentNodeHeadingTwo{Topics}{topics}",
+            r"\DocCContentNodeHeadingThree{Welcome}{welcome}",
+            r"\DocCContentNodeHeadingFour{Details}{details}",
+        ],
+        {},
+        RenderingMode.DIGITAL,
+        Appearance.LIGHT,
+    )
+
+    assert rendered[0] == r"\DocCContentNodeHeadingTwoTOC{Topics}{topics}"
+    assert rendered[1] == r"\DocCContentNodeHeadingThreeTOC{Welcome}{welcome}"
+    assert rendered[2] == r"\DocCContentNodeHeadingFour{Details}{details}"
+    assert "Heading2" not in "\n".join(rendered)
+    assert "Heading3" not in "\n".join(rendered)
+    assert "Heading4" not in "\n".join(rendered)

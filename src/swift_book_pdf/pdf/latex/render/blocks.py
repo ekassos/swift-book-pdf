@@ -154,6 +154,7 @@ def _convert_note_block(
         "\\end{DocCFlushLeftBlock}",
     ]
 
+
 def _convert_paragraph_block(
     block: ParagraphBlock, context: LaTeXRenderContext
 ) -> str:

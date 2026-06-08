@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from swift_book_pdf.core.blocks.models import CodeBlock
+from swift_book_pdf.core.blocks.models import (
+    Block,
+    CodeBlock,
+    NoteBlock,
+    ParagraphBlock,
+)
 from swift_book_pdf.pdf.config import Appearance, RenderingMode
 from swift_book_pdf.pdf.latex.render.blocks import convert_blocks_to_latex
 from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
@@ -35,6 +40,27 @@ def test_convert_nested_code_block_preserves_percent_for_minted() -> None:
 
     assert "-9 % 4 // equals -1" in rendered
     assert r"\%" not in rendered
+    assert "\\begin{DocCCodeListingSwiftBox}" in rendered
+
+
+def test_code_and_note_blocks_use_flushleft_wrapper() -> None:
+    blocks: list[Block] = [
+        CodeBlock(lines=["// code"]),
+        NoteBlock(label="Note", blocks=[ParagraphBlock(lines=["Body."])]),
+    ]
+
+    rendered = "\n".join(convert_blocks_to_latex(blocks, _render_context()))
+
+    assert (
+        "\\begin{DocCFlushLeftBlock}\n\\begin{DocCCodeListingSwiftBox}"
+    ) in rendered
+    assert (
+        "\\end{DocCCodeListingSwiftBox}\n\\end{DocCFlushLeftBlock}"
+    ) in rendered
+    assert ("\\begin{DocCFlushLeftBlock}\n\\begin{DocCAsideBox}") in rendered
+    assert (
+        r"\end{DocCAsideBox}" + "\n" + r"\end{DocCFlushLeftBlock}" in rendered
+    )
 
 
 def _render_context() -> LaTeXRenderContext:

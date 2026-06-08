@@ -207,15 +207,17 @@
   \global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{${article_hero_intro_font_size}}{${article_hero_intro_line_height}}\selectfont
 }
 
+\newif\ifDocCArticleHeroTitle
+
 \makeatletter
 \newcommand{\DocCSetCurrentLabelName}[1]{%
   \def\@currentlabelname{#1}%
 }
 
 \def\section{\@startsection{section}{1}{0pt}%
-  {${content_node_paragraph_to_heading_2_margin_top}}%
-  {${article_stacked_margin_small}}%
-  {\mainFontWithFallback{$main_font}\fontsize{${content_node_heading_2_font_size}}{${content_node_heading_2_line_height}}\selectfont\global\AtPageTopfalse}%
+  {\ifDocCArticleHeroTitle 0bp\else ${content_node_paragraph_to_heading_2_margin_top}\fi}%
+  {\ifDocCArticleHeroTitle ${documentation_topic_title_margin_bottom}\else ${article_stacked_margin_small}\fi}%
+  {\ifDocCArticleHeroTitle\DocCArticleHeroHeadlineStyle\else\mainFontWithFallback{$main_font}\fontsize{${content_node_heading_2_font_size}}{${content_node_heading_2_line_height}}\selectfont\fi\global\AtPageTopfalse}%
 }
 \makeatother
 
@@ -223,17 +225,17 @@
 
 \newcommand{\DocCArticleHeroTitle}[2]{%
   {%
-    \pdfbookmark[1]{#1}{#2}%
-    \DocCSetCurrentLabelName{#1}%
+    \DocCArticleHeroTitletrue%
     \vspace*{${spacing_stacked_margin_large}}%
-    {\DocCArticleHeroHeadlineStyle\strut #1\strut\par}%
+    \pdfbookmark[1]{#1}{#2}%
+    \section*{\DocCContentLineBox{#1}}%
+    \DocCSetCurrentLabelName{#1}%
     \label{#2}%
   }%
 }
 
 \newcommand{\DocCArticleHeroTextGroup}[3]{%
   \DocCArticleHeroTitle{#1}{#2}%
-  \vspace*{${documentation_topic_title_margin_bottom}}%
   {\DocCArticleHeroIntroStyle #3\strut\par}%
 }
 

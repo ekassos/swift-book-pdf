@@ -15,6 +15,7 @@
 from swift_book_pdf.core.source import ChapterMetadata
 from swift_book_pdf.pdf.config import Appearance, RenderingMode
 from swift_book_pdf.pdf.latex.render.toc import (
+    apply_toc_latex_overrides,
     replace_chapter_href_with_toc_item,
 )
 
@@ -68,3 +69,42 @@ def test_toc_chapter_icon_uses_dark_asset_in_print_mode() -> None:
     assert r"\fallbackrefbook{guidedtour}" not in rendered[0]
     assert r"\nameref{guidedtour}" in rendered[0]
     assert r"\pageref{guidedtour}" in rendered[0]
+
+
+def test_toc_topic_links_remove_generic_list_spacing_wrappers() -> None:
+    lines = [
+        r"\DocCDocumentationTopicContentNodeListBefore",
+        r"\begin{itemize}",
+        r"\item \DocCSuppressNextTopMargin",
+        r"\begin{DocCContentListItemParagraph}",
+        r"\fallbackrefdigital{guidedtour}",
+        r"\end{DocCContentListItemParagraph}",
+        r"\DocCContentNodeListItemBefore",
+        r"\item \DocCSuppressNextTopMargin",
+        r"\begin{DocCContentListItemParagraph}",
+        r"\fallbackrefdigital{thebasics}",
+        r"\end{DocCContentListItemParagraph}",
+        r"\end{itemize}",
+        r"\DocCDocumentationTopicContentNodeListAfter",
+    ]
+    metadata = {
+        "guidedtour": ChapterMetadata(subtitle_line="Explore Swift."),
+        "thebasics": ChapterMetadata(subtitle_line="Write basic syntax."),
+    }
+
+    rendered = "\n".join(
+        apply_toc_latex_overrides(
+            lines,
+            metadata,
+            RenderingMode.DIGITAL,
+            Appearance.LIGHT,
+        )
+    )
+
+    assert r"\DocCDocumentationTopicContentNodeListBefore" not in rendered
+    assert r"\DocCDocumentationTopicContentNodeListAfter" not in rendered
+    assert r"\DocCContentNodeListItemBefore" not in rendered
+    assert r"\DocCContentListItemParagraph" not in rendered
+    assert r"\begin{DocCTopicLinkBlockList}" in rendered
+    assert r"\DocCTopicLinkBlock{chapter-icon.png}{\nameref{guidedtour}}" in rendered
+    assert r"\DocCTopicLinkBlock{chapter-icon.png}{\nameref{thebasics}}" in rendered

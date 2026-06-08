@@ -101,6 +101,13 @@ def apply_toc_latex_overrides(
     latex_text = latex_text.replace(
         r"\end{itemize}", r"\end{DocCTopicLinkBlockList}"
     )
+    latex_text = latex_text.replace(
+        r"\DocCDocumentationTopicContentNodeListBefore", ""
+    )
+    latex_text = latex_text.replace(
+        r"\DocCDocumentationTopicContentNodeListAfter", ""
+    )
+    latex_text = latex_text.replace(r"\DocCContentNodeListItemBefore", "")
     return replace_chapter_href_with_toc_item(
         latex_text.splitlines(),
         chapter_metadata,

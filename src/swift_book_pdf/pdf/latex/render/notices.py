@@ -148,7 +148,7 @@ def _render_latex_preformatted_block(text: str) -> list[str]:
     Returns:
         LaTeX lines for the plain-listing box.
     """
-    lines = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{plainlistingbox}"]
+    lines = ["\\begin{DocCFlushLeftBlock}\n\\begin{DocCCodeListingPlainBox}"]
     lines.extend(text.splitlines())
-    lines.append(r"\end{plainlistingbox}" + "\n\\end{flushleft}\n")
+    lines.append("\\end{DocCCodeListingPlainBox}\n\\end{DocCFlushLeftBlock}")
     return lines

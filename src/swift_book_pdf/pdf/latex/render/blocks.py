@@ -119,9 +119,9 @@ def _convert_code_block(block: CodeBlock) -> list[str]:
     Returns:
         Rendered LaTeX lines.
     """
-    output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
+    output = ["\\begin{DocCFlushLeftBlock}\n\\begin{DocCCodeListingSwiftBox}"]
     output.extend(override_characters(line, True) for line in block.lines)
-    output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
+    output.append("\\end{DocCCodeListingSwiftBox}\n\\end{DocCFlushLeftBlock}")
     return output
 
 
@@ -141,10 +141,13 @@ def _convert_note_block(
         convert_nested_block(sub_block, context) for sub_block in block.blocks
     )
     return [
-        "\\begin{flushleft}\\begin{asideNote}",
-        f" \\textbf{{{block.label}}} \\vspace*{{4pt}} \\\\",
+        "\\begin{DocCFlushLeftBlock}",
+        "\\begin{DocCAsideBox}",
+        f"\\strut\\textcolor{{color_aside_note}}{{\\textbf{{{block.label}}}}}\\strut"
+        "\\par\\vspace*{\\DocCAsideLabelGap}",
         aside_content,
-        "\\end{asideNote}\\end{flushleft}" + "\n",
+        "\\end{DocCAsideBox}",
+        "\\end{DocCFlushLeftBlock}",
     ]
 
 

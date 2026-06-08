@@ -648,13 +648,62 @@
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
 }
 
-\newtcblisting{plainlistingbox}{
+\newcommand{\DocCCodeListingFontStyle}{\fontsize{${font_style_documentation_code_listing_font_size}}{${font_style_documentation_code_listing_line_height}}\selectfont}
+\newcommand{\DocCEnclosedEAcute}{%
+  \mbox{%
+    \tikz[baseline=(glyph.base)]{%
+      \node[inner sep=0pt, outer sep=0pt] (glyph) {é};%
+      \draw[line width=0.035em]
+        ([yshift=0.01em]glyph.center)
+        circle [radius=0.62em];%
+    }%
+  }%
+}
+\newtcblisting{DocCCodeListingSwiftBox}{
+  listing only,
+  breakable,
+  whole on next page if possible,
+  minted language=swift-book-swift,
+  minted options={
+    fontsize=\DocCCodeListingFontStyle,
+    style=$code_style,
+    breaklines=true,
+    breakanywhere=true,
+    breakbefore={ABCDEFGHIJKLMNOPQRSTUVWXYZ},
+    breakafter={.,>)]:(\{},
+    breaksymbolleft={\raisebox{0.1ex}{\color{color_aside_note_border}\DocCCodeListingFontStyle\ensuremath{\hookrightarrow}}},
+    breaksymbolsepleft=0.3em,
+    breakbeforesymbolpre={\,\DocCCodeListingFontStyle\ensuremath{_\rfloor}},
+    breakaftersymbolpre={\,\DocCCodeListingFontStyle\ensuremath{_\rfloor}},
+    breakanywheresymbolpre={\,\DocCCodeListingFontStyle\ensuremath{_\rfloor}},
+    autogobble=true,
+    breakautoindent=true,
+    breakindent=${breakindent_minted},
+    tabsize=2,
+    frame=none,
+    framesep=0pt,
+    escapeinside=||,
+  },
+  colback=color_code_background,
+  colframe=color_grid,
+  colupper=color_code_plain,
+  boxrule=${content_node_code_listing_border_width},
+  arc=${border_radius},
+  top=${code_block_style_elements_padding_block}, bottom=${code_block_style_elements_padding_block},
+  left=${code_block_style_elements_padding_inline}, right=${code_block_style_elements_padding_inline},
+  boxsep=0pt,
+  before skip={${documentation_topic_content_node_code_listing_margin_top}},
+  after skip=0bp,
+  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
+}
+
+\newtcblisting{DocCCodeListingPlainBox}{
   listing only,
   breakable,
   whole on next page if possible,
   minted language=text,
   minted options={
-    fontsize=\customsmall,
+    fontsize=\DocCCodeListingFontStyle,
     breaklines=true,
     breakanywhere=true,
     autogobble=true,
@@ -665,32 +714,45 @@
   colback=color_code_background,
   colframe=color_grid,
   colupper=color_code_plain,
-  boxrule=0.5pt,
-  arc=4pt,
-  top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
-  left=${spacing_code_box_lr}, right=${spacing_code_box_lr},
+  boxrule=${content_node_code_listing_border_width},
+  arc=${border_radius},
+  top=${code_block_style_elements_padding_block}, bottom=${code_block_style_elements_padding_block},
+  left=${code_block_style_elements_padding_inline}, right=${code_block_style_elements_padding_inline},
   boxsep=0pt,
-  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
+  before skip={${documentation_topic_content_node_code_listing_margin_top}},
   after skip=0in,
-  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
+  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
 }
 
 % ----------------------------------------
 % Define custom note style
 % ----------------------------------------
-\newtcolorbox{asideNote}{%
+\newcommand{\DocCAsideLabelGap}{${spacing_stacked_margin_small}}
+\newtcolorbox{DocCAsideBox}{%
   enhanced,
   breakable,
   whole on next page if possible,
   colback=color_aside_note_background,
-  arc=4pt,
-  borderline west={3pt}{0pt}{color_aside_note_border},
+  arc=${border_radius},
   boxrule=0pt,
   frame empty,
-  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
-  after skip=0in,
-  after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\AtPageTopfalse},
-  left=${spacing_aside_left}, right=${spacing_aside_pad}, top=${spacing_aside_pad}, bottom=${spacing_aside_pad},
+  underlay unbroken and first={%
+    \begin{tcbclipframe}%
+      \fill[color_aside_note_border] (frame.south west) rectangle ([xshift=${aside_border_width_left}]frame.north west);%
+    \end{tcbclipframe}%
+  },
+  underlay middle={%
+    \fill[color_aside_note_border] (frame.south west) rectangle ([xshift=${aside_border_width_left}]frame.north west);%
+  },
+  underlay last={%
+    \begin{tcbclipframe}%
+      \fill[color_aside_note_border] (frame.south west) rectangle ([xshift=${aside_border_width_left}]frame.north west);%
+    \end{tcbclipframe}%
+  },
+  before skip={${documentation_topic_content_node_aside_margin_top}},
+  after skip=0bp,
+  after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
+  left=\dimexpr${aside_padding}+${aside_border_width_left}\relax, right=${aside_padding}, top=${aside_padding}, bottom=${aside_padding},
   before upper={\raggedright\color{color_text}},
 }
 

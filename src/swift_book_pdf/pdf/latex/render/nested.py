@@ -42,10 +42,12 @@ def convert_nested_block(block: Block, context: LaTeXRenderContext) -> str:
             convert_inline_code(para), context.mode, context.doc_references
         )
     if isinstance(block, CodeBlock):
-        out = "\\parskip=0pt\n" + r"\begin{swiftstyledbox}" + "\n"
-        for line in block.lines:
-            out += override_characters(line) + "\n"
-        return out + r"\end{swiftstyledbox}" + "\n"
+        out = [
+            "\\begin{DocCCodeListingSwiftBox}",
+        ]
+        out.extend(override_characters(line) for line in block.lines)
+        out.append("\\end{DocCCodeListingSwiftBox}")
+        return "\n".join(out)
 
     raise TypeError(
         f"Unsupported nested LaTeX block type: {type(block).__name__}"

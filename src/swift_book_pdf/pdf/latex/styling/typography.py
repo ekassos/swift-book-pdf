@@ -40,6 +40,7 @@ DOCC_RENDER_LENGTHS = {
     "article_hero_intro_line_height": "29px",
     "article_hero_padding_top": "30px",
     "article_hero_padding_bottom": "30px",
+    "documentation_layout_full_width_container_padding_inline": "80px",
     "documentation_topic_title_margin_bottom": "12px",
     "documentation_topic_content_table_title_font_size": "32px",
     "documentation_topic_content_table_title_line_height": "36px",

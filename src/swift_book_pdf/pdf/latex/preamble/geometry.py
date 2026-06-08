@@ -15,20 +15,43 @@
 """LaTeX page geometry helpers."""
 
 from swift_book_pdf.pdf.config import PaperSize
+from swift_book_pdf.pdf.latex.styling.typography import get_css_dimension
 
 
-def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
+def get_geometry_opts(
+    paper_size: PaperSize,
+    gutter: bool = True,
+    body_font_size: float | None = None,
+) -> str:
     """Return LaTeX geometry options for the requested page layout.
 
     Args:
         paper_size: Output paper size.
         gutter: Whether to reserve extra inner margin for book binding.
+        body_font_size: Base paragraph font size in PDF points.
 
     Returns:
         Comma-separated geometry package options.
     """
+    if gutter:
+        layout_margins = {
+            PaperSize.A4: "inner=1.67in,outer=0.75in",
+            PaperSize.LETTER: "inner=1.9in,outer=0.75in",
+            PaperSize.LEGAL: "inner=1.9in,outer=0.75in",
+        }[paper_size]
+    else:
+        if body_font_size is None:
+            raise ValueError(
+                "body_font_size is required for no-gutter geometry"
+            )
+        no_gutter_hmargin = get_css_dimension(
+            "documentation_layout_full_width_container_padding_inline",
+            body_font_size,
+        )
+        layout_margins = f"hmargin={no_gutter_hmargin}"
+
     return {
-        PaperSize.A4: f"a4paper,{'inner=1.67in,outer=0.75in' if gutter else 'hmargin=1.285in'}",
-        PaperSize.LETTER: f"letterpaper,{'inner=1.9in,outer=0.75in' if gutter else 'hmargin=1.4in'}",
-        PaperSize.LEGAL: f"legalpaper,{'inner=1.9in,outer=0.75in' if gutter else 'hmargin=1.4in'}",
+        PaperSize.A4: f"a4paper,{layout_margins}",
+        PaperSize.LETTER: f"letterpaper,{layout_margins}",
+        PaperSize.LEGAL: f"legalpaper,{layout_margins}",
     }[paper_size]

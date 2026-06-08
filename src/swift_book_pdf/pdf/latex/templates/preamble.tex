@@ -223,6 +223,18 @@
   }%
 }
 
+\newcommand{\DocCDocumentationTopicContentTableTitleStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${documentation_topic_content_table_title_font_size}}{${documentation_topic_content_table_title_line_height}}\selectfont
+}
+
+\newcommand{\DocCContentNodeHeadingTwoTOC}[2]{%
+  {%
+    \setlength{\parskip}{0pt}
+    \pdfbookmark[2]{#1}{#2}%
+    {\DocCDocumentationTopicContentTableTitleStyle\noindent #1\par}\label{#2}
+  }%
+}
+
 \newcommand{\SectionHeaderTOC}[2]{%
   {%
     \setlength{\parskip}{0pt}
@@ -266,6 +278,25 @@
     \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
     \pdfbookmark[3]{#1}{#2}\subsubsection*{#1}\label{#2}
     \vspace*{-${spacing_section_adjust}}
+  }%
+}
+
+\newcommand{\DocCDocumentationTopicContentTableSectionTitleStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${documentation_topic_content_table_section_title_font_size}}{${documentation_topic_content_table_section_title_line_height}}\selectfont
+}
+
+\newcommand{\DocCContentNodeHeadingThreeTOC}[2]{%
+  {%
+    \needspace{5\baselineskip}%
+    \checkTopOfPage
+    \intoctrue
+    \setlength{\parskip}{0pt}
+    \nopagebreak
+    \vspace*{${documentation_topic_content_table_section_padding_top}}%
+    \pdfbookmark[3]{#1}{#2}%
+    {\DocCDocumentationTopicContentTableSectionTitleStyle\noindent #1\par}\label{#2}
+    \nopagebreak
+    \intocfalse
   }%
 }
 
@@ -329,6 +360,58 @@
   \setlength{\parskip}{${spacing_code_parskip}}\raggedright
 }
 \setmonofont{$mono_font}[RawFeature={fallback=monoFallback}, Scale=1]
+
+\newcommand{\DocCDocumentationTopicTopicsLinkBlockStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont
+}
+
+\newlength{\DocCTopicLinkIconWidth}
+\setlength{\DocCTopicLinkIconWidth}{${documentation_topic_topic_link_icon_width}}
+\newlength{\DocCTopicLinkIconSpacing}
+\setlength{\DocCTopicLinkIconSpacing}{${documentation_topic_topic_link_icon_spacing}}
+\newlength{\DocCTopicLinkIndent}
+\setlength{\DocCTopicLinkIndent}{\dimexpr\DocCTopicLinkIconWidth+\DocCTopicLinkIconSpacing\relax}
+\newlength{\DocCTopicLinkAnchorRowHeight}
+\setlength{\DocCTopicLinkAnchorRowHeight}{${documentation_topic_topic_icon_wrapper_height}}
+
+\newcommand{\DocCTopicLinkBlockIcon}[1]{%
+  \parbox[c][\DocCTopicLinkAnchorRowHeight][c]{\DocCTopicLinkIconWidth}{%
+    \centering\includegraphics[height=${documentation_topic_topic_link_icon_height}]{#1}%
+  }%
+}
+
+\newcommand{\DocCTopicLinkBlockAnchorRow}[2]{%
+  \vspace{${documentation_topic_topics_link_block_has_adjacent_elements_padding_top}}%
+  \noindent\DocCTopicLinkBlockIcon{#1}\hspace{\DocCTopicLinkIconSpacing}%
+  \parbox[c][\DocCTopicLinkAnchorRowHeight][c]{\dimexpr\linewidth-\DocCTopicLinkIndent\relax}{%
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{0pt}%
+    \DocCDocumentationTopicTopicsLinkBlockStyle #2\par%
+  }\par%
+  \vspace{${documentation_topic_topics_link_block_has_adjacent_elements_padding_bottom}}%
+}
+
+\newcommand{\DocCTopicLinkBlockAbstract}[1]{%
+  \noindent\hspace*{\DocCTopicLinkIndent}%
+  \begin{minipage}[t]{\dimexpr\linewidth-\DocCTopicLinkIndent\relax}%
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{0pt}%
+    {\DocCDocumentationTopicTopicsLinkBlockStyle #1\par}%
+  \end{minipage}\par%
+}
+
+\newenvironment{DocCTopicLinkBlockList}{%
+  \begingroup\ignorespaces
+}{%
+  \endgroup\ignorespacesafterend
+}
+
+\newcommand{\DocCTopicLinkBlock}[3]{%
+  \needspace{3\baselineskip}%
+  \vspace{${documentation_topic_topics_link_block_margin_top}}%
+  \DocCTopicLinkBlockAnchorRow{#1}{#2}%
+  \DocCTopicLinkBlockAbstract{#3}%
+}
 
 % ----------------------------------------
 % Define custom property for padding

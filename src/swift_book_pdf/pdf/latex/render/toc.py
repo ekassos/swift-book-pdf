@@ -33,8 +33,6 @@ from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 if TYPE_CHECKING:
     from swift_book_pdf.pdf.latex.renderer import LaTeXRenderer
 
-CHAPTER_ICON_WIDTH_EM = 0.8
-
 
 def generate_toc_latex(
     toc: TableOfContents,
@@ -91,9 +89,17 @@ def apply_toc_latex_overrides(
         Adjusted LaTeX lines for the PDF table of contents.
     """
     latex_text = "\n".join(latex_lines)
-    latex_text = latex_text.replace(r"\SectionHeader", r"\SectionHeaderTOC")
     latex_text = latex_text.replace(
-        r"\SubsectionHeader", r"\SubsectionHeaderTOC"
+        r"\DocCContentNodeHeadingTwo", r"\DocCContentNodeHeadingTwoTOC"
+    )
+    latex_text = latex_text.replace(
+        r"\DocCContentNodeHeadingThree", r"\DocCContentNodeHeadingThreeTOC"
+    )
+    latex_text = latex_text.replace(
+        r"\begin{itemize}", r"\begin{DocCTopicLinkBlockList}"
+    )
+    latex_text = latex_text.replace(
+        r"\end{itemize}", r"\end{DocCTopicLinkBlockList}"
     )
     return replace_chapter_href_with_toc_item(
         latex_text.splitlines(),
@@ -131,14 +137,12 @@ def replace_chapter_href_with_toc_item(
     icon_name = (
         f"chapter-icon{'~dark' if appearance == Appearance.DARK else ''}.png"
     )
-    icon_markup = (
-        rf"\includegraphics[width={CHAPTER_ICON_WIDTH_EM}em]{{{icon_name}}}"
-    )
 
     match mode:
         case RenderingMode.DIGITAL:
             pattern = re.compile(
-                r"\\item \\ParagraphStyle{\\fallbackrefdigital{(.*?)}}",
+                r"\\item\s+\\ParagraphStyle"
+                r"{\\fallbackrefdigital{([^{}]+)}}",
             )
 
             def replacement(match: re.Match[str]) -> str:
@@ -161,11 +165,12 @@ def replace_chapter_href_with_toc_item(
                     mode,
                     resolve_references=resolve_references,
                 )
-                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] {title} \\ {subtitle}"
+                return rf"\DocCTopicLinkBlock{{{icon_name}}}{{{title}}}{{{subtitle}}}"
 
         case RenderingMode.PRINT:
             pattern = re.compile(
-                r"\\item \\ParagraphStyle{\\fallbackrefbook{(.*?)}}"
+                r"\\item\s+\\ParagraphStyle"
+                r"{\\fallbackrefbook{([^{}]+)}}"
             )
 
             def replacement(match: re.Match[str]) -> str:
@@ -189,12 +194,11 @@ def replace_chapter_href_with_toc_item(
                     resolve_references=resolve_references,
                 )
                 page_ref = (
-                    rf" {{\textcolor{{aside_border}}{{\hrulefill}}}} \pageref{{{key}}}"
+                    rf" {{\textcolor{{color_aside_note_border}}{{\hrulefill}}}} \pageref{{{key}}}"
                     if resolve_references
                     else ""
                 )
-
-                return rf"\needspace{{2\baselineskip}}\item[{{{icon_markup}}}] {title} {page_ref} \\ {subtitle}"
+                return rf"\DocCTopicLinkBlock{{{icon_name}}}{{{title}{page_ref}}}{{{subtitle}}}"
 
         case _:
             raise ValueError("Invalid rendering mode specified.")

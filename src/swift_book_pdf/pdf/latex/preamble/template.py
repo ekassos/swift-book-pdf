@@ -20,8 +20,6 @@ from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.preamble.geometry import get_geometry_opts
 from swift_book_pdf.pdf.latex.styling.colors import get_document_colors
 from swift_book_pdf.pdf.latex.styling.typography import (
-    compute_font_sizes,
-    compute_spacing,
     compute_typography_variables,
     get_css_points,
 )
@@ -61,20 +59,7 @@ def build_preamble_substitutions(
         config.doc_config.mode, config.doc_config.appearance
     )
 
-    ### PREVIOUSLY:
-    ### TODO(ekassos): Remove this once we've transitioned to the new typography variables.
-    _font_sizes = compute_font_sizes(config.doc_config.font_size)
-    _spacing = compute_spacing(config.doc_config.font_size)
-    _template_vars = {**_font_sizes, **_spacing}
-    for key, value in sorted(_font_sizes.items()):
-        logger.debug(f"{key}: {value}pt")
-    for key, value in sorted(_spacing.items()):
-        logger.debug(f"{key}: {value}")
-
-    ### NEW:
     template_vars = compute_typography_variables(config.doc_config.font_size)
-    ### TODO(ekassos): Remove this once we've transitioned to the new typography variables.
-    template_vars = {**template_vars, **_template_vars}
     code_block_font_size = get_css_points(
         "font_style_documentation_code_listing_font_size",
         config.doc_config.font_size,

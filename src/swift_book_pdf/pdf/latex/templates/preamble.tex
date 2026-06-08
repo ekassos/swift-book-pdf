@@ -116,38 +116,11 @@
 \makeatother
 \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
 
-\newcommand{\TitleStyle}{%
-  \mainFontWithFallback{$main_font}\fontsize{${font_size_title}pt}{${spacing_baselineskip_title}}\selectfont
-}
-
-\newcommand{\SubtitleStyle}{%
-\global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{${font_size_subtitle}pt}{${spacing_baselineskip_subtitle}}\selectfont
-}
-
-\newcommand{\BodyStyle}{%
-\mainFontWithFallback{$main_font}\fontsize{${font_size_body}pt}{${spacing_baselineskip_body}}\selectfont\setlength{\parskip}{${spacing_parskip}}\raggedright
-}
-
 \newcommand{\DocCArticleBodyStyle}{%
   \mainFontWithFallback{$main_font}
   \fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont
   \setlength{\parskip}{${content_node_paragraph_margin}}
   \raggedright
-}
-
-\newcommand{\ParagraphStyle}[1]{%
-\ifprecededbybox\vspace{${spacing_para_after_box}}\fi%
-\ifprecededbysection\vspace{-${spacing_section_adjust}}\fi%
-\ifprecededbynote\vspace{${spacing_para_after_box}}\fi%
-\global\precededbyboxfalse%
-\global\precededbysectionfalse%
-\global\precededbyparagraphtrue%
-\global\precededbynotefalse%
-\global\AtPageTopfalse%
-\setlength{\parskip}{${spacing_parskip}}%
-\begin{flushleft}%
-#1%
-\end{flushleft}%
 }
 
 \newenvironment{DocCFlushLeftBlock}{%
@@ -409,15 +382,6 @@
   }%
 }
 
-\newcommand{\SectionHeader}[2]{%
-  {%
-    \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
-    \pdfbookmark[2]{#1}{#2}\subsection*{#1}\label{#2}
-    \vspace*{-${spacing_section_adjust}}
-  }%
-}
-
 \newcommand{\DocCDocumentationTopicContentTableTitleStyle}{%
   \mainFontWithFallback{$main_font}\fontsize{${documentation_topic_content_table_title_font_size}}{${documentation_topic_content_table_title_line_height}}\selectfont
 }
@@ -427,14 +391,6 @@
     \setlength{\parskip}{0pt}
     \pdfbookmark[2]{#1}{#2}%
     {\DocCDocumentationTopicContentTableTitleStyle\noindent #1\par}\label{#2}
-  }%
-}
-
-\newcommand{\SectionHeaderTOC}[2]{%
-  {%
-    \setlength{\parskip}{0pt}
-    \pdfbookmark[2]{#1}{#2}\subsection*{#1}\label{#2}
-    \vspace*{${spacing_toc_section_after}}
   }%
 }
 
@@ -469,15 +425,6 @@
   }%
 }
 
-\newcommand{\SubsectionHeader}[2]{%
-  {%
-    \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
-    \pdfbookmark[3]{#1}{#2}\subsubsection*{#1}\label{#2}
-    \vspace*{-${spacing_section_adjust}}
-  }%
-}
-
 \newcommand{\DocCDocumentationTopicContentTableSectionTitleStyle}{%
   \mainFontWithFallback{$main_font}\fontsize{${documentation_topic_content_table_section_title_font_size}}{${documentation_topic_content_table_section_title_line_height}}\selectfont
 }
@@ -492,23 +439,6 @@
     \vspace*{${documentation_topic_content_table_section_padding_top}}%
     \pdfbookmark[3]{#1}{#2}%
     {\DocCDocumentationTopicContentTableSectionTitleStyle\noindent #1\par}\label{#2}
-    \nopagebreak
-    \intocfalse
-  }%
-}
-
-\newcommand{\SubsectionHeaderTOC}[2]{%
-  {%
-    \needspace{5\baselineskip}%
-    \checkTopOfPage
-    \intoctrue
-    \setlength{\parskip}{0pt}
-    \nopagebreak
-    \vspace*{-${spacing_toc_adjust}}
-    \nopagebreak
-    \pdfbookmark[3]{#1}{#2}\subsubsection*{#1}\label{#2}
-    \nopagebreak
-    \vspace*{-${spacing_toc_adjust}}
     \nopagebreak
     \intocfalse
   }%
@@ -767,45 +697,6 @@
   \tcb@split@next%
 }
 \makeatother
-
-\newcommand{\customsmall}{\fontsize{${font_size_minted}pt}{${font_size_minted_leading}pt}\selectfont}
-\newtcblisting{swiftstyledbox}{
-  listing only,
-  breakable,
-  whole on next page if possible,
-  minted language=swift-book-swift,
-  minted options={
-    fontsize=\customsmall,
-    style=$code_style,
-    breaklines=true,
-    breakanywhere=true,
-    breakbefore={ABCDEFGHIJKLMNOPQRSTUVWXYZ},
-    breakafter={.,>)]:(\{},
-    breaksymbolleft={\raisebox{0.1ex}{\color{color_aside_note_border}\customsmall\ensuremath{\hookrightarrow}}},
-    breaksymbolsepleft=0.3em,
-    breakbeforesymbolpre={\,\customsmall\ensuremath{_\rfloor}},
-    breakaftersymbolpre={\,\customsmall\ensuremath{_\rfloor}},
-    breakanywheresymbolpre={\,\customsmall\ensuremath{_\rfloor}},
-    autogobble=true,
-    breakautoindent=true,
-    breakindent=${breakindent_minted},
-    tabsize=2,
-    frame=none,
-    framesep=0pt,
-    escapeinside=||,
-  },
-  colback=color_code_background,
-  colframe=color_grid,
-  colupper=color_code_plain,
-  boxrule=0.5pt,
-  arc=4pt,
-  top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
-  left=${spacing_code_box_lr}, right=${spacing_code_box_lr},
-  boxsep=0pt,
-  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
-  after skip=0in,
-  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
-}
 
 \newcommand{\DocCCodeListingFontStyle}{\fontsize{${font_style_documentation_code_listing_font_size}}{${font_style_documentation_code_listing_line_height}}\selectfont}
 \newcommand{\DocCEnclosedEAcute}{%

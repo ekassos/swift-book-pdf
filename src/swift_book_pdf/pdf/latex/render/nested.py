@@ -49,6 +49,40 @@ def convert_nested_block(block: Block, context: LaTeXRenderContext) -> str:
         out.append("\\end{DocCCodeListingSwiftBox}")
         return "\n".join(out)
 
-    raise TypeError(
-        f"Unsupported nested LaTeX block type: {type(block).__name__}"
-    )
+    from swift_book_pdf.pdf.latex.render.blocks import _convert_block_to_latex
+
+    return "\n".join(_convert_block_to_latex(block, context))
+
+
+def convert_nested_block_sequence(
+    blocks: list[Block],
+    context: LaTeXRenderContext,
+    *,
+    paragraph_environment: str,
+) -> list[str]:
+    """Render nested sibling blocks with first-child top margin suppression.
+
+    Args:
+        blocks: Parsed sibling blocks inside a parent list item or aside.
+        context: LaTeX rendering state for the current document.
+        paragraph_environment: LaTeX environment used for nested paragraphs in
+            this parent context.
+
+    Returns:
+        Rendered LaTeX chunks in source order.
+
+    Raises:
+        TypeError: If a nested block type is unsupported by the LaTeX backend.
+    """
+    output: list[str] = []
+    for index, block in enumerate(blocks):
+        prefix = "\\DocCSuppressNextTopMargin\n" if index == 0 else ""
+        if isinstance(block, ParagraphBlock):
+            output.append(
+                f"{prefix}\\begin{{{paragraph_environment}}}\n"
+                f"{convert_nested_block(block, context)}\n"
+                f"\\end{{{paragraph_environment}}}"
+            )
+            continue
+        output.append(f"{prefix}{convert_nested_block(block, context)}")
+    return output

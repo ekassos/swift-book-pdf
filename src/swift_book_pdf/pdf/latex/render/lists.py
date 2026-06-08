@@ -23,7 +23,9 @@ from swift_book_pdf.core.blocks.models import (
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
 from swift_book_pdf.pdf.latex.render.context import LaTeXRenderContext
 from swift_book_pdf.pdf.latex.render.inline import apply_formatting
-from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
+from swift_book_pdf.pdf.latex.render.nested import (
+    convert_nested_block_sequence,
+)
 
 
 def convert_list_like_block(
@@ -65,9 +67,9 @@ def _convert_unordered_list_block(
         r"\DocCDocumentationTopicContentNodeListBefore",
         r"\begin{itemize}",
     ]
-    for item in block.items:
+    for index, item in enumerate(block.items):
         if item:
-            output.extend(_convert_unordered_list_item(item, context))
+            output.extend(_convert_unordered_list_item(item, context, index))
     output.append(
         r"\end{itemize}" + "\n\\DocCDocumentationTopicContentNodeListAfter"
     )
@@ -75,35 +77,31 @@ def _convert_unordered_list_block(
 
 
 def _convert_unordered_list_item(
-    item: list[Block], context: LaTeXRenderContext
+    item: list[Block], context: LaTeXRenderContext, index: int
 ) -> list[str]:
     """Render nested blocks that make up one unordered-list item.
 
     Args:
         item: Parsed nested blocks for one list item.
         context: LaTeX rendering state for the current document.
+        index: Zero-based position of this item in the enclosing list.
 
     Returns:
         Rendered LaTeX lines for the item.
     """
-    output: list[str] = []
-    for index, sub_block in enumerate(item):
-        latex_sub = convert_nested_block(sub_block, context)
-        if index == 0:
-            output.append(
-                "\\item \\begin{DocCContentListItemParagraph}\n"
-                f"{latex_sub}\n"
-                "\\end{DocCContentListItemParagraph}\n"
+    prefix = "" if index == 0 else "\\DocCContentNodeListItemBefore\n"
+    return [
+        prefix
+        + "\\item "
+        + "\n".join(
+            convert_nested_block_sequence(
+                item,
+                context,
+                paragraph_environment="DocCContentListItemParagraph",
             )
-        elif latex_sub.startswith(r"\parskip"):
-            output.append(latex_sub)
-        else:
-            output.append(
-                "\\begin{DocCContentListItemParagraph}\n"
-                f"{latex_sub}\n"
-                "\\end{DocCContentListItemParagraph}\n"
-            )
-    return output
+        )
+        + "\n"
+    ]
 
 
 def _convert_ordered_list_block(
@@ -121,18 +119,39 @@ def _convert_ordered_list_block(
     """
     output = [r"\DocCContentNodeOrderedListBefore", r"\begin{enumerate}"]
     output.extend(
-        "\\item \\begin{DocCContentListItemParagraph}\n"
-        + apply_formatting(
-            convert_inline_code(item), context.mode, context.doc_references
-        )
-        + "\n\\end{{DocCContentListItemParagraph}}\n"
-        for item in block.items
+        _convert_ordered_list_item(item, context, index)
+        for index, item in enumerate(block.items)
     )
     output.append(
         r"\end{enumerate}"
         + "\n\\DocCDocumentationTopicContentNodeListAfter\\global\\AtPageTopfalse\n"
     )
     return output
+
+
+def _convert_ordered_list_item(
+    item: str, context: LaTeXRenderContext, index: int
+) -> str:
+    """Render one ordered-list item.
+
+    Args:
+        item: Parsed ordered-list item text.
+        context: LaTeX rendering state for the current document.
+        index: Zero-based position of this item in the enclosing list.
+
+    Returns:
+        Rendered LaTeX for the item.
+    """
+    prefix = "" if index == 0 else "\\DocCContentNodeOrderedListItemBefore\n"
+    return (
+        prefix
+        + "\\item \\DocCSuppressNextTopMargin\n"
+        + "\\begin{DocCContentListItemParagraph}\n"
+        + apply_formatting(
+            convert_inline_code(item), context.mode, context.doc_references
+        )
+        + "\n\\end{DocCContentListItemParagraph}\n"
+    )
 
 
 def _convert_term_list_block(

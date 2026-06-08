@@ -35,7 +35,9 @@ from swift_book_pdf.pdf.latex.render.headings import convert_header_like_block
 from swift_book_pdf.pdf.latex.render.images import convert_image_block
 from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 from swift_book_pdf.pdf.latex.render.lists import convert_list_like_block
-from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
+from swift_book_pdf.pdf.latex.render.nested import (
+    convert_nested_block_sequence,
+)
 from swift_book_pdf.pdf.latex.render.tables import convert_table_block
 
 
@@ -136,7 +138,11 @@ def _convert_note_block(
         Rendered LaTeX lines.
     """
     aside_content = "\n".join(
-        convert_nested_block(sub_block, context) for sub_block in block.blocks
+        convert_nested_block_sequence(
+            block.blocks,
+            context,
+            paragraph_environment="DocCAsideParagraph",
+        )
     )
     return [
         "\\begin{DocCFlushLeftBlock}",
@@ -147,7 +153,6 @@ def _convert_note_block(
         "\\end{DocCAsideBox}",
         "\\end{DocCFlushLeftBlock}",
     ]
-
 
 def _convert_paragraph_block(
     block: ParagraphBlock, context: LaTeXRenderContext

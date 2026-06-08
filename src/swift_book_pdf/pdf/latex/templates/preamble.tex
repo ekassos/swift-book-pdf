@@ -164,12 +164,14 @@
 
 \newenvironment{DocCContentNodeParagraph}{%
   \nointerlineskip%
-  \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
-  \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
-  \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
-  \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
-  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
-  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
   \global\precededbyboxfalse%
   \global\precededbysectionfalse%
   \global\precededbyparagraphtrue%
@@ -189,6 +191,14 @@
 }
 
 \newenvironment{DocCContentListItemParagraph}{%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
   \begin{DocCFlushLeftBlock}%
   \strut{}%
   \ignorespaces
@@ -196,17 +206,52 @@
   \unskip%
   \strut\par%
   \end{DocCFlushLeftBlock}%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \ignorespacesafterend
+}
+
+\newenvironment{DocCAsideParagraph}{%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+  \strut{}%
+  \ignorespaces
+}{%
+  \unskip%
+  \strut\par%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
   \ignorespacesafterend
 }
 
 \newcommand{\DocCDocumentationTopicContentNodeListBefore}{%
   \nointerlineskip%
-  \ifprecededbysection\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
-  \ifprecededbybox\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
-  \ifprecededbyparagraph\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
-  \ifprecededbynote\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
-  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
-  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+}
+
+\newcommand{\DocCContentNodeListItemBefore}{%
+  \vspace{${documentation_topic_content_node_list_item_margin_top}}%
 }
 
 \newcommand{\DocCDocumentationTopicContentNodeListAfter}{%
@@ -221,22 +266,41 @@
 
 \newcommand{\DocCContentNodeOrderedListBefore}{%
   \nointerlineskip%
-  \ifprecededbysection\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
-  \ifprecededbybox\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
-  \ifprecededbyparagraph\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
-  \ifprecededbynote\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
-  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
-  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+}
+
+\newcommand{\DocCContentNodeOrderedListItemBefore}{%
+  \vspace{${documentation_topic_content_node_ordered_list_item_margin_top}}%
+}
+
+\newcommand{\DocCContentNodeInlineImageBefore}{%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
 }
 
 \newcommand{\DocCContentNodeTermListBefore}{%
   \nointerlineskip%
-  \ifprecededbysection\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
-  \ifprecededbybox\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
-  \ifprecededbyparagraph\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
-  \ifprecededbynote\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
-  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
-  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
 }
 
 \newif\ifDocCContentNodeTermListHasItem
@@ -322,17 +386,19 @@
 \makeatother
 
 \newcommand{\DocCContentNodeHeadingTwoBefore}{%
-\ifprecededbyparagraph
-  \nointerlineskip\vspace{${content_node_paragraph_to_heading_2_margin_top}}%
-\else\ifprecededbybox
-  \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h2_margin_top}}%
-\else\ifprecededbynote
-  \nointerlineskip\vspace{${content_node_aside_to_documentation_h2_margin_top}}%
-\else\ifprecededbysection
-  \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
-\else\ifprecededbytable
-  \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
-\fi\fi\fi\fi\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbyparagraph
+      \nointerlineskip\vspace{${content_node_paragraph_to_heading_2_margin_top}}%
+    \else\ifprecededbybox
+      \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h2_margin_top}}%
+    \else\ifprecededbynote
+      \nointerlineskip\vspace{${content_node_aside_to_documentation_h2_margin_top}}%
+    \else\ifprecededbysection
+      \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+    \else\ifprecededbytable
+      \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+    \fi\fi\fi\fi\fi%
+  }%
 }
 
 \newcommand{\DocCContentNodeHeadingTwo}[2]{%
@@ -380,17 +446,19 @@
 \makeatother
 
 \newcommand{\DocCContentNodeHeadingThreeBefore}{%
-\ifprecededbyparagraph
-  \nointerlineskip\vspace{${content_node_paragraph_to_heading_3_margin_top}}%
-\else\ifprecededbybox
-  \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h3_margin_top}}%
-\else\ifprecededbynote
-  \nointerlineskip\vspace{${content_node_aside_to_documentation_h3_margin_top}}%
-\else\ifprecededbysection
-  \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
-\else\ifprecededbytable
-  \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
-\fi\fi\fi\fi\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbyparagraph
+      \nointerlineskip\vspace{${content_node_paragraph_to_heading_3_margin_top}}%
+    \else\ifprecededbybox
+      \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h3_margin_top}}%
+    \else\ifprecededbynote
+      \nointerlineskip\vspace{${content_node_aside_to_documentation_h3_margin_top}}%
+    \else\ifprecededbysection
+      \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+    \else\ifprecededbytable
+      \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+    \fi\fi\fi\fi\fi%
+  }%
 }
 
 \newcommand{\DocCContentNodeHeadingThree}[2]{%
@@ -454,17 +522,19 @@
 \makeatother
 
 \newcommand{\DocCContentNodeHeadingFourBefore}{%
-\ifprecededbyparagraph
-  \nointerlineskip\vspace{${content_node_paragraph_to_heading_4_margin_top}}%
-\else\ifprecededbybox
-  \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h4_margin_top}}%
-\else\ifprecededbynote
-  \nointerlineskip\vspace{${content_node_aside_to_documentation_h4_margin_top}}%
-\else\ifprecededbysection
-  \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
-\else\ifprecededbytable
-  \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
-\fi\fi\fi\fi\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbyparagraph
+      \nointerlineskip\vspace{${content_node_paragraph_to_heading_4_margin_top}}%
+    \else\ifprecededbybox
+      \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h4_margin_top}}%
+    \else\ifprecededbynote
+      \nointerlineskip\vspace{${content_node_aside_to_documentation_h4_margin_top}}%
+    \else\ifprecededbysection
+      \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+    \else\ifprecededbytable
+      \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+    \fi\fi\fi\fi\fi%
+  }%
 }
 
 \newcommand{\DocCContentNodeHeadingFour}[2]{%
@@ -563,6 +633,31 @@
 \newif\ifprecededbyparagraph
 \precededbyparagraphfalse
 
+\newif\ifDocCSuppressNextTopMargin
+\DocCSuppressNextTopMarginfalse
+
+\newcommand{\DocCResetPrecedingBlockState}{%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphfalse%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+}
+
+\newcommand{\DocCSuppressNextTopMargin}{%
+  \global\DocCSuppressNextTopMargintrue%
+  \DocCResetPrecedingBlockState%
+}
+
+\newcommand{\DocCUseTopMargin}[1]{%
+  \ifDocCSuppressNextTopMargin
+    \global\DocCSuppressNextTopMarginfalse%
+  \else
+    #1%
+  \fi
+}
+
 \newif\ifinitemize
 \initemizefalse
 
@@ -600,7 +695,7 @@
 \setlist[itemize]{
   left=0pt,
   labelsep=0.5em,
-  itemsep=${spacing_list_itemsep},
+  itemsep=0pt,
   topsep=0.0em,
   partopsep=0.0em
 }
@@ -608,7 +703,7 @@
 \setlist[enumerate]{
   left=0pt,
   labelsep=0.5em,
-  itemsep=${spacing_list_itemsep},
+  itemsep=0pt,
   topsep=0.0em,
   partopsep=0.0em
 }
@@ -765,7 +860,8 @@
   top=${code_block_style_elements_padding_block}, bottom=${code_block_style_elements_padding_block},
   left=${code_block_style_elements_padding_inline}, right=${code_block_style_elements_padding_inline},
   boxsep=0pt,
-  before skip={${documentation_topic_content_node_code_listing_margin_top}},
+  before skip={\dimexpr\ifDocCSuppressNextTopMargin 0bp\else ${documentation_topic_content_node_code_listing_margin_top}\fi\relax},
+  before app={\global\DocCSuppressNextTopMarginfalse},
   after skip=0bp,
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
 }
@@ -792,7 +888,8 @@
   top=${code_block_style_elements_padding_block}, bottom=${code_block_style_elements_padding_block},
   left=${code_block_style_elements_padding_inline}, right=${code_block_style_elements_padding_inline},
   boxsep=0pt,
-  before skip={${documentation_topic_content_node_code_listing_margin_top}},
+  before skip={\dimexpr\ifDocCSuppressNextTopMargin 0bp\else ${documentation_topic_content_node_code_listing_margin_top}\fi\relax},
+  before app={\global\DocCSuppressNextTopMarginfalse},
   after skip=0in,
   after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
 }
@@ -822,7 +919,8 @@
       \fill[color_aside_note_border] (frame.south west) rectangle ([xshift=${aside_border_width_left}]frame.north west);%
     \end{tcbclipframe}%
   },
-  before skip={${documentation_topic_content_node_aside_margin_top}},
+  before skip={\dimexpr\ifDocCSuppressNextTopMargin 0bp\else ${documentation_topic_content_node_aside_margin_top}\fi\relax},
+  before app={\global\DocCSuppressNextTopMarginfalse},
   after skip=0bp,
   after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
   left=\dimexpr${aside_padding}+${aside_border_width_left}\relax, right=${aside_padding}, top=${aside_padding}, bottom=${aside_padding},
@@ -843,12 +941,14 @@
 % ----------------------------------------
 \newcommand{\DocCContentNodeTableBefore}{%
   \nointerlineskip
-  \ifprecededbysection\vspace{${content_node_table_wrapper_margin_top}}\fi%
-  \ifprecededbybox\vspace{${content_node_table_wrapper_margin_top}}\fi%
-  \ifprecededbyparagraph\vspace{${content_node_table_wrapper_margin_top}}\fi%
-  \ifprecededbynote\vspace{${content_node_table_wrapper_margin_top}}\fi%
-  \ifprecededbyinlineimage\vspace{${content_node_table_wrapper_margin_top}}\fi%
-  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbybox\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbynote\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
 }
 
 \newlength{\DocCTableCellPad}

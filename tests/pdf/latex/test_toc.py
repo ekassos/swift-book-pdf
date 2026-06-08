@@ -106,5 +106,11 @@ def test_toc_topic_links_remove_generic_list_spacing_wrappers() -> None:
     assert r"\DocCContentNodeListItemBefore" not in rendered
     assert r"\DocCContentListItemParagraph" not in rendered
     assert r"\begin{DocCTopicLinkBlockList}" in rendered
-    assert r"\DocCTopicLinkBlock{chapter-icon.png}{\nameref{guidedtour}}" in rendered
-    assert r"\DocCTopicLinkBlock{chapter-icon.png}{\nameref{thebasics}}" in rendered
+    assert (
+        r"\DocCTopicLinkBlock{chapter-icon.png}{\nameref{guidedtour}}"
+        in rendered
+    )
+    assert (
+        r"\DocCTopicLinkBlock{chapter-icon.png}{\nameref{thebasics}}"
+        in rendered
+    )

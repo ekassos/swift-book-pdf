@@ -768,6 +768,141 @@
 }
 
 % ----------------------------------------
+% Define tables
+% ----------------------------------------
+\newcommand{\DocCContentNodeTableBefore}{%
+  \nointerlineskip
+  \ifprecededbysection\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \ifprecededbybox\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \ifprecededbyparagraph\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \ifprecededbynote\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \ifprecededbyinlineimage\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+}
+
+\newlength{\DocCTableCellPad}
+\setlength{\DocCTableCellPad}{${content_node_table_cell_padding}}
+
+\newcommand{\DocCTableCell}[1]{%
+  \rule[0pt]{0pt}{\dimexpr\ht\strutbox+\DocCTableCellPad\relax}%
+  #1%
+  \rule[-\dimexpr\dp\strutbox+\DocCTableCellPad\relax]{0pt}{0pt}%
+}
+
+\newcommand{\DocCTableFont}{%
+  \mainFontWithFallback{$main_font}%
+  \fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont
+}
+
+\newcommand{\DocCTableSetup}{%
+  \par\noindent
+  \setlength{\tabcolsep}{${content_node_table_cell_padding}}%
+  \setlength{\arrayrulewidth}{${content_node_table_border_width}}%
+  \arrayrulecolor{color_grid}%
+  \renewcommand{\arraystretch}{1}%
+  \DocCTableFont
+  \setlength{\parskip}{${content_node_paragraph_margin}}%
+  \raggedright
+}
+
+\newcount\DocCTableColCount
+\newcount\DocCTableWideCol
+\newcount\DocCTableColIter
+\newdimen\DocCTableMeasure
+\newdimen\DocCTableColMax
+\newdimen\DocCTableNatTotal
+\newdimen\DocCTableAvail
+\newdimen\DocCTableMinReflowCol
+\setlength{\DocCTableMinReflowCol}{1in}
+\def\DocCTableSpec{}
+
+\newcommand{\DocCTableAppendBar}{%
+  \expandafter\def\expandafter\DocCTableSpec\expandafter{\DocCTableSpec|}%
+}
+
+\newcommand{\DocCTableAppendCol}[1]{%
+  \expandafter\def\expandafter\DocCTableSpec\expandafter{%
+    \DocCTableSpec>{\raggedright\arraybackslash}m{#1}}%
+}
+
+\newcommand{\DocCTableBegin}{\DocCTableColCount=0\relax}
+
+\newcommand{\DocCTableMeasureColumn}[1]{%
+  \advance\DocCTableColCount by 1\relax
+  \begingroup
+    \DocCTableFont
+    \global\DocCTableColMax=0pt\relax
+    \renewcommand{\DocCTableCell}[1]{%
+      \settowidth{\DocCTableMeasure}{##1}%
+      \ifdim\DocCTableMeasure>\DocCTableColMax
+        \global\DocCTableColMax=\DocCTableMeasure
+      \fi}%
+    #1%
+    \expandafter\xdef\csname DocCTableColW@\the\DocCTableColCount\endcsname{%
+      \the\DocCTableColMax}%
+  \endgroup
+}
+
+\newcommand{\DocCTableRender}[1]{%
+  \DocCContentNodeTableBefore
+  {\DocCTableSetup
+   \DocCTableColMax=0pt\relax
+   \DocCTableWideCol=0\relax
+   \DocCTableNatTotal=0pt\relax
+   \DocCTableColIter=0\relax
+   \loop\ifnum\DocCTableColIter<\DocCTableColCount
+     \advance\DocCTableColIter by 1\relax
+     \DocCTableMeasure=\csname DocCTableColW@\the\DocCTableColIter\endcsname\relax
+     \advance\DocCTableNatTotal by \DocCTableMeasure
+     \ifdim\DocCTableMeasure>\DocCTableColMax
+       \DocCTableColMax=\DocCTableMeasure
+       \DocCTableWideCol=\DocCTableColIter
+     \fi
+   \repeat
+   \DocCTableAvail=\linewidth
+   \DocCTableColIter=0\relax
+   \loop\ifnum\DocCTableColIter<\DocCTableColCount
+     \advance\DocCTableColIter by 1\relax
+     \advance\DocCTableAvail by -2\tabcolsep
+     \ifnum\DocCTableColIter>1
+       \advance\DocCTableAvail by -\arrayrulewidth
+     \fi
+   \repeat
+   \def\DocCTableSpec{}%
+   \DocCTableColIter=0\relax
+   \loop\ifnum\DocCTableColIter<\DocCTableColCount
+     \advance\DocCTableColIter by 1\relax
+     \ifnum\DocCTableColIter>1 \DocCTableAppendBar \fi
+     \ifdim\DocCTableNatTotal>\DocCTableAvail
+       \ifnum\DocCTableColIter=\DocCTableWideCol
+         \DocCTableMeasure=\DocCTableAvail
+         \advance\DocCTableMeasure by -\DocCTableNatTotal
+         \advance\DocCTableMeasure by \DocCTableColMax
+         \ifdim\DocCTableMeasure<\DocCTableMinReflowCol
+           \DocCTableMeasure=\DocCTableMinReflowCol
+         \fi
+       \else
+         \DocCTableMeasure=\csname DocCTableColW@\the\DocCTableColIter\endcsname\relax
+       \fi
+     \else
+       \DocCTableMeasure=\csname DocCTableColW@\the\DocCTableColIter\endcsname\relax
+     \fi
+     \expandafter\DocCTableAppendCol\expandafter{\the\DocCTableMeasure}%
+   \repeat
+   \expandafter\DocCTableTypeset\expandafter{\DocCTableSpec}{#1}%
+   \par
+   \global\precededbyboxfalse
+   \global\precededbysectionfalse
+   \global\precededbyparagraphfalse
+   \global\precededbynotefalse
+   \global\precededbyinlineimagefalse
+   \global\precededbytabletrue
+   \global\AtPageTopfalse}%
+}
+
+\newcommand{\DocCTableTypeset}[2]{\begin{tabular}{#1}#2\end{tabular}}
+
+% ----------------------------------------
 % Define header and footer
 % ----------------------------------------
 \pagestyle{fancy}

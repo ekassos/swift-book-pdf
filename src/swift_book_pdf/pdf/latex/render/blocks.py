@@ -89,8 +89,6 @@ def _convert_block_to_latex(  # noqa: PLR0911
             return convert_table_block(
                 block,
                 context.mode,
-                context.main_font,
-                context.body_font_size,
                 context.doc_references,
             )
         case UnorderedListBlock() | OrderedListBlock() | TermListBlock():

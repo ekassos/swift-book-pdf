@@ -21,7 +21,8 @@ from swift_book_pdf.pdf.latex.render.toc import (
 
 def test_toc_chapter_icon_uses_em_based_width_in_digital_mode() -> None:
     lines = [
-        r"\item \begin{DocCContentListItemParagraph}",
+        r"\item \DocCSuppressNextTopMargin",
+        r"\begin{DocCContentListItemParagraph}",
         r"\fallbackrefdigital{guidedtour}",
         r"\end{DocCContentListItemParagraph}",
     ]
@@ -37,12 +38,17 @@ def test_toc_chapter_icon_uses_em_based_width_in_digital_mode() -> None:
     )
 
     assert r"\DocCTopicLinkBlock{chapter-icon.png}" in rendered[0]
+    assert r"\fallbackrefdigital{guidedtour}" not in rendered[0]
+    assert r"\fallbackrefbook{guidedtour}" not in rendered[0]
+    assert r"\nameref{guidedtour}" in rendered[0]
+    assert r"\pageref{guidedtour}" not in rendered[0]
     assert "0.1in" not in rendered[0]
 
 
 def test_toc_chapter_icon_uses_dark_asset_in_print_mode() -> None:
     lines = [
-        r"\item \begin{DocCContentListItemParagraph}",
+        r"\item \DocCSuppressNextTopMargin",
+        r"\begin{DocCContentListItemParagraph}",
         r"\fallbackrefbook{guidedtour}",
         r"\end{DocCContentListItemParagraph}",
     ]
@@ -58,3 +64,7 @@ def test_toc_chapter_icon_uses_dark_asset_in_print_mode() -> None:
     )
 
     assert r"\DocCTopicLinkBlock{chapter-icon~dark.png}" in rendered[0]
+    assert r"\fallbackrefdigital{guidedtour}" not in rendered[0]
+    assert r"\fallbackrefbook{guidedtour}" not in rendered[0]
+    assert r"\nameref{guidedtour}" in rendered[0]
+    assert r"\pageref{guidedtour}" in rendered[0]

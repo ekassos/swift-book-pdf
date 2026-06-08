@@ -141,7 +141,8 @@ def replace_chapter_href_with_toc_item(
     match mode:
         case RenderingMode.DIGITAL:
             pattern = re.compile(
-                r"\\item\s+\\begin{DocCContentListItemParagraph}\s*"
+                r"\\item\s+(?:\\DocCSuppressNextTopMargin\s*)?"
+                r"\\begin{DocCContentListItemParagraph}\s*"
                 r"\\fallbackrefdigital{([^{}]+)}\s*"
                 r"\\end{DocCContentListItemParagraph}"
             )
@@ -170,7 +171,8 @@ def replace_chapter_href_with_toc_item(
 
         case RenderingMode.PRINT:
             pattern = re.compile(
-                r"\\item\s+\\begin{DocCContentListItemParagraph}\s*"
+                r"\\item\s+(?:\\DocCSuppressNextTopMargin\s*)?"
+                r"\\begin{DocCContentListItemParagraph}\s*"
                 r"\\fallbackrefbook{([^{}]+)}\s*"
                 r"\\end{DocCContentListItemParagraph}"
             )

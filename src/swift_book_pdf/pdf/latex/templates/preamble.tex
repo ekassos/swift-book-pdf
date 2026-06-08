@@ -128,6 +128,13 @@
 \mainFontWithFallback{$main_font}\fontsize{${font_size_body}pt}{${spacing_baselineskip_body}}\selectfont\setlength{\parskip}{${spacing_parskip}}\raggedright
 }
 
+\newcommand{\DocCArticleBodyStyle}{%
+  \mainFontWithFallback{$main_font}
+  \fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont
+  \setlength{\parskip}{${content_node_paragraph_margin}}
+  \raggedright
+}
+
 \newcommand{\ParagraphStyle}[1]{%
 \ifprecededbybox\vspace{${spacing_para_after_box}}\fi%
 \ifprecededbysection\vspace{-${spacing_section_adjust}}\fi%

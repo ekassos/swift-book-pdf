@@ -103,7 +103,7 @@ class LaTeXRenderer:
         latex_lines = []
         latex_lines.extend(chapter_title_box.splitlines())
         latex_lines.append("")
-        latex_lines.append("{\\BodyStyle\n")
+        latex_lines.append("{\\DocCArticleBodyStyle\n")
         blocks = parse_blocks(file_content)
         body_latex = convert_blocks_to_latex(
             blocks,

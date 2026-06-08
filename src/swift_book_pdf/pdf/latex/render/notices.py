@@ -91,7 +91,7 @@ def render_notices_latex(
         "Swift.org open source project.",
     ]
 
-    latex_lines = [title_box, "", "{\\BodyStyle\n"]
+    latex_lines = [title_box, "", "{\\DocCArticleBodyStyle\n"]
     latex_lines.extend(
         "\\ParagraphStyle{"
         + apply_formatting(convert_inline_code(paragraph), mode)

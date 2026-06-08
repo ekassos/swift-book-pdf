@@ -30,13 +30,14 @@ from swift_book_pdf.pdf.config import (
 )
 
 
-def build_doc_config(
+def build_doc_config(  # noqa: PLR0913
     *,
     mode: str,
     paper: str,
     dark: bool,
     gutter: bool | None,
     font_size: float | None,
+    code_font_size: float | None = None,
 ) -> PDFDocumentConfig:
     """Build PDF document layout configuration from CLI options.
 
@@ -46,6 +47,7 @@ def build_doc_config(
         dark: Whether dark mode should be rendered.
         gutter: Optional gutter override.
         font_size: Optional base paragraph font size.
+        code_font_size: Optional fenced code listing font size.
 
     Returns:
         PDF document layout configuration.
@@ -58,6 +60,7 @@ def build_doc_config(
         if gutter is None
         else gutter,
         font_size=(DEFAULT_BODY_FONT_SIZE if font_size is None else font_size),
+        code_font_size=code_font_size,
         appearance=Appearance.DARK if dark else Appearance.LIGHT,
     )
 

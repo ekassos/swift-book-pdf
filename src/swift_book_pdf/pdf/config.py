@@ -80,6 +80,7 @@ class PDFDocumentConfig:
         gutter: Whether the book gutter should be rendered.
         font_size: Base paragraph font size in points.
         appearance: Light or dark rendering appearance.
+        code_font_size: Optional fenced code listing font size in points.
     """
 
     mode: RenderingMode = DEFAULT_RENDERING_MODE
@@ -97,14 +98,19 @@ class PDFDocumentConfig:
     appearance: Appearance = DEFAULT_APPEARANCE
     """Light or dark rendering appearance."""
 
+    code_font_size: float | None = None
+    """Optional fenced code listing font size in points."""
+
     def __post_init__(self) -> None:
         """Validate the resolved document configuration.
 
         Raises:
-            ValueError: If `font_size` is not positive.
+            ValueError: If a font size is not positive.
         """
         if self.font_size <= 0:
             raise ValueError("Font size must be a positive number.")
+        if self.code_font_size is not None and self.code_font_size <= 0:
+            raise ValueError("Code font size must be a positive number.")
 
 
 @dataclass(frozen=True)
@@ -181,6 +187,9 @@ class PDFConfig(BaseBuildConfig, ABC):
                 f"Appearance: {doc_config.appearance}",
                 f"Book Gutter: {doc_config.gutter}",
                 f"Font size: {doc_config.font_size}pt",
+                f"Code font size: {doc_config.code_font_size}pt"
+                if doc_config.code_font_size is not None
+                else "Code font size: scaled",
                 f"Content: {format_content_selection(self.content_selection)}",
                 f"Build target: {'tex' if self.save_tex else 'pdf'}",
                 f"Build files: {self.intermediates_path or 'temporary'}",

@@ -21,7 +21,7 @@ from swift_book_pdf.pdf.latex.preamble.geometry import get_geometry_opts
 from swift_book_pdf.pdf.latex.styling.colors import get_document_colors
 from swift_book_pdf.pdf.latex.styling.typography import (
     compute_typography_variables,
-    get_css_points,
+    get_code_listing_font_size_points,
 )
 from swift_book_pdf.pdf.latex.templating import load_latex_template
 
@@ -59,10 +59,13 @@ def build_preamble_substitutions(
         config.doc_config.mode, config.doc_config.appearance
     )
 
-    template_vars = compute_typography_variables(config.doc_config.font_size)
-    code_block_font_size = get_css_points(
-        "font_style_documentation_code_listing_font_size",
+    template_vars = compute_typography_variables(
         config.doc_config.font_size,
+        code_font_size=config.doc_config.code_font_size,
+    )
+    code_block_font_size = get_code_listing_font_size_points(
+        config.doc_config.font_size,
+        config.doc_config.code_font_size,
     )
     template_vars["breakindent_minted"] = f"{3.8 * code_block_font_size:.2f}bp"
 

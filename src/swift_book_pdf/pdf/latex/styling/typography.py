@@ -216,16 +216,66 @@ def format_dimension(value: float, unit: str) -> str:
     return f"{format_number(value)}{unit}"
 
 
-def compute_typography_variables(body_font_size: float) -> dict[str, str]:
+CODE_LISTING_FONT_SIZE_KEY = "font_style_documentation_code_listing_font_size"
+CODE_LISTING_LINE_HEIGHT_KEY = (
+    "font_style_documentation_code_listing_line_height"
+)
+
+
+def get_code_listing_font_size_points(
+    body_font_size: float,
+    code_font_size: float | None = None,
+) -> float:
+    """Return the resolved fenced code listing font size in PDF points.
+
+    Args:
+        body_font_size: Base paragraph font size in PDF points.
+        code_font_size: Optional fenced code listing font size override.
+
+    Returns:
+        Fenced code listing font size in PDF points.
+    """
+    if code_font_size is not None:
+        return code_font_size
+    return get_css_points(CODE_LISTING_FONT_SIZE_KEY, body_font_size)
+
+
+def compute_typography_variables(
+    body_font_size: float,
+    *,
+    code_font_size: float | None = None,
+) -> dict[str, str]:
     """Compute DocC Render-shaped variables for LaTeX templates.
 
     Args:
         body_font_size: Base paragraph font size in PDF points.
+        code_font_size: Optional fenced code listing font size override.
 
     Returns:
         Template variables keyed by DocC Render role names in snake case.
     """
-    return {
+    variables = {
         key: get_css_dimension(key, body_font_size)
         for key in DOCC_RENDER_LENGTHS
     }
+    if code_font_size is not None:
+        default_code_font_size = get_css_points(
+            CODE_LISTING_FONT_SIZE_KEY,
+            body_font_size,
+        )
+        default_code_line_height = get_css_points(
+            CODE_LISTING_LINE_HEIGHT_KEY,
+            body_font_size,
+        )
+        code_line_height = (
+            default_code_line_height * code_font_size / default_code_font_size
+        )
+        variables[CODE_LISTING_FONT_SIZE_KEY] = format_dimension(
+            code_font_size,
+            LATEX_PDF_POINT_UNIT,
+        )
+        variables[CODE_LISTING_LINE_HEIGHT_KEY] = format_dimension(
+            code_line_height,
+            LATEX_PDF_POINT_UNIT,
+        )
+    return variables

@@ -127,8 +127,14 @@ def pdf_typography_options(func: OptionTarget) -> OptionTarget:
             "--font-size",
             type=float,
             default=None,
-            help="Base paragraph font size in points. All other font sizes scale proportionally",
+            help="Base paragraph font size in points. Other font sizes scale proportionally unless overridden",
             show_default=f"{DEFAULT_BODY_FONT_SIZE:g}",
+        ),
+        click.option(
+            "--code-font-size",
+            type=float,
+            default=None,
+            help="Code block font size in points",
         ),
     )
     return apply_options(func, decorators)

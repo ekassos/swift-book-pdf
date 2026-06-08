@@ -21,87 +21,80 @@ from swift_book_pdf.pdf.latex.render.inline import (
     DocReferenceResolver,
     apply_formatting,
 )
-from swift_book_pdf.pdf.latex.styling.typography import (
-    get_font_size,
-    get_spacing,
-)
 
 
 def convert_table_block(
     block: TableBlock,
     mode: RenderingMode,
-    main_font: str,
-    body_font_size: float = 9.0,
     doc_references: DocReferenceResolver | None = None,
 ) -> list[str]:
-    """Render a Markdown table block as a LaTeX table.
+    """Render a Markdown table block as LaTeX table markup.
 
     Args:
         block: Parsed table block.
         mode: PDF rendering mode.
-        main_font: Resolved main text font.
-        body_font_size: Base paragraph font size in points.
         doc_references: Optional resolver for subset-build document refs.
 
     Returns:
         Rendered LaTeX table lines.
     """
-    font_size = get_font_size("body", body_font_size)
-    parskip = get_spacing("parskip", body_font_size)
-    baselineskip = get_spacing("baselineskip_table", body_font_size)
-    output = [
-        "\\begin{table}[H]\n\\centering\n\\setlength{\\tymin}{1in}\\arrayrulecolor{color_grid}\n\\renewcommand{\\arraystretch}{1.5}\n\\mainFontWithFallback{"
-        + main_font
-        + "}\\fontsize{"
-        + font_size
-        + "pt}{"
-        + baselineskip
-        + "}\\selectfont\\setlength{\\parskip}{"
-        + parskip
-        + "}\\raggedright",
+    rows = [row for row in block.rows if row]
+    if not rows:
+        return []
+    column_count = max(len(row) for row in rows)
+
+    padded_rows = [_pad_row(row, column_count) for row in rows]
+    is_header = [index == 0 for index in range(len(padded_rows))]
+    cells = [
+        [
+            format_table_cell(row[column], mode, doc_references, bold=header)
+            for row, header in zip(padded_rows, is_header, strict=False)
+        ]
+        for column in range(column_count)
     ]
-    header_row = block.rows[0]
-    output.append(
-        f"\\begin{{tabulary}}{{1.0\\textwidth}}{{{'|'.join('L' for _ in header_row)}}}",
-    )
-    output.append(
-        format_table_row(header_row, mode, doc_references, bold=True)
-        + " \\\\ \\hline"
-    )
+
+    output = ["\\DocCTableBegin"]
     output.extend(
-        format_table_row(row, mode, doc_references) + " \\\\ \\hline"
-        for row in block.rows[1:-1]
+        "\\DocCTableMeasureColumn{" + "".join(column_cells) + "}"
+        for column_cells in cells
     )
-    if block.rows[-1]:
-        output.append(
-            format_table_row(block.rows[-1], mode, doc_references) + " \\\\"
+
+    formatted_rows = [
+        " & ".join(
+            format_table_cell(cell, mode, doc_references, bold=header)
+            for cell in row
         )
-    output.extend(["\\end{tabulary}", "\\end{table}", "\n"])
+        for row, header in zip(padded_rows, is_header, strict=False)
+    ]
+    body = " \\\\ \\hline\n".join(formatted_rows) + " \\\\"
+    output.append("\\DocCTableRender{%\n" + body + "}")
     return output
 
 
-def format_table_row(
-    row: list[str],
+def format_table_cell(
+    cell: str,
     mode: RenderingMode,
     doc_references: DocReferenceResolver | None = None,
     *,
     bold: bool = False,
 ) -> str:
-    """Format one table row as LaTeX cells.
+    """Format one table cell.
 
     Args:
-        row: Raw cell text values.
+        cell: Raw cell text value.
         mode: PDF rendering mode.
         doc_references: Optional resolver for subset-build document refs.
-        bold: Whether every cell should be bold.
+        bold: Whether to render the cell in bold.
 
     Returns:
-        LaTeX row content joined with column separators.
+        LaTeX for a single table cell.
     """
-    cells = [
-        apply_formatting(convert_inline_code(cell), mode, doc_references)
-        for cell in row
-    ]
+    content = apply_formatting(convert_inline_code(cell), mode, doc_references)
     if bold:
-        cells = [f"\\textbf{{{cell}}}" for cell in cells]
-    return " & ".join(cells)
+        content = f"\\textbf{{{content}}}"
+    return "\\DocCTableCell{" + content + "}"
+
+
+def _pad_row(row: list[str], column_count: int) -> list[str]:
+    """Pad a ragged Markdown table row to the table's widest row."""
+    return [*row, *([""] * (column_count - len(row)))]

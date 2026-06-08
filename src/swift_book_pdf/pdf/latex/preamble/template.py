@@ -20,8 +20,8 @@ from swift_book_pdf.pdf.latex.config import LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.preamble.geometry import get_geometry_opts
 from swift_book_pdf.pdf.latex.styling.colors import get_document_colors
 from swift_book_pdf.pdf.latex.styling.typography import (
-    compute_font_sizes,
-    compute_spacing,
+    compute_typography_variables,
+    get_css_points,
 )
 from swift_book_pdf.pdf.latex.templating import load_latex_template
 
@@ -58,16 +58,17 @@ def build_preamble_substitutions(
     colors = get_document_colors(
         config.doc_config.mode, config.doc_config.appearance
     )
-    font_sizes = compute_font_sizes(config.doc_config.font_size)
-    spacing = compute_spacing(config.doc_config.font_size)
-    template_vars = {**font_sizes, **spacing}
-    template_vars["breakindent_minted"] = (
-        f"{3.8 * float(template_vars['font_size_minted']):.2f}pt"
+
+    template_vars = compute_typography_variables(config.doc_config.font_size)
+    code_block_font_size = get_css_points(
+        "font_style_documentation_code_listing_font_size",
+        config.doc_config.font_size,
     )
-    for key, value in sorted(font_sizes.items()):
-        logger.debug(f"{key}: {value}pt")
-    for key, value in sorted(spacing.items()):
+    template_vars["breakindent_minted"] = f"{3.8 * code_block_font_size:.2f}bp"
+
+    for key, value in sorted(template_vars.items()):
         logger.debug(f"{key}: {value}")
+
     header_footer_hero = _render_header_footer_hero(
         font_config.header_footer_font,
         template_vars,

@@ -35,17 +35,16 @@
   }
 }
 
-\newcommand{\HeroBox}[3]{%
+\newcommand{\DocCArticleHeroBox}[3]{%
   \hspace*{-2in}
   \fcolorbox{color_article_background}{color_article_background}{%
     \begin{minipage}{\dimexpr\textwidth+2.3in\relax}
       \hspace{1.9in}
       \begin{minipage}[t]{0.7\textwidth}
         \color{color_text}
-        \vspace*{${spacing_hero_top}}
-        \TitleSection{#1}{#2}  % Title
-        {\SubtitleStyle #3\par}  % Subtitle
-        \vspace*{${spacing_hero_bottom}}
+        \vspace*{${article_hero_padding_top}}
+        \DocCArticleHeroTextGroup{#1}{#2}{#3}%
+        \vspace*{${article_hero_padding_bottom}}
       \end{minipage}%
     \end{minipage}
   }

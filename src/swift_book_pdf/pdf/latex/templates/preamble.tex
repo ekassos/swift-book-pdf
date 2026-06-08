@@ -45,6 +45,20 @@
 % Define fonts and small helpers
 % ----------------------------------------
 \setlength\parindent{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\partopsep}{0pt}
+\setlength{\topsep}{0pt}
+\setlength{\itemsep}{0pt}
+\setlength{\floatsep}{0pt}
+\setlength{\textfloatsep}{0pt}
+\setlength{\intextsep}{0pt}
+\setlength{\dblfloatsep}{0pt}
+\setlength{\dbltextfloatsep}{0pt}
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\belowdisplayskip}{0pt}
+\setlength{\abovedisplayshortskip}{0pt}
+\setlength{\belowdisplayshortskip}{0pt}
 \setcounter{secnumdepth}{4}
 
 \directlua{luaotfload.add_fallback
@@ -81,19 +95,19 @@
 }
 
 \newcommand{\mainFontWithFallback}[1]{%
- \fontspec{#1}[RawFeature={fallback=mainFontFallback}]%
+ \fontspec{#1}[Kerning=Off,RawFeature={fallback=mainFontFallback}]%
 }
 
 \newcommand{\monoFontWithFallback}[1]{%
-  \fontspec{#1}[RawFeature={fallback=monoFallback}]%
+  \fontspec{#1}[Kerning=Off,RawFeature={fallback=monoFallback}]%
 }
 
 \newcommand{\headerFontWithFallback}[2]{%
-  \fontspec{#1}[RawFeature={fallback=headerFallback},#2]\color{color_header_footer_text}%
+  \fontspec{#1}[Kerning=Off,RawFeature={fallback=headerFallback},#2]\color{color_header_footer_text}%
 }
 
-\renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{${font_size_footnote}pt}{${font_size_footnote}pt}\selectfont}
-\setlength{\footnotesep}{${spacing_footnotesep}}
+\renewcommand{\footnotesize}{\monoFontWithFallback{$mono_font}\fontsize{${pdf_footnote_font_size}}{${pdf_footnote_line_height}}\selectfont}
+\setlength{\footnotesep}{${font_style_body_font_size}}
 \makeatletter
 \renewcommand{\@makefnmark}{\mainFontWithFallback{$main_font}\selectfont\textsuperscript\@thefnmark}
 \renewcommand{\@makefntext}[1]{%
@@ -102,98 +116,329 @@
 \makeatother
 \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
 
-\newcommand{\TitleStyle}{%
-  \mainFontWithFallback{$main_font}\fontsize{${font_size_title}pt}{${spacing_baselineskip_title}}\selectfont
+\newcommand{\DocCArticleBodyStyle}{%
+  \mainFontWithFallback{$main_font}
+  \fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont
+  \setlength{\parskip}{${content_node_paragraph_margin}}
+  \raggedright
 }
 
-\newcommand{\SubtitleStyle}{%
-\global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{${font_size_subtitle}pt}{${spacing_baselineskip_subtitle}}\selectfont
+\newenvironment{DocCFlushLeftBlock}{%
+  \begingroup
+  \setlength{\topsep}{0pt}%
+  \setlength{\partopsep}{0pt}%
+  \setlength{\parsep}{0pt}%
+  \setlength{\itemsep}{0pt}%
+  \begin{flushleft}%
+}{%
+  \end{flushleft}%
+  \endgroup
 }
 
-\newcommand{\BodyStyle}{%
-\mainFontWithFallback{$main_font}\fontsize{${font_size_body}pt}{${spacing_baselineskip_body}}\selectfont\setlength{\parskip}{${spacing_parskip}}\raggedright
+\newenvironment{DocCContentNodeParagraph}{%
+  \nointerlineskip%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \global\AtPageTopfalse%
+  \setlength{\parskip}{${content_node_paragraph_margin}}%
+  \begin{DocCFlushLeftBlock}%
+  \strut{}%
+  \ignorespaces
+}{%
+  \unskip%
+  \strut\par%
+  \end{DocCFlushLeftBlock}%
+  \ignorespacesafterend
 }
 
-\newcommand{\ParagraphStyle}[1]{%
-\ifprecededbybox\vspace{${spacing_para_after_box}}\fi%
-\ifprecededbysection\vspace{-${spacing_section_adjust}}\fi%
-\ifprecededbynote\vspace{${spacing_para_after_box}}\fi%
-\global\precededbyboxfalse%
-\global\precededbysectionfalse%
-\global\precededbyparagraphtrue%
-\global\precededbynotefalse%
-\global\AtPageTopfalse%
-\setlength{\parskip}{${spacing_parskip}}%
-\begin{flushleft}%
-#1%
-\end{flushleft}%
+\newenvironment{DocCContentListItemParagraph}{%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+  \begin{DocCFlushLeftBlock}%
+  \strut{}%
+  \ignorespaces
+}{%
+  \unskip%
+  \strut\par%
+  \end{DocCFlushLeftBlock}%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \ignorespacesafterend
 }
+
+\newenvironment{DocCAsideParagraph}{%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+  \strut{}%
+  \ignorespaces
+}{%
+  \unskip%
+  \strut\par%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \ignorespacesafterend
+}
+
+\newcommand{\DocCDocumentationTopicContentNodeListBefore}{%
+  \nointerlineskip%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+}
+
+\newcommand{\DocCContentNodeListItemBefore}{%
+  \vspace{${documentation_topic_content_node_list_item_margin_top}}%
+}
+
+\newcommand{\DocCDocumentationTopicContentNodeListAfter}{%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \global\AtPageTopfalse%
+}
+
+\newcommand{\DocCContentNodeOrderedListBefore}{%
+  \nointerlineskip%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+}
+
+\newcommand{\DocCContentNodeOrderedListItemBefore}{%
+  \vspace{${documentation_topic_content_node_ordered_list_item_margin_top}}%
+}
+
+\newcommand{\DocCContentNodeInlineImageBefore}{%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+}
+
+\newcommand{\DocCContentNodeTermListBefore}{%
+  \nointerlineskip%
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbybox\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbynote\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+}
+
+\newif\ifDocCContentNodeTermListHasItem
+
+\newenvironment{DocCContentNodeTermList}{%
+  \begingroup
+  \setlength{\parindent}{0pt}%
+  \setlength{\parskip}{0pt}%
+  \DocCContentNodeTermListHasItemfalse
+}{%
+  \endgroup
+}
+
+\newcommand{\DocCContentNodeTermListItem}[2]{%
+  \needspace{3\baselineskip}%
+  \ifDocCContentNodeTermListHasItem
+    \vspace{${documentation_topic_content_node_term_list_term_margin_top}}%
+  \fi
+  \DocCContentNodeTermListHasItemtrue
+  {\raggedright\noindent\DocCContentLineBox{#1}\par}%
+  {\raggedright\leftskip=${documentation_topic_content_node_term_list_definition_margin_left}\noindent\DocCContentLineBox{#2}\par}%
+}
+
+\newcommand{\DocCContentNodeTermListAfter}{%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \global\AtPageTopfalse%
+}
+
+\newcommand{\DocCArticleHeroHeadlineStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${article_hero_headline_font_size}}{${article_hero_headline_line_height}}\selectfont
+}
+
+\newcommand{\DocCArticleHeroIntroStyle}{%
+  \global\precededbyboxfalse\mainFontWithFallback{$main_font}\fontsize{${article_hero_intro_font_size}}{${article_hero_intro_line_height}}\selectfont
+}
+
+\newif\ifDocCArticleHeroTitle
 
 \makeatletter
+\newcommand{\DocCSetCurrentLabelName}[1]{%
+  \def\@currentlabelname{#1}%
+}
+
 \def\section{\@startsection{section}{1}{0pt}%
-   {${spacing_section_before}}
-   {${spacing_section_after}}
-   {\mainFontWithFallback{$main_font}\fontsize{${font_size_section}pt}{${spacing_baselineskip_section}}\selectfont\global\AtPageTopfalse}}
+  {\ifDocCArticleHeroTitle 0bp\else ${content_node_paragraph_to_heading_2_margin_top}\fi}%
+  {\ifDocCArticleHeroTitle ${documentation_topic_title_margin_bottom}\else ${article_stacked_margin_small}\fi}%
+  {\ifDocCArticleHeroTitle\DocCArticleHeroHeadlineStyle\else\mainFontWithFallback{$main_font}\fontsize{${content_node_heading_2_font_size}}{${content_node_heading_2_line_height}}\selectfont\fi\global\AtPageTopfalse}%
+}
 \makeatother
 
-\newcommand{\TitleSection}[2]{%
+\newcommand{\DocCArticleHeroChapterGap}{${article_stacked_margin_large}}
+
+\newcommand{\DocCArticleHeroTitle}[2]{%
   {%
-    \pdfbookmark[1]{#1}{#2}\section*{#1}\label{#2}\par
+    \DocCArticleHeroTitletrue%
+    \vspace*{${spacing_stacked_margin_large}}%
+    \pdfbookmark[1]{#1}{#2}%
+    \section*{\DocCContentLineBox{#1}}%
+    \DocCSetCurrentLabelName{#1}%
+    \label{#2}%
   }%
+}
+
+\newcommand{\DocCArticleHeroTextGroup}[3]{%
+  \DocCArticleHeroTitle{#1}{#2}%
+  {\DocCArticleHeroIntroStyle #3\strut\par}%
+}
+
+\newcommand{\DocCContentLineBox}[1]{%
+  \strut #1\strut%
 }
 
 \makeatletter
 \def\subsection{\@startsection{subsection}{2}{0pt}%
-   {\ifprecededbyparagraph ${spacing_subsection_before_para} \else ${spacing_subsection_before} \fi}
-   {${spacing_heading_after}}
-   {\mainFontWithFallback{$main_font}\fontsize{${font_size_subsection}pt}{${spacing_baselineskip_subsection}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {0bp}
+   {1sp}
+   {\mainFontWithFallback{$main_font}\fontsize{${content_node_heading_2_font_size}}{${content_node_heading_2_line_height}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse}}
 \makeatother
 
-\newcommand{\SectionHeader}[2]{%
-  {%
-    \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
-    \pdfbookmark[2]{#1}{#2}\subsection*{#1}\label{#2}
-    \vspace*{-${spacing_section_adjust}}
+\newcommand{\DocCContentNodeHeadingTwoBefore}{%
+  \DocCUseTopMargin{%
+    \ifprecededbyparagraph
+      \nointerlineskip\vspace{${content_node_paragraph_to_heading_2_margin_top}}%
+    \else\ifprecededbybox
+      \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h2_margin_top}}%
+    \else\ifprecededbynote
+      \nointerlineskip\vspace{${content_node_aside_to_documentation_h2_margin_top}}%
+    \else\ifprecededbysection
+      \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+    \else\ifprecededbytable
+      \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+    \fi\fi\fi\fi\fi%
   }%
 }
 
-\newcommand{\SectionHeaderTOC}[2]{%
+\newcommand{\DocCContentNodeHeadingTwo}[2]{%
   {%
     \setlength{\parskip}{0pt}
-    \pdfbookmark[2]{#1}{#2}\subsection*{#1}\label{#2}
-    \vspace*{${spacing_toc_section_after}}
+    \DocCContentNodeHeadingTwoBefore
+    \pdfbookmark[2]{#1}{#2}\subsection*{\DocCContentLineBox{#1}}\label{#2}
+  }%
+}
+
+\newcommand{\DocCDocumentationTopicContentTableTitleStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${documentation_topic_content_table_title_font_size}}{${documentation_topic_content_table_title_line_height}}\selectfont
+}
+
+\newcommand{\DocCContentNodeHeadingTwoTOC}[2]{%
+  {%
+    \setlength{\parskip}{0pt}
+    \pdfbookmark[2]{#1}{#2}%
+    {\DocCDocumentationTopicContentTableTitleStyle\noindent #1\par}\label{#2}
   }%
 }
 
 \makeatletter
 \def\subsubsection{\@startsection{subsubsection}{3}{0pt}%
-   {\ifAtPageTop \ifintoc 0in \else \ifprecededbyparagraph ${spacing_subsubsection_before_para} \else ${spacing_subsubsection_before} \fi \fi \else \ifprecededbyparagraph ${spacing_subsubsection_before_para} \else ${spacing_subsubsection_before} \fi \fi}
-   {${spacing_heading_after}}
-   {\mainFontWithFallback{$main_font}\fontsize{${font_size_subsubsection}pt}{${spacing_baselineskip_subsubsection}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {0bp}
+   {1sp}
+   {\mainFontWithFallback{$main_font}\fontsize{${font_style_documentation_h3_font_size}}{${font_style_documentation_h3_line_height}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse}}
 \makeatother
 
-\newcommand{\SubsectionHeader}[2]{%
-  {%
-    \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
-    \pdfbookmark[3]{#1}{#2}\subsubsection*{#1}\label{#2}
-    \vspace*{-${spacing_section_adjust}}
+\newcommand{\DocCContentNodeHeadingThreeBefore}{%
+  \DocCUseTopMargin{%
+    \ifprecededbyparagraph
+      \nointerlineskip\vspace{${content_node_paragraph_to_heading_3_margin_top}}%
+    \else\ifprecededbybox
+      \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h3_margin_top}}%
+    \else\ifprecededbynote
+      \nointerlineskip\vspace{${content_node_aside_to_documentation_h3_margin_top}}%
+    \else\ifprecededbysection
+      \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+    \else\ifprecededbytable
+      \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+    \fi\fi\fi\fi\fi%
   }%
 }
 
-\newcommand{\SubsectionHeaderTOC}[2]{%
+\newcommand{\DocCContentNodeHeadingThree}[2]{%
+  {%
+    \setlength{\parskip}{0pt}
+    \DocCContentNodeHeadingThreeBefore
+    \pdfbookmark[3]{#1}{#2}\subsubsection*{\DocCContentLineBox{#1}}\label{#2}
+  }%
+}
+
+\newcommand{\DocCDocumentationTopicContentTableSectionTitleStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${documentation_topic_content_table_section_title_font_size}}{${documentation_topic_content_table_section_title_line_height}}\selectfont
+}
+
+\newcommand{\DocCContentNodeHeadingThreeTOC}[2]{%
   {%
     \needspace{5\baselineskip}%
     \checkTopOfPage
     \intoctrue
     \setlength{\parskip}{0pt}
     \nopagebreak
-    \vspace*{-${spacing_toc_adjust}}
-    \nopagebreak
-    \pdfbookmark[3]{#1}{#2}\subsubsection*{#1}\label{#2}
-    \nopagebreak
-    \vspace*{-${spacing_toc_adjust}}
+    \vspace*{${documentation_topic_content_table_section_padding_top}}%
+    \pdfbookmark[3]{#1}{#2}%
+    {\DocCDocumentationTopicContentTableSectionTitleStyle\noindent #1\par}\label{#2}
     \nopagebreak
     \intocfalse
   }%
@@ -201,25 +446,92 @@
 
 \makeatletter
 \def\paragraph{\@startsection{paragraph}{4}{0pt}%
-   {\ifprecededbyparagraph ${spacing_paragraph_before_para} \else ${spacing_paragraph_before} \fi}
-   {${spacing_heading_after}}
-   {\bfseries\mainFontWithFallback{$main_font}\fontsize{${font_size_paragraph}pt}{${spacing_baselineskip_paragraph}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {0bp}
+   {1sp}
+   {\bfseries\mainFontWithFallback{$main_font}\fontsize{${font_style_documentation_h4_font_size}}{${font_style_documentation_h4_line_height}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse}}
 \makeatother
 
-\newcommand{\SubsubsectionHeader}[2]{%
-  {%
-    \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
-    \pdfbookmark[4]{#1}{#2}\paragraph*{#1}\label{#2}
-    \vspace*{-${spacing_section_adjust}}
+\newcommand{\DocCContentNodeHeadingFourBefore}{%
+  \DocCUseTopMargin{%
+    \ifprecededbyparagraph
+      \nointerlineskip\vspace{${content_node_paragraph_to_heading_4_margin_top}}%
+    \else\ifprecededbybox
+      \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h4_margin_top}}%
+    \else\ifprecededbynote
+      \nointerlineskip\vspace{${content_node_aside_to_documentation_h4_margin_top}}%
+    \else\ifprecededbysection
+      \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+    \else\ifprecededbytable
+      \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+    \fi\fi\fi\fi\fi%
   }%
 }
 
-\newcommand{\CodeStyle}{%
-  \monoFontWithFallback{$mono_font}\fontsize{${font_size_code}pt}{${spacing_baselineskip_code}}\selectfont
-  \setlength{\parskip}{${spacing_code_parskip}}\raggedright
+\newcommand{\DocCContentNodeHeadingFour}[2]{%
+  {%
+    \setlength{\parskip}{0pt}
+    \DocCContentNodeHeadingFourBefore
+    \pdfbookmark[4]{#1}{#2}\paragraph*{\DocCContentLineBox{#1}}\label{#2}
+  }%
 }
-\setmonofont{$mono_font}[RawFeature={fallback=monoFallback}, Scale=1]
+
+\newcommand{\DocCCodeVoiceStyle}{%
+  \monoFontWithFallback{$mono_font}\fontsize{${content_node_code_voice_font_size}}{${content_node_code_voice_line_height}}\selectfont
+  \setlength{\parskip}{${content_node_paragraph_margin}}\raggedright
+}
+\setmonofont{$mono_font}[Kerning=Off, RawFeature={fallback=monoFallback}, Scale=1]
+
+\newcommand{\DocCDocumentationTopicTopicsLinkBlockStyle}{%
+  \mainFontWithFallback{$main_font}\fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont
+}
+
+\newlength{\DocCTopicLinkIconWidth}
+\setlength{\DocCTopicLinkIconWidth}{${documentation_topic_topic_link_icon_width}}
+\newlength{\DocCTopicLinkIconSpacing}
+\setlength{\DocCTopicLinkIconSpacing}{${documentation_topic_topic_link_icon_spacing}}
+\newlength{\DocCTopicLinkIndent}
+\setlength{\DocCTopicLinkIndent}{\dimexpr\DocCTopicLinkIconWidth+\DocCTopicLinkIconSpacing\relax}
+\newlength{\DocCTopicLinkAnchorRowHeight}
+\setlength{\DocCTopicLinkAnchorRowHeight}{${documentation_topic_topic_icon_wrapper_height}}
+
+\newcommand{\DocCTopicLinkBlockIcon}[1]{%
+  \parbox[c][\DocCTopicLinkAnchorRowHeight][c]{\DocCTopicLinkIconWidth}{%
+    \centering\includegraphics[height=${documentation_topic_topic_link_icon_height}]{#1}%
+  }%
+}
+
+\newcommand{\DocCTopicLinkBlockAnchorRow}[2]{%
+  \vspace{${documentation_topic_topics_link_block_has_adjacent_elements_padding_top}}%
+  \noindent\DocCTopicLinkBlockIcon{#1}\hspace{\DocCTopicLinkIconSpacing}%
+  \parbox[c][\DocCTopicLinkAnchorRowHeight][c]{\dimexpr\linewidth-\DocCTopicLinkIndent\relax}{%
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{0pt}%
+    \DocCDocumentationTopicTopicsLinkBlockStyle #2\par%
+  }\par%
+  \vspace{${documentation_topic_topics_link_block_has_adjacent_elements_padding_bottom}}%
+}
+
+\newcommand{\DocCTopicLinkBlockAbstract}[1]{%
+  \noindent\hspace*{\DocCTopicLinkIndent}%
+  \begin{minipage}[t]{\dimexpr\linewidth-\DocCTopicLinkIndent\relax}%
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{0pt}%
+    {\DocCDocumentationTopicTopicsLinkBlockStyle #1\par}%
+  \end{minipage}\par%
+}
+
+\newenvironment{DocCTopicLinkBlockList}{%
+  \begingroup\ignorespaces
+}{%
+  \endgroup\ignorespacesafterend
+}
+
+\newcommand{\DocCTopicLinkBlock}[3]{%
+  \needspace{3\baselineskip}%
+  \vspace{${documentation_topic_topics_link_block_margin_top}}%
+  \DocCTopicLinkBlockAnchorRow{#1}{#2}%
+  \DocCTopicLinkBlockAbstract{#3}%
+}
 
 % ----------------------------------------
 % Define custom property for padding
@@ -233,8 +545,39 @@
 \newif\ifprecededbysection
 \precededbysectionfalse
 
+\newif\ifprecededbyinlineimage
+\precededbyinlineimagefalse
+
+\newif\ifprecededbytable
+\precededbytablefalse
+
 \newif\ifprecededbyparagraph
 \precededbyparagraphfalse
+
+\newif\ifDocCSuppressNextTopMargin
+\DocCSuppressNextTopMarginfalse
+
+\newcommand{\DocCResetPrecedingBlockState}{%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphfalse%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+}
+
+\newcommand{\DocCSuppressNextTopMargin}{%
+  \global\DocCSuppressNextTopMargintrue%
+  \DocCResetPrecedingBlockState%
+}
+
+\newcommand{\DocCUseTopMargin}[1]{%
+  \ifDocCSuppressNextTopMargin
+    \global\DocCSuppressNextTopMarginfalse%
+  \else
+    #1%
+  \fi
+}
 
 \newif\ifinitemize
 \initemizefalse
@@ -273,7 +616,7 @@
 \setlist[itemize]{
   left=0pt,
   labelsep=0.5em,
-  itemsep=${spacing_list_itemsep},
+  itemsep=0pt,
   topsep=0.0em,
   partopsep=0.0em
 }
@@ -281,7 +624,7 @@
 \setlist[enumerate]{
   left=0pt,
   labelsep=0.5em,
-  itemsep=${spacing_list_itemsep},
+  itemsep=0pt,
   topsep=0.0em,
   partopsep=0.0em
 }
@@ -308,7 +651,7 @@
 % dedicated option, `whole on next page if possible`.
 %
 % The option defaults to false so the patch does not affect other breakable
-% tcolorbox environments. swiftstyledbox and asideNote opt into it explicitly.
+% tcolorbox environments. DocC code listings and asides opt into it explicitly.
 \makeatletter
 \newif\iftcb@wholeonnextpageifpossible
 \tcbset{
@@ -355,52 +698,63 @@
 }
 \makeatother
 
-\newcommand{\customsmall}{\fontsize{${font_size_minted}pt}{${font_size_minted_leading}pt}\selectfont}
-\newtcblisting{swiftstyledbox}{
+\newcommand{\DocCCodeListingFontStyle}{\fontsize{${font_style_documentation_code_listing_font_size}}{${font_style_documentation_code_listing_line_height}}\selectfont}
+\newcommand{\DocCEnclosedEAcute}{%
+  \mbox{%
+    \tikz[baseline=(glyph.base)]{%
+      \node[inner sep=0pt, outer sep=0pt] (glyph) {é};%
+      \draw[line width=0.035em]
+        ([yshift=0.01em]glyph.center)
+        circle [radius=0.62em];%
+    }%
+  }%
+}
+\newtcblisting{DocCCodeListingSwiftBox}{
   listing only,
   breakable,
   whole on next page if possible,
   minted language=swift-book-swift,
   minted options={
-    fontsize=\customsmall,
+    fontsize=\DocCCodeListingFontStyle,
     style=$code_style,
     breaklines=true,
     breakanywhere=true,
     breakbefore={ABCDEFGHIJKLMNOPQRSTUVWXYZ},
     breakafter={.,>)]:(\{},
-    breaksymbolleft={\raisebox{0.1ex}{\color{color_aside_note_border}\customsmall\ensuremath{\hookrightarrow}}},
+    breaksymbolleft={\raisebox{0.1ex}{\color{color_aside_note_border}\DocCCodeListingFontStyle\ensuremath{\hookrightarrow}}},
     breaksymbolsepleft=0.3em,
-    breakbeforesymbolpre={\,\customsmall\ensuremath{_\rfloor}},
-    breakaftersymbolpre={\,\customsmall\ensuremath{_\rfloor}},
-    breakanywheresymbolpre={\,\customsmall\ensuremath{_\rfloor}},
+    breakbeforesymbolpre={\,\DocCCodeListingFontStyle\ensuremath{_\rfloor}},
+    breakaftersymbolpre={\,\DocCCodeListingFontStyle\ensuremath{_\rfloor}},
+    breakanywheresymbolpre={\,\DocCCodeListingFontStyle\ensuremath{_\rfloor}},
     autogobble=true,
     breakautoindent=true,
     breakindent=${breakindent_minted},
     tabsize=2,
     frame=none,
     framesep=0pt,
-    escapeinside=||,
+    escapeinside=^^^^e200^^^^e201,
   },
   colback=color_code_background,
   colframe=color_grid,
   colupper=color_code_plain,
-  boxrule=0.5pt,
-  arc=4pt,
-  top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
-  left=${spacing_code_box_lr}, right=${spacing_code_box_lr},
+  boxrule=${content_node_code_listing_border_width},
+  arc=${border_radius},
+  top=${code_block_style_elements_padding_block}, bottom=${code_block_style_elements_padding_block},
+  left=${code_block_style_elements_padding_inline}, right=${code_block_style_elements_padding_inline},
   boxsep=0pt,
-  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
-  after skip=0in,
-  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
+  before skip={\dimexpr\ifDocCSuppressNextTopMargin 0bp\else ${documentation_topic_content_node_code_listing_margin_top}\fi\relax},
+  before app={\global\DocCSuppressNextTopMarginfalse},
+  after skip=0bp,
+  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
 }
 
-\newtcblisting{plainlistingbox}{
+\newtcblisting{DocCCodeListingPlainBox}{
   listing only,
   breakable,
   whole on next page if possible,
   minted language=text,
   minted options={
-    fontsize=\customsmall,
+    fontsize=\DocCCodeListingFontStyle,
     breaklines=true,
     breakanywhere=true,
     autogobble=true,
@@ -411,32 +765,47 @@
   colback=color_code_background,
   colframe=color_grid,
   colupper=color_code_plain,
-  boxrule=0.5pt,
-  arc=4pt,
-  top=${spacing_code_box_tb}, bottom=${spacing_code_box_tb},
-  left=${spacing_code_box_lr}, right=${spacing_code_box_lr},
+  boxrule=${content_node_code_listing_border_width},
+  arc=${border_radius},
+  top=${code_block_style_elements_padding_block}, bottom=${code_block_style_elements_padding_block},
+  left=${code_block_style_elements_padding_inline}, right=${code_block_style_elements_padding_inline},
   boxsep=0pt,
-  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
+  before skip={\dimexpr\ifDocCSuppressNextTopMargin 0bp\else ${documentation_topic_content_node_code_listing_margin_top}\fi\relax},
+  before app={\global\DocCSuppressNextTopMarginfalse},
   after skip=0in,
-  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\AtPageTopfalse},
+  after app={\global\precededbyboxtrue\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
 }
 
 % ----------------------------------------
 % Define custom note style
 % ----------------------------------------
-\newtcolorbox{asideNote}{%
+\newcommand{\DocCAsideLabelGap}{${spacing_stacked_margin_small}}
+\newtcolorbox{DocCAsideBox}{%
   enhanced,
   breakable,
   whole on next page if possible,
   colback=color_aside_note_background,
-  arc=4pt,
-  borderline west={3pt}{0pt}{color_aside_note_border},
+  arc=${border_radius},
   boxrule=0pt,
   frame empty,
-  before skip={\dimexpr\ifprecededbybox${spacing_box_before_preceded}\else${spacing_box_before}\fi},
-  after skip=0in,
-  after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\AtPageTopfalse},
-  left=${spacing_aside_left}, right=${spacing_aside_pad}, top=${spacing_aside_pad}, bottom=${spacing_aside_pad},
+  underlay unbroken and first={%
+    \begin{tcbclipframe}%
+      \fill[color_aside_note_border] (frame.south west) rectangle ([xshift=${aside_border_width_left}]frame.north west);%
+    \end{tcbclipframe}%
+  },
+  underlay middle={%
+    \fill[color_aside_note_border] (frame.south west) rectangle ([xshift=${aside_border_width_left}]frame.north west);%
+  },
+  underlay last={%
+    \begin{tcbclipframe}%
+      \fill[color_aside_note_border] (frame.south west) rectangle ([xshift=${aside_border_width_left}]frame.north west);%
+    \end{tcbclipframe}%
+  },
+  before skip={\dimexpr\ifDocCSuppressNextTopMargin 0bp\else ${documentation_topic_content_node_aside_margin_top}\fi\relax},
+  before app={\global\DocCSuppressNextTopMarginfalse},
+  after skip=0bp,
+  after app={\global\precededbyboxfalse\global\precededbysectionfalse\global\precededbyparagraphfalse\global\precededbynotetrue\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse},
+  left=\dimexpr${aside_padding}+${aside_border_width_left}\relax, right=${aside_padding}, top=${aside_padding}, bottom=${aside_padding},
   before upper={\raggedright\color{color_text}},
 }
 
@@ -448,6 +817,143 @@
   pdfstartview=FitH,        % Ensure the view fits horizontally on page
   bookmarksdepth=4
 }
+
+% ----------------------------------------
+% Define tables
+% ----------------------------------------
+\newcommand{\DocCContentNodeTableBefore}{%
+  \nointerlineskip
+  \DocCUseTopMargin{%
+    \ifprecededbysection\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbybox\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbyparagraph\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbynote\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbyinlineimage\vspace{${content_node_table_wrapper_margin_top}}\fi%
+    \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  }%
+}
+
+\newlength{\DocCTableCellPad}
+\setlength{\DocCTableCellPad}{${content_node_table_cell_padding}}
+
+\newcommand{\DocCTableCell}[1]{%
+  \rule[0pt]{0pt}{\dimexpr\ht\strutbox+\DocCTableCellPad\relax}%
+  #1%
+  \rule[-\dimexpr\dp\strutbox+\DocCTableCellPad\relax]{0pt}{0pt}%
+}
+
+\newcommand{\DocCTableFont}{%
+  \mainFontWithFallback{$main_font}%
+  \fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont
+}
+
+\newcommand{\DocCTableSetup}{%
+  \par\noindent
+  \setlength{\tabcolsep}{${content_node_table_cell_padding}}%
+  \setlength{\arrayrulewidth}{${content_node_table_border_width}}%
+  \arrayrulecolor{color_grid}%
+  \renewcommand{\arraystretch}{1}%
+  \DocCTableFont
+  \setlength{\parskip}{${content_node_paragraph_margin}}%
+  \raggedright
+}
+
+\newcount\DocCTableColCount
+\newcount\DocCTableWideCol
+\newcount\DocCTableColIter
+\newdimen\DocCTableMeasure
+\newdimen\DocCTableColMax
+\newdimen\DocCTableNatTotal
+\newdimen\DocCTableAvail
+\newdimen\DocCTableMinReflowCol
+\setlength{\DocCTableMinReflowCol}{1in}
+\def\DocCTableSpec{}
+
+\newcommand{\DocCTableAppendBar}{%
+  \expandafter\def\expandafter\DocCTableSpec\expandafter{\DocCTableSpec|}%
+}
+
+\newcommand{\DocCTableAppendCol}[1]{%
+  \expandafter\def\expandafter\DocCTableSpec\expandafter{%
+    \DocCTableSpec>{\raggedright\arraybackslash}m{#1}}%
+}
+
+\newcommand{\DocCTableBegin}{\DocCTableColCount=0\relax}
+
+\newcommand{\DocCTableMeasureColumn}[1]{%
+  \advance\DocCTableColCount by 1\relax
+  \begingroup
+    \DocCTableFont
+    \global\DocCTableColMax=0pt\relax
+    \renewcommand{\DocCTableCell}[1]{%
+      \settowidth{\DocCTableMeasure}{##1}%
+      \ifdim\DocCTableMeasure>\DocCTableColMax
+        \global\DocCTableColMax=\DocCTableMeasure
+      \fi}%
+    #1%
+    \expandafter\xdef\csname DocCTableColW@\the\DocCTableColCount\endcsname{%
+      \the\DocCTableColMax}%
+  \endgroup
+}
+
+\newcommand{\DocCTableRender}[1]{%
+  \DocCContentNodeTableBefore
+  {\DocCTableSetup
+   \DocCTableColMax=0pt\relax
+   \DocCTableWideCol=0\relax
+   \DocCTableNatTotal=0pt\relax
+   \DocCTableColIter=0\relax
+   \loop\ifnum\DocCTableColIter<\DocCTableColCount
+     \advance\DocCTableColIter by 1\relax
+     \DocCTableMeasure=\csname DocCTableColW@\the\DocCTableColIter\endcsname\relax
+     \advance\DocCTableNatTotal by \DocCTableMeasure
+     \ifdim\DocCTableMeasure>\DocCTableColMax
+       \DocCTableColMax=\DocCTableMeasure
+       \DocCTableWideCol=\DocCTableColIter
+     \fi
+   \repeat
+   \DocCTableAvail=\linewidth
+   \DocCTableColIter=0\relax
+   \loop\ifnum\DocCTableColIter<\DocCTableColCount
+     \advance\DocCTableColIter by 1\relax
+     \advance\DocCTableAvail by -2\tabcolsep
+     \ifnum\DocCTableColIter>1
+       \advance\DocCTableAvail by -\arrayrulewidth
+     \fi
+   \repeat
+   \def\DocCTableSpec{}%
+   \DocCTableColIter=0\relax
+   \loop\ifnum\DocCTableColIter<\DocCTableColCount
+     \advance\DocCTableColIter by 1\relax
+     \ifnum\DocCTableColIter>1 \DocCTableAppendBar \fi
+     \ifdim\DocCTableNatTotal>\DocCTableAvail
+       \ifnum\DocCTableColIter=\DocCTableWideCol
+         \DocCTableMeasure=\DocCTableAvail
+         \advance\DocCTableMeasure by -\DocCTableNatTotal
+         \advance\DocCTableMeasure by \DocCTableColMax
+         \ifdim\DocCTableMeasure<\DocCTableMinReflowCol
+           \DocCTableMeasure=\DocCTableMinReflowCol
+         \fi
+       \else
+         \DocCTableMeasure=\csname DocCTableColW@\the\DocCTableColIter\endcsname\relax
+       \fi
+     \else
+       \DocCTableMeasure=\csname DocCTableColW@\the\DocCTableColIter\endcsname\relax
+     \fi
+     \expandafter\DocCTableAppendCol\expandafter{\the\DocCTableMeasure}%
+   \repeat
+   \expandafter\DocCTableTypeset\expandafter{\DocCTableSpec}{#1}%
+   \par
+   \global\precededbyboxfalse
+   \global\precededbysectionfalse
+   \global\precededbyparagraphfalse
+   \global\precededbynotefalse
+   \global\precededbyinlineimagefalse
+   \global\precededbytabletrue
+   \global\AtPageTopfalse}%
+}
+
+\newcommand{\DocCTableTypeset}[2]{\begin{tabular}{#1}#2\end{tabular}}
 
 % ----------------------------------------
 % Define header and footer

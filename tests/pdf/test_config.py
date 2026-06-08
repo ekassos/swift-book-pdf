@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from swift_book_pdf.core.config import ResolvedBuildSource
-from swift_book_pdf.pdf.config import PDFDocumentConfig
+from swift_book_pdf.pdf.cli.config import build_content_selection
+from swift_book_pdf.pdf.config import PDFContentSelection, PDFDocumentConfig
 from swift_book_pdf.pdf.latex.config import LaTeXConfig, LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.fonts.resolver import LaTeXFontConfig
 
@@ -55,7 +56,9 @@ def test_latex_pdf_config_formats_document_and_backend_diagnostics() -> None:
     diagnostics = config.diagnostic_details()
 
     assert "Rendering mode: digital" in diagnostics
-    assert "Font size: 9.0pt" in diagnostics
+    assert "Font size: 9.5625pt" in diagnostics
+    assert "Content: full" in diagnostics
+    assert "Build target: pdf" in diagnostics
     assert "Typesets: 3" in diagnostics
     assert "Main font: New York (custom font)" in diagnostics
 
@@ -83,3 +86,18 @@ def test_latex_pdf_config_formats_build_error_details() -> None:
     assert "Unicode font(s): Noto Sans Symbols 2 (custom font(s))" in (
         config.build_error_details()
     )
+
+
+def test_pdf_content_selection_rejects_conflicting_selectors() -> None:
+    try:
+        PDFContentSelection(only_toc=True, only_chapter="GuidedTour")
+    except ValueError as exc:
+        assert "Use either --only-toc or --only-chapter" in str(exc)
+    else:
+        raise AssertionError("Expected conflicting PDF content selection")
+
+
+def test_build_content_selection_strips_empty_chapter_value() -> None:
+    selection = build_content_selection(only_toc=False, only_chapter="  ")
+
+    assert selection == PDFContentSelection()

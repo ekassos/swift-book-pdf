@@ -109,6 +109,8 @@ def stub_resolve_cli_build_source(
                 "--save-intermediates",
                 "--typesets",
                 "--override-version",
+                "--only-toc",
+                "--only-chapter",
                 "--main",
                 "--dangerously-skip-legal-notices",
             ),
@@ -229,6 +231,8 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
             "./build-files",
             "--override-version",
             "6.2 beta",
+            "--only-chapter",
+            "GuidedTour",
             "--main",
             "New York",
             "--mono",
@@ -273,6 +277,8 @@ def test_pdf_command_builds_pdf_config_and_calls_pdf_builder(
     assert config_input.doc_config.appearance.value == "dark"
     assert config_input.doc_config.gutter is False
     assert config_input.doc_config.font_size == PDF_FONT_SIZE
+    assert config_input.content_selection.only_toc is False
+    assert config_input.content_selection.only_chapter == "GuidedTour"
     assert config_input.save_tex is False
     assert config_input.intermediates_path == str(tmp_path / "build-files")
     assert config_input.override_version == "6.2 beta"

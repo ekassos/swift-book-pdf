@@ -16,6 +16,9 @@
 
 import re
 
+MINTED_ESCAPE_START = "\ue200"
+MINTED_ESCAPE_END = "\ue201"
+
 TEXTTT_TRANSLATION = str.maketrans(
     {
         "\\": r"\textbackslash ",
@@ -70,10 +73,13 @@ def override_characters(text: str, in_code_block: bool = False) -> str:
     Returns:
         Text with special glyph overrides applied.
     """
-    override_set = {"é⃝": "\\textcircled{é}"}
+    override_set = {"é⃝": "\\DocCEnclosedEAcute{}"}
 
     if in_code_block:
-        override_set = {k: f"|{v}|" for k, v in override_set.items()}
+        override_set = {
+            k: f"{MINTED_ESCAPE_START}{v}{MINTED_ESCAPE_END}"
+            for k, v in override_set.items()
+        }
 
     for char, replacement in override_set.items():
         text = text.replace(char, replacement)

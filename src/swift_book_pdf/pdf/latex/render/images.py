@@ -60,7 +60,15 @@ def convert_image_block(
         else f"{width}in"
     )
     return [
-        f"\\begin{{figure}}[H]\n\\centering\\includegraphics[width={final_width}]{{{latex_img_path}}}\n\\end{{figure}}\n\\global\\AtPageTopfalse\n",
+        "\\DocCContentNodeInlineImageBefore\n"
+        f"\\begin{{figure}}[H]\n\\centering\\includegraphics[width={final_width}]{{{latex_img_path}}}\n\\end{{figure}}\n"
+        "\\global\\precededbyboxfalse\n"
+        "\\global\\precededbysectionfalse\n"
+        "\\global\\precededbyparagraphfalse\n"
+        "\\global\\precededbynotefalse\n"
+        "\\global\\precededbyinlineimagetrue\n"
+        "\\global\\precededbytablefalse\n"
+        "\\global\\AtPageTopfalse\n",
     ]
 
 

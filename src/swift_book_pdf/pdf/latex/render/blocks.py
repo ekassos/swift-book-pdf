@@ -35,7 +35,9 @@ from swift_book_pdf.pdf.latex.render.headings import convert_header_like_block
 from swift_book_pdf.pdf.latex.render.images import convert_image_block
 from swift_book_pdf.pdf.latex.render.inline import apply_formatting
 from swift_book_pdf.pdf.latex.render.lists import convert_list_like_block
-from swift_book_pdf.pdf.latex.render.nested import convert_nested_block
+from swift_book_pdf.pdf.latex.render.nested import (
+    convert_nested_block_sequence,
+)
 from swift_book_pdf.pdf.latex.render.tables import convert_table_block
 
 
@@ -89,8 +91,6 @@ def _convert_block_to_latex(  # noqa: PLR0911
             return convert_table_block(
                 block,
                 context.mode,
-                context.main_font,
-                context.body_font_size,
                 context.doc_references,
             )
         case UnorderedListBlock() | OrderedListBlock() | TermListBlock():
@@ -119,9 +119,9 @@ def _convert_code_block(block: CodeBlock) -> list[str]:
     Returns:
         Rendered LaTeX lines.
     """
-    output = ["\\parskip=0pt\n" + r"\begin{flushleft}\begin{swiftstyledbox}"]
+    output = ["\\begin{DocCFlushLeftBlock}\n\\begin{DocCCodeListingSwiftBox}"]
     output.extend(override_characters(line, True) for line in block.lines)
-    output.append(r"\end{swiftstyledbox}" + "\n\\end{flushleft}\n")
+    output.append("\\end{DocCCodeListingSwiftBox}\n\\end{DocCFlushLeftBlock}")
     return output
 
 
@@ -138,13 +138,20 @@ def _convert_note_block(
         Rendered LaTeX lines.
     """
     aside_content = "\n".join(
-        convert_nested_block(sub_block, context) for sub_block in block.blocks
+        convert_nested_block_sequence(
+            block.blocks,
+            context,
+            paragraph_environment="DocCAsideParagraph",
+        )
     )
     return [
-        "\\begin{flushleft}\\begin{asideNote}",
-        f" \\textbf{{{block.label}}} \\vspace*{{4pt}} \\\\",
+        "\\begin{DocCFlushLeftBlock}",
+        "\\begin{DocCAsideBox}",
+        f"\\strut\\textcolor{{color_aside_note}}{{\\textbf{{{block.label}}}}}\\strut"
+        "\\par\\vspace*{\\DocCAsideLabelGap}",
         aside_content,
-        "\\end{asideNote}\\end{flushleft}" + "\n",
+        "\\end{DocCAsideBox}",
+        "\\end{DocCFlushLeftBlock}",
     ]
 
 
@@ -165,4 +172,8 @@ def _convert_paragraph_block(
         context.mode,
         context.doc_references,
     )
-    return f"\\ParagraphStyle{{{paragraph}}}\n"
+    return (
+        "\\begin{DocCContentNodeParagraph}\n"
+        f"{paragraph}\n"
+        "\\end{DocCContentNodeParagraph}\n"
+    )

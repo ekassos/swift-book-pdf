@@ -28,7 +28,7 @@ def test_render_notices_latex_uses_detected_year_range() -> None:
     latex = render_notices_latex(RenderingMode.DIGITAL, (2014, 2026))
 
     assert f"{{{NOTICES_DOC_KEY}}}" in latex
-    assert r"\begin{plainlistingbox}" in latex
+    assert r"\begin{DocCCodeListingPlainBox}" in latex
     assert r"\textcopyright{} 2025-2026" in latex
     assert (
         r"\textcopyright{} 2014-2026 Apple Inc. and the Swift project authors"

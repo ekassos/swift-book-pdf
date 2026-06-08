@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from swift_book_pdf.core.source import ChapterMetadata
 from swift_book_pdf.pdf.config import RenderingMode
 from swift_book_pdf.pdf.latex.render.code_spans import convert_inline_code
-from swift_book_pdf.pdf.latex.render.inline import apply_formatting
+from swift_book_pdf.pdf.latex.render.inline import (
+    DocReferenceResolver,
+    apply_formatting,
+)
 
 
 def test_apply_formatting_converts_underscore_emphasis() -> None:
@@ -66,4 +70,48 @@ def test_apply_formatting_escapes_hash_fragments_inside_link_urls() -> None:
     assert (
         r"\footnote{\url{https://developer.apple.com/documentation/swift/hashable\#2849490}}"
         in rendered
+    )
+
+
+def test_apply_formatting_keeps_live_single_chapter_references() -> None:
+    resolver = DocReferenceResolver(
+        chapter_metadata={
+            "stringsandcharacters": ChapterMetadata(
+                header_line="Strings and Characters"
+            )
+        },
+        live_reference_prefixes=frozenset({"guidedtour"}),
+    )
+
+    rendered = apply_formatting(
+        "See <doc:GuidedTour> and <doc:GuidedTour#Overview>.",
+        RenderingMode.DIGITAL,
+        resolver,
+    )
+
+    assert r"\fallbackrefdigital{guidedtour}" in rendered
+    assert r"\fallbackrefdigital{guidedtour_overview}" in rendered
+
+
+def test_apply_formatting_staticizes_missing_cross_chapter_references() -> (
+    None
+):
+    resolver = DocReferenceResolver(
+        chapter_metadata={
+            "stringsandcharacters": ChapterMetadata(
+                header_line="Strings and Characters"
+            )
+        },
+        live_reference_prefixes=frozenset({"guidedtour"}),
+    )
+
+    rendered = apply_formatting(
+        "See <doc:StringsAndCharacters> and "
+        "<doc:StringsAndCharacters#Unicode>.",
+        RenderingMode.DIGITAL,
+        resolver,
+    )
+
+    assert rendered == (
+        "See Strings and Characters and Strings and Characters."
     )

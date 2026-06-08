@@ -564,7 +564,7 @@
 % dedicated option, `whole on next page if possible`.
 %
 % The option defaults to false so the patch does not affect other breakable
-% tcolorbox environments. swiftstyledbox and asideNote opt into it explicitly.
+% tcolorbox environments. DocC code listings and asides opt into it explicitly.
 \makeatletter
 \newif\iftcb@wholeonnextpageifpossible
 \tcbset{
@@ -684,7 +684,7 @@
     tabsize=2,
     frame=none,
     framesep=0pt,
-    escapeinside=||,
+    escapeinside=^^^^e200^^^^e201,
   },
   colback=color_code_background,
   colframe=color_grid,

@@ -21,7 +21,6 @@ from swift_book_pdf.cli.source import resolve_cli_build_source
 from swift_book_pdf.pdf.backend import PDFBackend, PDFBackendConfigInput
 from swift_book_pdf.pdf.config import (
     DEFAULT_BODY_FONT_SIZE,
-    DEFAULT_GUTTER,
     Appearance,
     PaperSize,
     PDFConfig,
@@ -51,13 +50,28 @@ def build_doc_config(
     Returns:
         PDF document layout configuration.
     """
+    rendering_mode = RenderingMode(mode)
     return PDFDocumentConfig(
-        mode=RenderingMode(mode),
+        mode=rendering_mode,
         paper_size=PaperSize(paper),
-        gutter=DEFAULT_GUTTER if gutter is None else gutter,
+        gutter=_default_gutter_for_mode(rendering_mode)
+        if gutter is None
+        else gutter,
         font_size=(DEFAULT_BODY_FONT_SIZE if font_size is None else font_size),
         appearance=Appearance.DARK if dark else Appearance.LIGHT,
     )
+
+
+def _default_gutter_for_mode(mode: RenderingMode) -> bool:
+    """Return the implicit gutter setting for a rendering mode.
+
+    Args:
+        mode: Resolved PDF rendering mode.
+
+    Returns:
+        Whether gutter should be enabled when the CLI flag is omitted.
+    """
+    return mode == RenderingMode.PRINT
 
 
 def build_content_selection(

@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve handling of special characters in generated PDF code blocks and inline text with PUA escapes.
 - Adjust the generated PDF LaTeX template geometry so guttered body content aligns more closely with header and footer text at the outer page edge.
 - Align generated PDF no-gutter horizontal content margins with Swift-DocC-Render's full-width container padding instead of using paper-size-specific LaTeX margins.
+- Default generated PDF digital-mode output to no book gutter while preserving the guttered default for print-mode output.
 
 ### Fixed
 - Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.

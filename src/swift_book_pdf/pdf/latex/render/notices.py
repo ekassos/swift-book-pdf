@@ -93,9 +93,9 @@ def render_notices_latex(
 
     latex_lines = [title_box, "", "{\\DocCArticleBodyStyle\n"]
     latex_lines.extend(
-        "\\ParagraphStyle{"
+        "\\begin{DocCContentNodeParagraph}\n"
         + apply_formatting(convert_inline_code(paragraph), mode)
-        + "}\n"
+        + "\n\\end{DocCContentNodeParagraph}"
         for paragraph in paragraphs
     )
     latex_lines.append(

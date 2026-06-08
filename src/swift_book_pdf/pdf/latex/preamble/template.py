@@ -93,6 +93,7 @@ def build_preamble_substitutions(
         "geometry_opts": get_geometry_opts(
             config.doc_config.paper_size,
             config.doc_config.gutter,
+            config.doc_config.font_size,
         ),
         "fancyhead_fancyfoot_hero": header_footer_hero,
         "main_font": font_config.main_font,

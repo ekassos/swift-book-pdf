@@ -13,7 +13,10 @@
 # limitations under the License.
 
 from swift_book_pdf.core.config import ResolvedBuildSource
-from swift_book_pdf.pdf.cli.config import build_content_selection
+from swift_book_pdf.pdf.cli.config import (
+    build_content_selection,
+    build_doc_config,
+)
 from swift_book_pdf.pdf.config import PDFContentSelection, PDFDocumentConfig
 from swift_book_pdf.pdf.latex.config import LaTeXConfig, LaTeXPDFConfig
 from swift_book_pdf.pdf.latex.fonts.resolver import LaTeXFontConfig
@@ -86,6 +89,42 @@ def test_latex_pdf_config_formats_build_error_details() -> None:
     assert "Unicode font(s): Noto Sans Symbols 2 (custom font(s))" in (
         config.build_error_details()
     )
+
+
+def test_build_doc_config_defaults_to_no_gutter_for_digital_mode() -> None:
+    config = build_doc_config(
+        mode="digital",
+        paper="letter",
+        dark=False,
+        gutter=None,
+        font_size=None,
+    )
+
+    assert config.gutter is False
+
+
+def test_build_doc_config_defaults_to_gutter_for_print_mode() -> None:
+    config = build_doc_config(
+        mode="print",
+        paper="letter",
+        dark=False,
+        gutter=None,
+        font_size=None,
+    )
+
+    assert config.gutter is True
+
+
+def test_build_doc_config_uses_explicit_gutter_override() -> None:
+    config = build_doc_config(
+        mode="digital",
+        paper="letter",
+        dark=False,
+        gutter=True,
+        font_size=None,
+    )
+
+    assert config.gutter is True
 
 
 def test_pdf_content_selection_rejects_conflicting_selectors() -> None:

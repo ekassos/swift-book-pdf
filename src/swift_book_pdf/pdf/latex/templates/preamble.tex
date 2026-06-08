@@ -516,9 +516,9 @@
 
 \makeatletter
 \def\paragraph{\@startsection{paragraph}{4}{0pt}%
-   {\ifprecededbyparagraph ${spacing_paragraph_before_para} \else ${spacing_paragraph_before} \fi}
-   {${spacing_heading_after}}
-   {\bfseries\mainFontWithFallback{$main_font}\fontsize{${font_size_paragraph}pt}{${spacing_baselineskip_paragraph}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {0bp}
+   {1sp}
+   {\bfseries\mainFontWithFallback{$main_font}\fontsize{${font_style_documentation_h4_font_size}}{${font_style_documentation_h4_line_height}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse}}
 \makeatother
 
 \newcommand{\DocCContentNodeHeadingFourBefore}{%

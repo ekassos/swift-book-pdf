@@ -85,11 +85,19 @@ def _convert_unordered_list_item(
     for index, sub_block in enumerate(item):
         latex_sub = convert_nested_block(sub_block, context)
         if index == 0:
-            output.append(f"\\item \\ParagraphStyle{{{latex_sub}}}\n")
+            output.append(
+                "\\item \\begin{DocCContentListItemParagraph}\n"
+                f"{latex_sub}\n"
+                "\\end{DocCContentListItemParagraph}\n"
+            )
         elif latex_sub.startswith(r"\parskip"):
             output.append(latex_sub)
         else:
-            output.append(f"\\ParagraphStyle{{{latex_sub}}}\n")
+            output.append(
+                "\\begin{DocCContentListItemParagraph}\n"
+                f"{latex_sub}\n"
+                "\\end{DocCContentListItemParagraph}\n"
+            )
     return output
 
 

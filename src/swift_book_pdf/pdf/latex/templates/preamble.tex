@@ -150,6 +150,55 @@
 \end{flushleft}%
 }
 
+\newenvironment{DocCFlushLeftBlock}{%
+  \begingroup
+  \setlength{\topsep}{0pt}%
+  \setlength{\partopsep}{0pt}%
+  \setlength{\parsep}{0pt}%
+  \setlength{\itemsep}{0pt}%
+  \begin{flushleft}%
+}{%
+  \end{flushleft}%
+  \endgroup
+}
+
+\newenvironment{DocCContentNodeParagraph}{%
+  \nointerlineskip%
+  \ifprecededbysection\vspace{${content_node_heading_to_content_margin_top}}\fi%
+  \ifprecededbybox\vspace{${documentation_topic_content_node_code_listing_margin_top}}\fi%
+  \ifprecededbyparagraph\vspace{${content_node_paragraph_to_content_margin_top}}\fi%
+  \ifprecededbynote\vspace{${documentation_topic_content_node_aside_margin_top}}\fi%
+  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_inline_image_container_margin_top}}\fi%
+  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \global\AtPageTopfalse%
+  \setlength{\parskip}{${content_node_paragraph_margin}}%
+  \begin{DocCFlushLeftBlock}%
+  \strut{}%
+  \ignorespaces
+}{%
+  \unskip%
+  \strut\par%
+  \end{DocCFlushLeftBlock}%
+  \ignorespacesafterend
+}
+
+\newenvironment{DocCContentListItemParagraph}{%
+  \begin{DocCFlushLeftBlock}%
+  \strut{}%
+  \ignorespaces
+}{%
+  \unskip%
+  \strut\par%
+  \end{DocCFlushLeftBlock}%
+  \ignorespacesafterend
+}
+
 \newcommand{\DocCArticleHeroHeadlineStyle}{%
   \mainFontWithFallback{$main_font}\fontsize{${article_hero_headline_font_size}}{${article_hero_headline_line_height}}\selectfont
 }

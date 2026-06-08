@@ -165,4 +165,8 @@ def _convert_paragraph_block(
         context.mode,
         context.doc_references,
     )
-    return f"\\ParagraphStyle{{{paragraph}}}\n"
+    return (
+        "\\begin{DocCContentNodeParagraph}\n"
+        f"{paragraph}\n"
+        "\\end{DocCContentNodeParagraph}\n"
+    )

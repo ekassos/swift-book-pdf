@@ -61,11 +61,16 @@ def _convert_unordered_list_block(
     Returns:
         Rendered LaTeX lines.
     """
-    output = [r"\begin{itemize}"]
+    output = [
+        r"\DocCDocumentationTopicContentNodeListBefore",
+        r"\begin{itemize}",
+    ]
     for item in block.items:
         if item:
             output.extend(_convert_unordered_list_item(item, context))
-    output.append(r"\end{itemize}" + "\n\\global\\AtPageTopfalse\n")
+    output.append(
+        r"\end{itemize}" + "\n\\DocCDocumentationTopicContentNodeListAfter"
+    )
     return output
 
 
@@ -114,12 +119,19 @@ def _convert_ordered_list_block(
     Returns:
         Rendered LaTeX lines.
     """
-    output = [r"\begin{enumerate}"]
+    output = [r"\DocCContentNodeOrderedListBefore", r"\begin{enumerate}"]
     output.extend(
-        f"\\item {apply_formatting(convert_inline_code(item), context.mode, context.doc_references)}"
+        "\\item \\begin{DocCContentListItemParagraph}\n"
+        + apply_formatting(
+            convert_inline_code(item), context.mode, context.doc_references
+        )
+        + "\n\\end{{DocCContentListItemParagraph}}\n"
         for item in block.items
     )
-    output.append(r"\end{enumerate}" + "\n\\global\\AtPageTopfalse\n")
+    output.append(
+        r"\end{enumerate}"
+        + "\n\\DocCDocumentationTopicContentNodeListAfter\\global\\AtPageTopfalse\n"
+    )
     return output
 
 
@@ -135,7 +147,10 @@ def _convert_term_list_block(
     Returns:
         Rendered LaTeX lines.
     """
-    output = ["\\ParagraphStyle{"]
+    output = [
+        r"\DocCContentNodeTermListBefore",
+        r"\begin{DocCContentNodeTermList}",
+    ]
     for term in block.items:
         label_conv = apply_formatting(
             convert_inline_code(term.label),
@@ -148,7 +163,12 @@ def _convert_term_list_block(
             context.doc_references,
         )
         output.append(
-            f"\\needspace{{3\\baselineskip}} {label_conv} \\vspace*{{-0.09in}} \\begin{{quote}} {content_conv} \\end{{quote}}",
+            f"\\DocCContentNodeTermListItem{{{label_conv}}}{{{content_conv}}}",
         )
-    output.append(" }\n")
+    output.extend(
+        [
+            r"\end{DocCContentNodeTermList}",
+            r"\DocCContentNodeTermListAfter",
+        ]
+    )
     return output

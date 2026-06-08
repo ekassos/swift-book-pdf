@@ -199,6 +199,77 @@
   \ignorespacesafterend
 }
 
+\newcommand{\DocCDocumentationTopicContentNodeListBefore}{%
+  \nointerlineskip%
+  \ifprecededbysection\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+  \ifprecededbybox\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+  \ifprecededbyparagraph\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+  \ifprecededbynote\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_list_margin_top}}\fi%
+  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+}
+
+\newcommand{\DocCDocumentationTopicContentNodeListAfter}{%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \global\AtPageTopfalse%
+}
+
+\newcommand{\DocCContentNodeOrderedListBefore}{%
+  \nointerlineskip%
+  \ifprecededbysection\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+  \ifprecededbybox\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+  \ifprecededbyparagraph\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+  \ifprecededbynote\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_ordered_list_margin_top}}\fi%
+  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+}
+
+\newcommand{\DocCContentNodeTermListBefore}{%
+  \nointerlineskip%
+  \ifprecededbysection\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+  \ifprecededbybox\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+  \ifprecededbyparagraph\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+  \ifprecededbynote\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+  \ifprecededbyinlineimage\vspace{${documentation_topic_content_node_term_list_margin_top}}\fi%
+  \ifprecededbytable\vspace{${content_node_table_wrapper_margin_top}}\fi%
+}
+
+\newif\ifDocCContentNodeTermListHasItem
+
+\newenvironment{DocCContentNodeTermList}{%
+  \begingroup
+  \setlength{\parindent}{0pt}%
+  \setlength{\parskip}{0pt}%
+  \DocCContentNodeTermListHasItemfalse
+}{%
+  \endgroup
+}
+
+\newcommand{\DocCContentNodeTermListItem}[2]{%
+  \needspace{3\baselineskip}%
+  \ifDocCContentNodeTermListHasItem
+    \vspace{${documentation_topic_content_node_term_list_term_margin_top}}%
+  \fi
+  \DocCContentNodeTermListHasItemtrue
+  {\raggedright\noindent\DocCContentLineBox{#1}\par}%
+  {\raggedright\leftskip=${documentation_topic_content_node_term_list_definition_margin_left}\noindent\DocCContentLineBox{#2}\par}%
+}
+
+\newcommand{\DocCContentNodeTermListAfter}{%
+  \global\precededbyboxfalse%
+  \global\precededbysectionfalse%
+  \global\precededbyparagraphtrue%
+  \global\precededbynotefalse%
+  \global\precededbyinlineimagefalse%
+  \global\precededbytablefalse%
+  \global\AtPageTopfalse%
+}
+
 \newcommand{\DocCArticleHeroHeadlineStyle}{%
   \mainFontWithFallback{$main_font}\fontsize{${article_hero_headline_font_size}}{${article_hero_headline_line_height}}\selectfont
 }

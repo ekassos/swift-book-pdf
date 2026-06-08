@@ -28,7 +28,7 @@ def get_geometry_opts(paper_size: PaperSize, gutter: bool = True) -> str:
         Comma-separated geometry package options.
     """
     return {
-        PaperSize.A4: f"a4paper,{'inner=1.67in,outer=0.9in' if gutter else 'hmargin=1.285in'}",
-        PaperSize.LETTER: f"letterpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
-        PaperSize.LEGAL: f"legalpaper,{'inner=1.9in,outer=0.9in' if gutter else 'hmargin=1.4in'}",
+        PaperSize.A4: f"a4paper,{'inner=1.67in,outer=0.75in' if gutter else 'hmargin=1.285in'}",
+        PaperSize.LETTER: f"letterpaper,{'inner=1.9in,outer=0.75in' if gutter else 'hmargin=1.4in'}",
+        PaperSize.LEGAL: f"legalpaper,{'inner=1.9in,outer=0.75in' if gutter else 'hmargin=1.4in'}",
     }[paper_size]

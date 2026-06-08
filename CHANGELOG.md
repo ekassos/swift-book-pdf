@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rework generated PDF table-of-contents chapter links to use DocC-style topic link blocks with aligned icons, subtitle indentation, and print page-reference leaders.
 - Align generated PDF inline image spacing with DocC content-node spacing and surrounding block-state handling.
 - Improve handling of special characters in generated PDF code blocks and inline text with PUA escapes.
+- Adjust the generated PDF LaTeX template geometry so guttered body content aligns more closely with header and footer text at the outer page edge.
 
 ### Fixed
 - Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.

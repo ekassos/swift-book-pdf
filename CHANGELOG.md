@@ -26,12 +26,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Highlight.js attribution and BSD 3-Clause license text to the third-party notices.
 - Apply Swift-DocC-Render's Swift grammar overrides when highlighting Swift code.
 - Align generated PDF LaTeX colors with Swift-DocC-Render CSS color tokens for page backgrounds, chapter heroes, links, tables, code blocks, and aside notes.
+- Change the default paragraph font size from 9.0pt to 9.5625pt to match Swift-DocC-Render's default body font size.
+- Rework generated PDF chapter heroes, body text, headings, and table-of-contents section headings to use Swift-DocC-Render-derived typography, line heights, and spacing.
+- Rework generated PDF block spacing so paragraphs, headings, lists, asides, code listings, images, and tables use DocC-style top-margin ownership instead of implicit LaTeX spacing.
+- Render generated PDF code listings with DocC-style listing boxes, padding, borders, and code typography.
+- Redesign generated PDF aside notes with DocC-style padding, label spacing, text color, left-border rendering, and breakable-page behavior.
+- Refine generated PDF aside note borders so the left accent follows the rounded box corners instead of drawing as a square-edged rule.
+- Rework generated PDF unordered, ordered, and term lists to use DocC-style list spacing, indentation, and nested paragraph rendering.
+- Rework generated PDF tables to use DocC-style cell padding, borders, body typography, and measured column widths instead of the previous stretched table layout.
+- Rework generated PDF table-of-contents chapter links to use DocC-style topic link blocks with aligned icons, subtitle indentation, and print page-reference leaders.
+- Align generated PDF inline image spacing with DocC content-node spacing and surrounding block-state handling.
+- Improve handling of special characters in generated PDF code blocks and inline text with PUA escapes.
 
 ### Fixed
 - Fix an issue where the header text in the generated PDF document could be misaligned between odd and even pages.
 - Fix an issue where Swift property scopes and unknown Highlight.js scopes could receive unsupported token styling instead of falling back to normal code text.
 - Fix an issue where multiline string escaped-newline continuations in Swift code could be highlighted differently from Swift-DocC-Render in generated HTML and Pygments tokens.
 - Fix an issue where generated PDF links with URL fragments could fail LaTeX compilation.
+- Fix an issue where generated PDF code listings could be missing a double pipe (||) because of an unintended formatting escape.
 
 ### Removed
 - Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.

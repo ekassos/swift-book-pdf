@@ -205,10 +205,8 @@ def replace_chapter_href_with_toc_item(
         case _:
             raise ValueError("Invalid rendering mode specified.")
 
-    for line in file_content:
-        updated_line = pattern.sub(replacement, line)
-        updated_lines.append(updated_line)
-
+    updated_text = pattern.sub(replacement, "\n".join(file_content))
+    updated_lines.extend(updated_text.splitlines())
     return updated_lines
 
 

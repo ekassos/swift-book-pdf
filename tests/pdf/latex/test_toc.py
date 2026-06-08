@@ -20,7 +20,11 @@ from swift_book_pdf.pdf.latex.render.toc import (
 
 
 def test_toc_chapter_icon_uses_em_based_width_in_digital_mode() -> None:
-    lines = [r"\item \ParagraphStyle{\fallbackrefdigital{guidedtour}}"]
+    lines = [
+        r"\item \begin{DocCContentListItemParagraph}",
+        r"\fallbackrefdigital{guidedtour}",
+        r"\end{DocCContentListItemParagraph}",
+    ]
     metadata = {
         "guidedtour": ChapterMetadata(subtitle_line="A quick start."),
     }
@@ -32,12 +36,16 @@ def test_toc_chapter_icon_uses_em_based_width_in_digital_mode() -> None:
         Appearance.LIGHT,
     )
 
-    assert r"\includegraphics[width=0.8em]{chapter-icon.png}" in rendered[0]
+    assert r"\DocCTopicLinkBlock{chapter-icon.png}" in rendered[0]
     assert "0.1in" not in rendered[0]
 
 
 def test_toc_chapter_icon_uses_dark_asset_in_print_mode() -> None:
-    lines = [r"\item \ParagraphStyle{\fallbackrefbook{guidedtour}}"]
+    lines = [
+        r"\item \begin{DocCContentListItemParagraph}",
+        r"\fallbackrefbook{guidedtour}",
+        r"\end{DocCContentListItemParagraph}",
+    ]
     metadata = {
         "guidedtour": ChapterMetadata(subtitle_line="A quick start."),
     }
@@ -49,6 +57,4 @@ def test_toc_chapter_icon_uses_dark_asset_in_print_mode() -> None:
         Appearance.DARK,
     )
 
-    assert (
-        r"\includegraphics[width=0.8em]{chapter-icon~dark.png}" in rendered[0]
-    )
+    assert r"\DocCTopicLinkBlock{chapter-icon~dark.png}" in rendered[0]

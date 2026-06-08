@@ -193,11 +193,17 @@
 \makeatother
 
 \newcommand{\DocCContentNodeHeadingTwoBefore}{%
-\ifprecededbyparagraph\nointerlineskip\vspace{${content_node_paragraph_to_heading_2_margin_top}}\fi%
-\ifprecededbybox\nointerlineskip\vspace{${content_node_code_listing_to_documentation_h2_margin_top}}\fi%
-\ifprecededbynote\nointerlineskip\vspace{${content_node_aside_to_documentation_h2_margin_top}}\fi%
-\ifprecededbysection\nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}\fi%
-\ifprecededbytable\nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}\fi%
+\ifprecededbyparagraph
+  \nointerlineskip\vspace{${content_node_paragraph_to_heading_2_margin_top}}%
+\else\ifprecededbybox
+  \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h2_margin_top}}%
+\else\ifprecededbynote
+  \nointerlineskip\vspace{${content_node_aside_to_documentation_h2_margin_top}}%
+\else\ifprecededbysection
+  \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+\else\ifprecededbytable
+  \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+\fi\fi\fi\fi\fi%
 }
 
 \newcommand{\DocCContentNodeHeadingTwo}[2]{%
@@ -233,11 +239,17 @@
 \makeatother
 
 \newcommand{\DocCContentNodeHeadingThreeBefore}{%
-\ifprecededbyparagraph\nointerlineskip\vspace{${content_node_paragraph_to_heading_3_margin_top}}\fi%
-\ifprecededbybox\nointerlineskip\vspace{${content_node_code_listing_to_documentation_h3_margin_top}}\fi%
-\ifprecededbynote\nointerlineskip\vspace{${content_node_aside_to_documentation_h3_margin_top}}\fi%
-\ifprecededbysection\nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}\fi%
-\ifprecededbytable\nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}\fi%
+\ifprecededbyparagraph
+  \nointerlineskip\vspace{${content_node_paragraph_to_heading_3_margin_top}}%
+\else\ifprecededbybox
+  \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h3_margin_top}}%
+\else\ifprecededbynote
+  \nointerlineskip\vspace{${content_node_aside_to_documentation_h3_margin_top}}%
+\else\ifprecededbysection
+  \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+\else\ifprecededbytable
+  \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+\fi\fi\fi\fi\fi%
 }
 
 \newcommand{\DocCContentNodeHeadingThree}[2]{%
@@ -280,6 +292,28 @@
    {${spacing_heading_after}}
    {\bfseries\mainFontWithFallback{$main_font}\fontsize{${font_size_paragraph}pt}{${spacing_baselineskip_paragraph}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
 \makeatother
+
+\newcommand{\DocCContentNodeHeadingFourBefore}{%
+\ifprecededbyparagraph
+  \nointerlineskip\vspace{${content_node_paragraph_to_heading_4_margin_top}}%
+\else\ifprecededbybox
+  \nointerlineskip\vspace{${content_node_code_listing_to_documentation_h4_margin_top}}%
+\else\ifprecededbynote
+  \nointerlineskip\vspace{${content_node_aside_to_documentation_h4_margin_top}}%
+\else\ifprecededbysection
+  \nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}%
+\else\ifprecededbytable
+  \nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}%
+\fi\fi\fi\fi\fi%
+}
+
+\newcommand{\DocCContentNodeHeadingFour}[2]{%
+  {%
+    \setlength{\parskip}{0pt}
+    \DocCContentNodeHeadingFourBefore
+    \pdfbookmark[4]{#1}{#2}\paragraph*{\DocCContentLineBox{#1}}\label{#2}
+  }%
+}
 
 \newcommand{\SubsubsectionHeader}[2]{%
   {%

@@ -127,6 +127,28 @@ def test_build_doc_config_uses_explicit_gutter_override() -> None:
     assert config.gutter is True
 
 
+def test_build_doc_config_keeps_code_font_size_override() -> None:
+    config = build_doc_config(
+        mode="digital",
+        paper="letter",
+        dark=False,
+        gutter=None,
+        font_size=None,
+        code_font_size=8.5,
+    )
+
+    assert config.code_font_size == 8.5
+
+
+def test_pdf_document_config_rejects_non_positive_code_font_size() -> None:
+    try:
+        PDFDocumentConfig(code_font_size=0)
+    except ValueError as exc:
+        assert "Code font size must be a positive number" in str(exc)
+    else:
+        raise AssertionError("Expected invalid code font size")
+
+
 def test_pdf_content_selection_rejects_conflicting_selectors() -> None:
     try:
         PDFContentSelection(only_toc=True, only_chapter="GuidedTour")

@@ -29,8 +29,33 @@ def test_default_line_height_and_code_padding_match_docc_css() -> None:
     variables = compute_typography_variables(DEFAULT_BODY_FONT_SIZE)
 
     assert variables["font_style_body_line_height"] == "14.0625bp"
+    assert (
+        variables["font_style_documentation_code_listing_font_size"]
+        == "8.4375bp"
+    )
+    assert (
+        variables["font_style_documentation_code_listing_line_height"]
+        == "14.0625bp"
+    )
     assert variables["code_block_style_elements_padding_block"] == "4.5bp"
     assert variables["code_block_style_elements_padding_inline"] == "7.875bp"
+
+
+def test_code_font_size_override_only_changes_code_listing_size() -> None:
+    variables = compute_typography_variables(
+        DEFAULT_BODY_FONT_SIZE,
+        code_font_size=9,
+    )
+
+    assert variables["font_style_body_font_size"] == "9.5625bp"
+    assert variables["content_node_code_voice_font_size"] == "9.5625bp"
+    assert (
+        variables["font_style_documentation_code_listing_font_size"] == "9bp"
+    )
+    assert (
+        variables["font_style_documentation_code_listing_line_height"]
+        == "15bp"
+    )
 
 
 def test_article_route_tokens_match_docc_css() -> None:

@@ -78,6 +78,7 @@ def pdf(  # noqa: PLR0913
     only_toc: bool,
     only_chapter: str | None,
     font_size: float | None,
+    code_font_size: float | None,
     dark: bool,
     dangerously_skip_legal_notices: bool,
     gutter: bool | None,
@@ -101,6 +102,7 @@ def pdf(  # noqa: PLR0913
         only_toc: Whether to render only the table of contents page.
         only_chapter: Optional document tag or file stem for one chapter.
         font_size: Optional base paragraph font size.
+        code_font_size: Optional fenced code listing font size.
         dark: Whether dark mode should be rendered.
         dangerously_skip_legal_notices: Whether generated notices are omitted.
         gutter: Optional gutter override.
@@ -122,6 +124,7 @@ def pdf(  # noqa: PLR0913
         dark=dark,
         gutter=gutter,
         font_size=font_size,
+        code_font_size=code_font_size,
     )
     content_selection = pdf_config.build_content_selection(
         only_toc=only_toc,

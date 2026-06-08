@@ -227,10 +227,26 @@
 
 \makeatletter
 \def\subsubsection{\@startsection{subsubsection}{3}{0pt}%
-   {\ifAtPageTop \ifintoc 0in \else \ifprecededbyparagraph ${spacing_subsubsection_before_para} \else ${spacing_subsubsection_before} \fi \fi \else \ifprecededbyparagraph ${spacing_subsubsection_before_para} \else ${spacing_subsubsection_before} \fi \fi}
-   {${spacing_heading_after}}
-   {\mainFontWithFallback{$main_font}\fontsize{${font_size_subsubsection}pt}{${spacing_baselineskip_subsubsection}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\AtPageTopfalse}}
+   {0bp}
+   {1sp}
+   {\mainFontWithFallback{$main_font}\fontsize{${font_style_documentation_h3_font_size}}{${font_style_documentation_h3_line_height}}\selectfont\global\precededbysectiontrue\global\precededbyparagraphfalse\global\precededbyboxfalse\global\precededbynotefalse\global\precededbyinlineimagefalse\global\precededbytablefalse\global\AtPageTopfalse}}
 \makeatother
+
+\newcommand{\DocCContentNodeHeadingThreeBefore}{%
+\ifprecededbyparagraph\nointerlineskip\vspace{${content_node_paragraph_to_heading_3_margin_top}}\fi%
+\ifprecededbybox\nointerlineskip\vspace{${content_node_code_listing_to_documentation_h3_margin_top}}\fi%
+\ifprecededbynote\nointerlineskip\vspace{${content_node_aside_to_documentation_h3_margin_top}}\fi%
+\ifprecededbysection\nointerlineskip\vspace{${content_node_heading_to_content_margin_top}}\fi%
+\ifprecededbytable\nointerlineskip\vspace{${content_node_table_wrapper_margin_top}}\fi%
+}
+
+\newcommand{\DocCContentNodeHeadingThree}[2]{%
+  {%
+    \setlength{\parskip}{0pt}
+    \DocCContentNodeHeadingThreeBefore
+    \pdfbookmark[3]{#1}{#2}\subsubsection*{\DocCContentLineBox{#1}}\label{#2}
+  }%
+}
 
 \newcommand{\SubsectionHeader}[2]{%
   {%

@@ -61,7 +61,7 @@ def convert_header_like_block(
                 block.content,
                 file_name,
                 mode,
-                "SubsectionHeader",
+                "DocCContentNodeHeadingThree",
                 doc_references,
             )
         ]

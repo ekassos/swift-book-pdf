@@ -545,20 +545,11 @@
   }%
 }
 
-\newcommand{\SubsubsectionHeader}[2]{%
-  {%
-    \setlength{\parskip}{0pt}
-    \ifprecededbyparagraph\vspace*{-${spacing_section_adjust}}\fi
-    \pdfbookmark[4]{#1}{#2}\paragraph*{#1}\label{#2}
-    \vspace*{-${spacing_section_adjust}}
-  }%
+\newcommand{\DocCCodeVoiceStyle}{%
+  \monoFontWithFallback{$mono_font}\fontsize{${content_node_code_voice_font_size}}{${content_node_code_voice_line_height}}\selectfont
+  \setlength{\parskip}{${content_node_paragraph_margin}}\raggedright
 }
-
-\newcommand{\CodeStyle}{%
-  \monoFontWithFallback{$mono_font}\fontsize{${font_size_code}pt}{${spacing_baselineskip_code}}\selectfont
-  \setlength{\parskip}{${spacing_code_parskip}}\raggedright
-}
-\setmonofont{$mono_font}[RawFeature={fallback=monoFallback}, Scale=1]
+\setmonofont{$mono_font}[Kerning=Off, RawFeature={fallback=monoFallback}, Scale=1]
 
 \newcommand{\DocCDocumentationTopicTopicsLinkBlockStyle}{%
   \mainFontWithFallback{$main_font}\fontsize{${font_style_body_font_size}}{${font_style_body_line_height}}\selectfont

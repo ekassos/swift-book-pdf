@@ -116,7 +116,9 @@ def apply_formatting(
         inline_segments[token] = match.group(0)
         return token
 
-    text = re.sub(r"(\{\\CodeStyle\s+\\texttt\{.*?\}\})", replace_inline, text)
+    text = re.sub(
+        r"(\{\\DocCCodeVoiceStyle\s+\\texttt\{.*?\}\})", replace_inline, text
+    )
     text, markdown_links = extract_markdown_links(text)
 
     # Escape literal currency/math markers from source text before we inject

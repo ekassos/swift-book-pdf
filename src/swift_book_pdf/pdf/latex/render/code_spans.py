@@ -87,7 +87,7 @@ def _render_code_voice(text: str) -> str:
         LaTeX for the inline-code span.
     """
     return (
-        r"{\CodeStyle \texttt{"
+        r"{\DocCCodeVoiceStyle \texttt{"
         + _escape_texttt_with_word_breaks(text.strip())
         + "}}"
     )

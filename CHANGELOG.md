@@ -50,11 +50,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix an issue where generated PDF code listings could be missing a double pipe (||) because of an unintended formatting escape.
 
 ### Removed
+- Remove support for Python v3.10. Update minimum Python version requirement to 3.11.
 - Remove the bundled `Swift_logo_color_epub.png` asset, which is no longer referenced by the new SVG-based cover layout.
 - Remove the Swift logo from the header and footer of the generated PDF document, and remove the related `swift-logo` asset directory.
 
 ### Security
-- Update pillow (`12.2.0` to `12.3.0`) to resolve 13 Dependabot alerts.
+- Update pillow (`12.2.0` to `13.0.0`).
+- Update virtualenv (`21.2.0` to `21.14.9`).
 
 ### Internal
 - Reorganize the package into shared `core`, `cli`, `pdf`, and `epub` modules, with PDF and EPUB builders owning their backend-specific CLI, config, rendering, packaging, and asset code.
@@ -65,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Swift lexer fixture coverage for attributes, availability annotations, declarations, keywords, numbers, operators, ownership modifiers, regex literals, strings, SwiftUI snippets, tuples, and type definitions.
 - Add Swift-DocC-Render-derived tests for custom Swift grammar overrides and syntax-highlighting behavior.
 - Add an external Swift Book corpus parity test against Swift-DocC-Render's pinned Highlight.js version and custom Swift grammar override in CI.
+- Update Python version in testing workflows.
 
 ## [2.6.0] - 2026-04-22
 ### Added

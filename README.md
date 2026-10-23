@@ -140,7 +140,7 @@ Convert the DocC source for _The Swift Programming Language_ book into polished 
 - The generated EPUB file follows the rendering style used by TSPL editions up to Swift 5.7 [published on Apple Books](https://books.apple.com/us/book/the-swift-programming-language-swift-5-7/id881256329) and retains all internal references and external links.
 
 ## Requirements
-- Python 3.10+
+- Python 3.11+
 - Git
 - Specifically for generating PDF editions with `swift-book-pdf`:
     - LuaTeX. If you don't have an existing LaTeX installation, see [MacTeX](https://www.tug.org/mactex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org).
